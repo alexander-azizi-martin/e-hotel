@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import { Flex, Text, Divider, Center } from "@mantine/core";
 import { IconBed } from "@tabler/icons";
@@ -19,7 +18,7 @@ export default function Header() {
           padding: "10px",
         }}
       >
-        <Link href="/">
+        <Link href="/" style={{ textDecoration: "unset" }}>
           <Center inline sx={{ color: "black" }}>
             <IconBed size="32px" />
             <Text size="xl" sx={{ paddingLeft: "8px" }}>
