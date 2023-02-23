@@ -23,7 +23,11 @@ export default function FilterOptions() {
   const form = useForm({
     initialValues: {
       minPrice: 0,
-      maxPrice: 10,
+      maxPrice: 100,
+      hotelChain: "",
+      category: 0,
+      numberOfRooms: null,
+      roomCapacity: "any",
     },
   });
 
@@ -54,7 +58,7 @@ export default function FilterOptions() {
           </Center>
         }
       >
-        <Box sx={{ padding: "20px" }}>
+        <Box sx={{ padding: "0px 20px" }}>
           <Flex rowGap="20px" direction="column" sx={{ margin: "20px" }}>
             <Title order={3} sx={{ marginBottom: "-20px" }}>
               Price
@@ -76,6 +80,7 @@ export default function FilterOptions() {
             <Box sx={{ width: "80%", margin: "auto" }}>
               <RangeSlider
                 step={1}
+                minRange={0}
                 value={[form.values.minPrice, form.values.maxPrice]}
                 onChange={(newRange) => {
                   form.setValues({
@@ -94,7 +99,7 @@ export default function FilterOptions() {
 
             <Flex direction="column" rowGap="8px">
               <Text>Hotel Chain</Text>
-              <Radio.Group>
+              <Radio.Group {...form.getInputProps("hotelChain")}>
                 <Radio value="Chain1" label="Chain1" />
                 <Radio value="Chain2" label="Chain2" />
                 <Radio value="Chain3" label="Chain3" />
@@ -104,12 +109,15 @@ export default function FilterOptions() {
 
             <Flex direction="column" rowGap="8px">
               <Text>Category</Text>
-              <Rating size="lg" />
+              <Rating size="lg" {...form.getInputProps("category")} />
             </Flex>
 
             <Flex direction="column" rowGap="8px">
               <Text>Number of Rooms</Text>
-              <NumberInput sx={{ width: "50%" }} />
+              <NumberInput
+                sx={{ width: "50%" }}
+                {...form.getInputProps("numberOfRooms")}
+              />
             </Flex>
           </Flex>
 
@@ -130,6 +138,7 @@ export default function FilterOptions() {
                 { label: "7", value: "7" },
                 { label: "8+", value: "8" },
               ]}
+              {...form.getInputProps("roomCapacity")}
             />
           </Flex>
         </Box>
