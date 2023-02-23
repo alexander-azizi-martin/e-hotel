@@ -3,7 +3,14 @@
 import { useLayoutEffect, useState } from "react";
 import dayjs from "dayjs";
 
-import { Flex, Popover, Text, UnstyledButton, Center } from "@mantine/core";
+import {
+  Flex,
+  Popover,
+  Text,
+  UnstyledButton,
+  Center,
+  Divider,
+} from "@mantine/core";
 import { RangeCalendar } from "@mantine/dates";
 import { Calendar } from "react-feather";
 
@@ -13,7 +20,12 @@ function formatDate(date: Date | null) {
   return !date ? "---, --/--/--" : dayjs(date).format("ddd, MM/DD/YY");
 }
 
-export default function DateRangePicker() {
+interface DateRangePickerProps {
+  startDateLabel?: string;
+  endDateLabel?: string;
+}
+
+export default function DateRangePicker(props: DateRangePickerProps) {
   const [dateRange, setDateRange] = useState<DateRange>([null, null]);
 
   useLayoutEffect(() => {
@@ -31,12 +43,14 @@ export default function DateRangePicker() {
         <Popover.Target>
           <UnstyledButton>
             <Center inline>
-              <Text
-                size={!dateRange[0] ? "md" : "sm"}
-                sx={{ paddingRight: "8px" }}
-              >
-                {formatDate(dateRange[0])}
-              </Text>
+              <Flex direction="column" sx={{ paddingRight: "8px" }}>
+                {props.startDateLabel && (
+                  <Text size="xs">{props.startDateLabel}</Text>
+                )}
+                <Text size={!dateRange[0] ? "md" : "sm"}>
+                  {formatDate(dateRange[0])}
+                </Text>
+              </Flex>
               <Calendar />
             </Center>
           </UnstyledButton>
@@ -48,24 +62,26 @@ export default function DateRangePicker() {
             onChange={setDateRange}
             weekendDays={[]}
             minDate={new Date()}
+            initialMonth={dateRange[0] || new Date()}
+            hideOutsideDates
           />
         </Popover.Dropdown>
       </Popover>
 
-      <Text size="md" sx={{ padding: "0px 10px" }}>
-        to
-      </Text>
+      <Divider orientation="vertical" sx={{ margin: "0px 16px" }} />
 
       <Popover position="bottom" withArrow shadow="md">
         <Popover.Target>
           <UnstyledButton>
             <Center inline>
-              <Text
-                size={!dateRange[1] ? "md" : "sm"}
-                sx={{ paddingRight: "8px" }}
-              >
-                {formatDate(dateRange[1])}
-              </Text>
+              <Flex direction="column" sx={{ paddingRight: "8px" }}>
+                {props.endDateLabel && (
+                  <Text size="xs">{props.endDateLabel}</Text>
+                )}
+                <Text size={!dateRange[1] ? "md" : "sm"}>
+                  {formatDate(dateRange[1])}
+                </Text>
+              </Flex>
               <Calendar />
             </Center>
           </UnstyledButton>
@@ -77,6 +93,8 @@ export default function DateRangePicker() {
             onChange={setDateRange}
             weekendDays={[]}
             minDate={new Date()}
+            initialMonth={dateRange[1] || new Date()}
+            hideOutsideDates
           />
         </Popover.Dropdown>
       </Popover>

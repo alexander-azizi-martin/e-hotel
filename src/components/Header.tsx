@@ -14,7 +14,7 @@ export default function Header() {
         align="center"
         wrap="wrap"
         sx={{
-          height: "max-content",
+          height: "65px",
           padding: "10px",
         }}
       >
@@ -37,7 +37,7 @@ export default function Header() {
         >
           <FilterOptions />
           <SearchBar />
-          <DateRangePicker />
+          <DateRangePicker startDateLabel="Check In" endDateLabel="Check Out" />
         </Flex>
 
         <UserMenu username="username" />
