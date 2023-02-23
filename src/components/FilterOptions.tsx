@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import { useToggle } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import {
@@ -68,12 +69,22 @@ export default function FilterOptions() {
                 label="Min price"
                 icon="$"
                 {...form.getInputProps("minPrice")}
+                onChange={(event) => {
+                  if (/^\d+$/.test(event.target.value)) {
+                    form.setValues({ minPrice: parseInt(event.target.value) });
+                  }
+                }}
               />
               <Text sx={{ padding: "10px" }}>-</Text>
               <TextInput
                 label="Max price"
                 icon="$"
                 {...form.getInputProps("maxPrice")}
+                onChange={(event) => {
+                  if (/^\d+$/.test(event.target.value)) {
+                    form.setValues({ maxPrice: parseInt(event.target.value) });
+                  }
+                }}
               />
             </Flex>
 
