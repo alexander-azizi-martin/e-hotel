@@ -1,10 +1,11 @@
 import { TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 
-export default function FilterOptions() {
+export default function SearchBar() {
   return (
     <TextInput
-      rightSection={<IconSearch />}
+      placeholder="Destination"
+      icon={<IconSearch />}
       radius="xl"
       sx={{
         boxShadow: "rgba(0, 0, 0, 0.08) 0px 1px 2px",
