@@ -111,10 +111,42 @@ export default function FilterOptions() {
             <Flex direction="column" rowGap="8px">
               <Text>Hotel Chain</Text>
               <Radio.Group {...form.getInputProps("hotelChain")}>
-                <Radio value="Chain1" label="Chain1" />
-                <Radio value="Chain2" label="Chain2" />
-                <Radio value="Chain3" label="Chain3" />
-                <Radio value="Chain4" label="Chain4" />
+                <Radio
+                  value="Chain1"
+                  label="Chain1"
+                  onClick={() => {
+                    if (form.values.hotelChain === "Chain1") {
+                      form.setValues({ hotelChain: "" });
+                    }
+                  }}
+                />
+                <Radio
+                  value="Chain2"
+                  label="Chain2"
+                  onClick={() => {
+                    if (form.values.hotelChain === "Chain2") {
+                      form.setValues({ hotelChain: "" });
+                    }
+                  }}
+                />
+                <Radio
+                  value="Chain3"
+                  label="Chain3"
+                  onClick={() => {
+                    if (form.values.hotelChain === "Chain3") {
+                      form.setValues({ hotelChain: "" });
+                    }
+                  }}
+                />
+                <Radio
+                  value="Chain4"
+                  label="Chain4"
+                  onClick={() => {
+                    if (form.values.hotelChain === "Chain4") {
+                      form.setValues({ hotelChain: "" });
+                    }
+                  }}
+                />
               </Radio.Group>
             </Flex>
 
