@@ -45,7 +45,7 @@ export default function FilterOptions() {
         opened={open}
         onClose={() => toggle()}
         size="800px"
-        transition="slide-up"
+        transition="scale"
         overflow="inside"
         centered
         title={
@@ -116,7 +116,7 @@ export default function FilterOptions() {
           <Divider />
 
           <Flex rowGap="20px" direction="column" sx={{ margin: "20px" }}>
-            <Title order={3}>Capacity</Title>
+            <Title order={3}>Room Capacity</Title>
 
             <SegmentedControl
               data={[
