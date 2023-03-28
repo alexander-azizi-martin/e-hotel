@@ -103,30 +103,30 @@ CREATE TABLE Has_Amenity (
 );
 
 CREATE TABLE Customer (
-customer_SSN_SIN INT,
-first_name VARCHAR(50) NOT NULL,
-last_name VARCHAR(50) NOT NULL,
-address_street_name VARCHAR(50) NOT NULL,
-address_street_number INT NOT NULL,
-address_city VARCHAR(50) NOT NULL,
-address_province_state VARCHAR(50) NOT NULL,
-address_country VARCHAR(50) NOT NULL,
-registration_date DATE NOT NULL,
-PRIMARY KEY (customer_SSN_SIN)
+    customer_SSN_SIN INT,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    address_street_name VARCHAR(50) NOT NULL,
+    address_street_number INT NOT NULL,
+    address_city VARCHAR(50) NOT NULL,
+    address_province_state VARCHAR(50) NOT NULL,
+    address_country VARCHAR(50) NOT NULL,
+    registration_date DATE NOT NULL,
+    PRIMARY KEY (customer_SSN_SIN)
 );
 
 CREATE TABLE Booking (
-booking_ID INT,
-booking_date DATE NOT NULL,
-scheduled_check_in_date DATE NOT NULL,
-scheduled_check_out_date DATE NOT NULL,
-canceled BOOLEAN NOT NULL DEFAULT false,
-customer_SSN_SIN INT,
-room_number INT,
-hotel_ID INT,
-PRIMARY KEY (booking_ID),
-FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
-FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
+    booking_ID INT,
+    booking_date DATE NOT NULL,
+    scheduled_check_in_date DATE NOT NULL,
+    scheduled_check_out_date DATE NOT NULL,
+    canceled BOOLEAN NOT NULL DEFAULT false,
+    customer_SSN_SIN INT,
+    room_number INT,
+    hotel_ID INT,
+    PRIMARY KEY (booking_ID),
+    FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
+    FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
 );
 
 CREATE TABLE Rental (
