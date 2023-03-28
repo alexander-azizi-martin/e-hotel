@@ -150,3 +150,18 @@ CREATE TABLE Rental (
   FOREIGN KEY (booking_ID) REFERENCES Booking(booking_ID),
   FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
 );
+
+CREATE TABLE Users (
+    username VARCHAR(50) NOT NULL PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    customer_SSN_SIN INT,
+    employee_SSN_SIN INT,
+    employee_ID INT,
+    FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
+    FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
+    CHECK (
+        (customer_SSN_SIN IS NULL AND (employee_SSN_SIN IS NOT NULL AND employee_ID IS NOT NULL)) OR
+        (customer_SSN_SIN IS NOT NULL AND (employee_SSN_SIN IS NULL AND employee_ID IS NULL))
+    )
+);
+
