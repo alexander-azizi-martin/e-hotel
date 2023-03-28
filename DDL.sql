@@ -1,3 +1,16 @@
+CREATE TABLE Hotel (
+  hotel_ID INT,
+  number_of_rooms INT,
+  address_street_name VARCHAR(50) NOT NULL,
+  address_street_number INT NOT NULL,
+  address_city VARCHAR(50) NOT NULL,
+  address_province_state VARCHAR(50) NOT NULL,
+  address_country VARCHAR(50) NOT NULL,
+  contact_email VARCHAR(50) NOT NULL,
+  star_rating INT NOT NULL,
+  PRIMARY KEY (hotel_ID)
+);
+
 CREATE TABLE Employee (
   employee_SSN_SIN INT,
   employee_ID INT,
@@ -20,22 +33,8 @@ CREATE TABLE Employee_Role (
   hotel_ID INT NOT NULL,
   role VARCHAR(50) NOT NULL,
   PRIMARY KEY (employee_SSN_SIN, employee_ID),
-  FOREIGN KEY (employee_SSN_SIN) REFERENCES Employee(employee_SSN_SIN),
-  FOREIGN KEY (employee_ID) REFERENCES Employee(employee_ID),
+  FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
   FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
-);
-
-CREATE TABLE Hotel (
-  hotel_ID INT,
-  number_of_rooms INT,
-  address_street_name VARCHAR(50) NOT NULL,
-  address_street_number INT NOT NULL,
-  address_city VARCHAR(50) NOT NULL,
-  address_province_state VARCHAR(50) NOT NULL,
-  address_country VARCHAR(50) NOT NULL,
-  contact_email VARCHAR(50) NOT NULL,
-  star_rating INT NOT NULL,
-  PRIMARY KEY (hotel_ID)
 );
 
 CREATE TABLE Hotel_Phone_Number (
@@ -131,24 +130,23 @@ FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
 );
 
 CREATE TABLE Rental (
-rental_ID INT,
-base_price INT NOT NULL,
-date_paid DATE NOT NULL,
-total_paid INT NOT NULL,
-discount INT NOT NULL,
-additional_charges INT NOT NULL,
-check_in_date DATE NOT NULL,
-check_out_date DATE NOT NULL,
-customer_SSN_SIN INT,
-booking_ID INT,
-room_number INT,
-hotel_ID INT,
-employee_ID INT,
-employee_SSN_SIN INT,
-PRIMARY KEY (rental_ID),
-FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
-FOREIGN KEY (employee_SSN_SIN) REFERENCES Employee(employee_SSN_SIN),
-FOREIGN KEY (employee_ID) REFERENCES Employee(employee_ID),
-FOREIGN KEY (booking_ID) REFERENCES Booking(booking_ID),
-FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
+  rental_ID INT,
+  base_price INT NOT NULL,
+  date_paid DATE NOT NULL,
+  total_paid INT NOT NULL,
+  discount INT NOT NULL,
+  additional_charges INT NOT NULL,
+  check_in_date DATE NOT NULL,
+  check_out_date DATE NOT NULL,
+  customer_SSN_SIN INT,
+  booking_ID INT,
+  room_number INT,
+  hotel_ID INT,
+  employee_ID INT,
+  employee_SSN_SIN INT,
+  PRIMARY KEY (rental_ID),
+  FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
+  FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
+  FOREIGN KEY (booking_ID) REFERENCES Booking(booking_ID),
+  FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
 );
