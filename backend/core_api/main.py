@@ -29,8 +29,6 @@ class Hotel_Chain(Resource):
     def get(self, id): 
         return {"message": f"Getting all hotels associated with hotel chain {id}"}
 
-
-
 @api.route('/hotel/<int:id>')
 class Hotels(Resource): 
     def get(self, id): 
@@ -41,6 +39,16 @@ class Hotels(Resource):
 
     def delete(self, id): 
         return {"message":  f"Deleting hotel with id {id}"}
+
+@api.route('/hotel/search')
+class HotelSearch(Resource): 
+    def get(self, id): 
+        return {"message": f"Searching for hotels with provided parameters"}
+
+
+
+
+
 
 if __name__ == '__main__': 
     app.run(debug=True)
