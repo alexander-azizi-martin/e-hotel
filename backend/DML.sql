@@ -141,6 +141,13 @@ INSERT INTO Hotel_Phone_Number (hotel_ID, phone_number) VALUES (507, '+65-6222-1
 INSERT INTO Hotel_Phone_Number (hotel_ID, phone_number) VALUES (508, '+34-93-567-8901');
 
 -- Rooms
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (101, 101, 1, 'City View', 100, TRUE, NULL);
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (102, 101, 2, 'City View', 150, FALSE, NULL);
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (103, 101, 3, 'City View', 200, TRUE, NULL);
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (104, 101, 4, 'City View', 250, FALSE, NULL);
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (105, 101, 5, 'City View', 300, TRUE, NULL);
+
+
 
 
 
