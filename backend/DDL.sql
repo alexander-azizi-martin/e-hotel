@@ -8,7 +8,8 @@ CREATE TABLE Hotel (
   address_country VARCHAR(50) NOT NULL,
   contact_email VARCHAR(50) NOT NULL,
   star_rating INT NOT NULL,
-  PRIMARY KEY (hotel_ID)
+  PRIMARY KEY (hotel_ID),
+  CONSTRAINT uc_address UNIQUE (address_street_name, address_street_number, address_city, address_province_state, address_country)
 );
 
 CREATE TABLE Employee (
@@ -39,7 +40,7 @@ CREATE TABLE Employee_Role (
 
 CREATE TABLE Hotel_Phone_Number (
   hotel_ID INT,
-  phone_number VARCHAR(12),
+  phone_number VARCHAR(20),
   PRIMARY KEY (hotel_ID, phone_number),
   FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
 );
@@ -154,14 +155,7 @@ CREATE TABLE Rental (
 CREATE TABLE Users (
     username VARCHAR(50) NOT NULL PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    customer_SSN_SIN INT,
-    employee_SSN_SIN INT,
-    employee_ID INT,
-    FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
-    FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
-    CHECK (
-        (customer_SSN_SIN IS NULL AND (employee_SSN_SIN IS NOT NULL AND employee_ID IS NOT NULL)) OR
-        (customer_SSN_SIN IS NOT NULL AND (employee_SSN_SIN IS NULL AND employee_ID IS NULL))
-    )
+    role VARCHAR(10) NOT NULL,
+    CHECK (role = 'customer' OR role = 'employee')
 );
 

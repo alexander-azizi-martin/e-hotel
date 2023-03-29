@@ -39,7 +39,7 @@ class Database(object):
         return ["Invalid Username"]
       hashed_pass = tuple[2]
       if check_password_hash(password, hashed_pass):
-        user_type = "Customer" if result[3] is None else "Employee"
+        user_type = result[3]
         return ["Found User", user_type]
     
     # Add methods here as we use them.
