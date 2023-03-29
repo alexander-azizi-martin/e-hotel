@@ -8,14 +8,11 @@ import datetime
 load_dotenv()
 
 # SETUP
-secret_key = os.getenv('SECRET_KEY')
-debug = os.getenv('DEBUG')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
-BASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # We need an object oriented way to connect to and communicate with the database.
 class Database(object): 

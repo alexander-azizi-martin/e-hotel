@@ -165,12 +165,10 @@ INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_nig
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (1, 104, 1, 'City', 100, TRUE, NULL);
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (2, 104, 2, 'Garden', 150, TRUE, NULL);
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (3, 104, 3, 'Garden', 200, FALSE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (4, 103, 4, 'City', 250, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (5, 103, 5, 'City', 300, FALSE, NULL); 
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (4, 104, 4, 'City', 250, TRUE, NULL);
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (5, 104, 5, 'City', 300, FALSE, NULL); 
 
-
-
-
+-- Add more hotels later on.
 
 
 
