@@ -1,17 +1,20 @@
 from sqlalchemy.sql.expression import text
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 import os
 import psycopg2
 import datetime
 
+load_dotenv()
+
 # SETUP
-secret_key = os.environ.get('SECRET_KEY')
-debug = os.environ.get('DEBUG')
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-DB_HOST = os.environ.get('DB_HOST')
-DB_PORT = os.environ.get('DB_PORT')
-DB_NAME = os.environ.get('DB_NAME')
+secret_key = os.getenv('SECRET_KEY')
+debug = os.getenv('DEBUG')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
 BASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # We need an object oriented way to connect to and communicate with the database.
@@ -43,7 +46,8 @@ class Database(object):
         return ["Found User", user_type]
     
     # Add methods here as we use them.
-    
+
+db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
     
 
