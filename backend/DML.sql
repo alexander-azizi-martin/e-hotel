@@ -141,35 +141,304 @@ INSERT INTO Hotel_Phone_Number (hotel_ID, phone_number) VALUES (507, '+65-6222-1
 INSERT INTO Hotel_Phone_Number (hotel_ID, phone_number) VALUES (508, '+34-93-567-8901');
 
 -- Rooms
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (1, 101, 1, 'City', 100, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (2, 101, 2, 'City', 150, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (3, 101, 3, 'City', 200, FALSE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (4, 101, 4, 'City', 250, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (5, 101, 5, 'City', 300, FALSE, NULL);
 
--- Hilton 2
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (1, 102, 1, 'City', 100, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (2, 102, 2, 'City', 150, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (3, 102, 3, 'City', 200, FALSE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (4, 102, 4, 'City', 250, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (5, 102, 5, 'City', 300, FALSE, NULL);
 
--- Hilton 3
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (1, 103, 1, 'City', 100, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (2, 103, 2, 'Garden', 150, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (3, 103, 3, 'Garden', 200, FALSE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (4, 103, 4, 'City', 250, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (5, 103, 5, 'City', 300, FALSE, NULL); 
+-- Hotel 103 (5-star)
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 103, 2, 'City', 300, TRUE, NULL),
+       (2, 103, 2, 'Garden', 320, TRUE, NULL),
+       (3, 103, 3, 'Pool', 350, FALSE, NULL),
+       (4, 103, 4, 'City', 400, TRUE, NULL),
+       (5, 103, 4, 'Garden', 420, FALSE, NULL);
 
--- Hilton 4
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (1, 104, 1, 'City', 100, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (2, 104, 2, 'Garden', 150, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (3, 104, 3, 'Garden', 200, FALSE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (4, 104, 4, 'City', 250, TRUE, NULL);
-INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (5, 104, 5, 'City', 300, FALSE, NULL); 
+-- Hotel 104 (5-star)
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 104, 2, 'City', 320, TRUE, NULL),
+       (2, 104, 3, 'Garden', 360, TRUE, NULL),
+       (3, 104, 3, 'Pool', 380, FALSE, NULL),
+       (4, 104, 4, 'City', 420, TRUE, NULL),
+       (5, 104, 5, 'Garden', 500, FALSE, NULL);
 
--- Add more hotels later on.
+-- Hotel 105 (3-star)
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 105, 1, 'City', 100, TRUE, NULL),
+       (2, 105, 2, 'Garden', 150, TRUE, NULL),
+       (3, 105, 2, 'Pool', 170, FALSE, NULL),
+       (4, 105, 3, 'City', 200, TRUE, NULL),
+       (5, 105, 3, 'Garden', 220, FALSE, NULL);
 
+-- Hotel 106 (4-star)
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 106, 2, 'City', 250, TRUE, NULL),
+       (2, 106, 3, 'Garden', 290, TRUE, NULL),
+       (3, 106, 3, 'Pool', 320, FALSE, NULL),
+       (4, 106, 4, 'City', 380, TRUE, NULL),
+       (5, 106, 5, 'Garden', 450, FALSE, NULL);
+
+-- Hotel 107 (5-star)
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 107, 2, 'City', 320, TRUE, NULL),
+       (2, 107, 2, 'Garden', 350, TRUE, NULL),
+       (3, 107, 3, 'Pool', 400, FALSE, NULL),
+       (4, 107, 4, 'City', 450, TRUE, NULL),
+       (5, 107, 4, 'Garden', 500, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 108, 1, 'City', 75, TRUE, NULL),
+(2, 108, 2, 'Pool', 125, TRUE, NULL),
+(3, 108, 2, 'Garden', 125, TRUE, NULL),
+(4, 108, 3, 'City', 175, TRUE, NULL),
+(5, 108, 4, 'Pool', 225, FALSE, NULL);
+
+-- Hotel 201
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 201, 1, 'City', 50, TRUE, NULL),
+(2, 201, 2, 'Garden', 100, TRUE, NULL),
+(3, 201, 2, 'Pool', 100, TRUE, NULL),
+(4, 201, 3, 'City', 150, TRUE, NULL),
+(5, 201, 4, 'Garden', 200, FALSE, NULL);
+
+-- Hotel 202
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 202, 1, 'City', 55, TRUE, NULL),
+(2, 202, 2, 'Garden', 110, TRUE, NULL),
+(3, 202, 2, 'Pool', 110, TRUE, NULL),
+(4, 202, 3, 'City', 165, TRUE, NULL),
+(5, 202, 4, 'Garden', 220, FALSE, NULL);
+
+-- Hotel 203
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 203, 1, 'City', 45, TRUE, NULL),
+(2, 203, 2, 'Garden', 90, TRUE, NULL),
+(3, 203, 2, 'Pool', 90, TRUE, NULL),
+(4, 203, 3, 'City', 135, TRUE, NULL),
+(5, 203, 4, 'Garden', 180, FALSE, NULL);
+
+-- Hotel 204
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 204, 1, 'City', 60, TRUE, NULL),
+(2, 204, 2, 'Garden', 120, TRUE, NULL),
+(3, 204, 2, 'Pool', 120, TRUE, NULL),
+(4, 204, 3, 'City', 180, TRUE, NULL),
+(5, 204, 4, 'Garden', 240, FALSE, NULL);
+
+-- Hotel 205
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 205, 1, 'City', 75, TRUE, NULL),
+(2, 205, 2, 'Garden', 150, TRUE, NULL),
+(3, 205, 2, 'Pool', 150, TRUE, NULL),
+(4, 205, 3, 'City', 225, TRUE, NULL),
+(5, 205, 4, 'Garden', 300, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 206, 2, 'City', 120, TRUE, NULL),
+(2, 206, 4, 'Garden', 220, TRUE, NULL),
+(3, 206, 3, 'Pool', 180, FALSE, 'Leaky faucet'),
+(4, 206, 2, 'City', 120, FALSE, NULL),
+(5, 206, 1, 'City', 100, TRUE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 207, 3, 'Garden', 210, TRUE, NULL),
+(2, 207, 2, 'City', 140, TRUE, NULL),
+(3, 207, 4, 'Pool', 240, FALSE, 'Broken AC'),
+(4, 207, 1, 'City', 90, FALSE, 'No hot water'),
+(5, 207, 2, 'Garden', 160, TRUE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 208, 5, 'Pool', 350, TRUE, 'Stained carpet'),
+(2, 208, 2, 'City', 140, TRUE, NULL),
+(3, 208, 3, 'Garden', 210, FALSE, NULL),
+(4, 208, 4, 'Pool', 280, TRUE, NULL),
+(5, 208, 1, 'City', 90, TRUE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 301, 4, 'Garden', 280, TRUE, 'Clogged sink'),
+(2, 301, 2, 'City', 140, TRUE, NULL),
+(3, 301, 3, 'Pool', 210, FALSE, NULL),
+(4, 301, 5, 'Pool', 350, TRUE, NULL),
+(5, 301, 1, 'City', 90, TRUE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 302, 3, 'Garden', 210, TRUE, NULL),
+(2, 302, 2, 'City', 140, TRUE, NULL),
+(3, 302, 4, 'Pool', 280, FALSE, 'Leaky shower'),
+(4, 302, 1, 'City', 90, FALSE, NULL),
+(5, 302, 2, 'Garden', 160, TRUE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 303, 1, 'City', 100, TRUE, NULL),
+(2, 303, 2, 'City', 140, TRUE, NULL),
+(3, 303, 3, 'Pool', 210, FALSE, 'Noisy AC'),
+(4, 303, 4, 'Garden', 280, TRUE, NULL),
+(5, 303, 5, 'Pool', 350, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+(1, 304, 2, 'City', 140, TRUE, NULL),
+(2, 304, 4, 'Pool', 280, TRUE, NULL),
+(3, 304, 1, 'City', 90, FALSE, NULL),
+(4, 304, 3, 'Garden', 210, TRUE, NULL),
+(5, 304, 5, 'Pool', 350, FALSE, 'Broken TV');
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 305, 1, 'City', 50, TRUE, NULL),
+       (2, 305, 2, 'Garden', 75, TRUE, NULL),
+       (3, 305, 3, 'Pool', 100, FALSE, NULL),
+       (4, 305, 4, 'City', 125, TRUE, NULL),
+       (5, 305, 5, 'Garden', 150, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 306, 1, 'Pool', 50, TRUE, NULL),
+       (2, 306, 2, 'City', 75, TRUE, NULL),
+       (3, 306, 3, 'Garden', 100, FALSE, NULL),
+       (4, 306, 4, 'Pool', 125, TRUE, NULL),
+       (5, 306, 5, 'City', 150, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 307, 1, 'Garden', 50, TRUE, NULL),
+       (2, 307, 2, 'Pool', 75, TRUE, NULL),
+       (3, 307, 3, 'City', 100, FALSE, NULL),
+       (4, 307, 4, 'Garden', 125, TRUE, NULL),
+       (5, 307, 5, 'Pool', 150, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 308, 1, 'City', 50, TRUE, NULL),
+       (2, 308, 2, 'Garden', 75, TRUE, NULL),
+       (3, 308, 3, 'Pool', 100, FALSE, NULL),
+       (4, 308, 4, 'City', 125, TRUE, NULL),
+       (5, 308, 5, 'Garden', 150, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 401, 1, 'Pool', 50, TRUE, NULL),
+       (2, 401, 2, 'City', 75, TRUE, NULL),
+       (3, 401, 3, 'Garden', 100, FALSE, NULL),
+       (4, 401, 4, 'Pool', 125, TRUE, NULL),
+       (5, 401, 5, 'City', 150, FALSE, NULL);
+
+-- Hotel 402
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 402, 2, 'City', 80, TRUE, NULL),
+       (2, 402, 4, 'Garden', 150, TRUE, NULL),
+       (3, 402, 2, 'Pool', 100, TRUE, 'Leaky faucet'),
+       (4, 402, 1, 'City', 60, FALSE, NULL),
+       (5, 402, 3, 'Garden', 120, TRUE, NULL);
+
+-- Hotel 403
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 403, 1, 'City', 70, FALSE, 'Broken AC'),
+       (2, 403, 2, 'Pool', 120, TRUE, NULL),
+       (3, 403, 3, 'Garden', 160, TRUE, NULL),
+       (4, 403, 2, 'City', 100, TRUE, NULL),
+       (5, 403, 4, 'Garden', 200, TRUE, 'Clogged toilet');
+
+-- Hotel 404
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 404, 1, 'City', 50, FALSE, NULL),
+       (2, 404, 2, 'Garden', 90, TRUE, NULL),
+       (3, 404, 3, 'City', 130, TRUE, NULL),
+       (4, 404, 4, 'Pool', 180, TRUE, NULL),
+       (5, 404, 5, 'Garden', 250, TRUE, NULL);
+
+-- Hotel 405
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 405, 1, 'City', 60, FALSE, NULL),
+       (2, 405, 2, 'Pool', 120, TRUE, 'TV not working'),
+       (3, 405, 3, 'Garden', 160, TRUE, NULL),
+       (4, 405, 2, 'City', 100, TRUE, NULL),
+       (5, 405, 4, 'Garden', 200, TRUE, 'Leaky shower');
+
+-- Hotel 406
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 406, 1, 'City', 70, FALSE, NULL),
+       (2, 406, 2, 'Garden', 120, TRUE, 'Broken hair dryer'),
+       (3, 406, 3, 'City', 160, TRUE, NULL),
+       (4, 406, 4, 'Pool', 200, TRUE, NULL),
+       (5, 406, 5, 'Garden', 270, TRUE, 'Clogged sink');
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 407, 1, 'Garden', 75, TRUE, NULL),
+(2, 407, 2, 'Pool', 100, TRUE, NULL),
+(3, 407, 2, 'Garden', 100, FALSE, NULL),
+(4, 407, 3, 'Pool', 150, TRUE, NULL),
+(5, 407, 4, 'City', 200, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES (1, 408, 1, 'City', 75, TRUE, NULL),
+(2, 408, 2, 'Garden', 100, TRUE, NULL),
+(3, 408, 2, 'Pool', 100, FALSE, NULL),
+(4, 408, 3, 'Garden', 150, TRUE, NULL),
+(5, 408, 4, 'City', 200, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES
+(1, 501, 1, 'Garden', 75, TRUE, NULL),
+(2, 501, 2, 'City', 100, TRUE, NULL),
+(3, 501, 2, 'Garden', 100, FALSE, NULL),
+(4, 501, 3, 'City', 150, TRUE, NULL),
+(5, 501, 4, 'Pool', 200, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES
+(1, 502, 1, 'Pool', 75, TRUE, NULL),
+(2, 502, 2, 'City', 100, TRUE, NULL),
+(3, 502, 2, 'Garden', 100, FALSE, NULL),
+(4, 502, 3, 'City', 150, TRUE, NULL),
+(5, 502, 4, 'Pool', 200, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES
+(1, 503, 1, 'Garden', 50, TRUE, NULL),
+(2, 503, 2, 'City', 75, TRUE, NULL),
+(3, 503, 2, 'Garden', 75, FALSE, NULL),
+(4, 503, 3, 'Pool', 125, TRUE, NULL),
+(5, 503, 4, 'City', 175, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES
+(1, 504, 1, 'City', 50, TRUE, NULL),
+(2, 504, 2, 'Garden', 75, TRUE, NULL),
+(3, 504, 2, 'Pool', 75, FALSE, NULL),
+(4, 504, 3, 'City', 125, TRUE, NULL),
+(5, 504, 4, 'Garden', 175, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES
+(1, 505, 1, 'Pool', 50, TRUE, NULL),
+(2, 505, 2, 'Garden', 75, TRUE, NULL),
+(3, 505, 2, 'City', 75, FALSE, NULL),
+(4, 505, 3, 'Garden', 125, TRUE, NULL),
+(5, 505, 4, 'Pool', 175, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+    (1, 506, 1, 'City', 60, FALSE, NULL),
+    (2, 506, 2, 'City', 80, TRUE, NULL),
+    (3, 506, 2, 'Garden', 100, TRUE, NULL),
+    (4, 506, 4, 'Garden', 160, TRUE, NULL),
+    (5, 506, 4, 'Pool', 200, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+    (1, 507, 2, 'City', 120, TRUE, NULL),
+    (2, 507, 2, 'Garden', 140, FALSE, NULL),
+    (3, 507, 3, 'Garden', 180, TRUE, NULL),
+    (4, 507, 4, 'Pool', 240, TRUE, NULL),
+    (5, 507, 5, 'Pool', 300, FALSE, NULL);
+
+INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+VALUES
+    (1, 508, 1, 'City', 70, FALSE, NULL),
+    (2, 508, 2, 'City', 100, TRUE, NULL),
+    (3, 508, 3, 'Garden', 150, TRUE, NULL),
+    (4, 508, 4, 'Pool', 220, TRUE, NULL),
+    (5, 508, 5, 'Pool', 300, FALSE, NULL);
 
 
 
