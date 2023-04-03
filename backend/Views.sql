@@ -42,9 +42,13 @@ VALUES
 (111111111, 1, 'John', 'Doe', 'Main St', 123, 'Vancouver', 'BC', 'Canada', 103, true);
 
 
+-- capacity of all the rooms of a specific hotel
+
 create view hotel_total_room_capacity as
-select room_number, room_capacity
-from Room where hotel_ID = 103;
+select hotel_id, room_number, room_capacity
+from Room;
+
+select * from hotel_total_room_capacity;
 
 -- number of available rooms per area
 create view available_rooms_in_area as
@@ -56,3 +60,4 @@ where (room_number, hotel_ID) not in ((select room_number, hotel_ID
                                     (select room_number, hotel_ID
                                     from booking where scheduled_check_in_date > '2023-04-03' and scheduled_check_out_date < '2023-04-25' and canceled = false))
 group by address_country, address_province_state, address_city;
+
