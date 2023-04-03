@@ -42,19 +42,17 @@ VALUES
 (111111111, 1, 'John', 'Doe', 'Main St', 123, 'Vancouver', 'BC', 'Canada', 103, true);
 
 
--- capacity of all the rooms of a specific hotel
-
 create view hotel_total_room_capacity as
 select room_number, room_capacity
 from Room where hotel_ID = 103;
 
 -- number of available rooms per area
 create view available_rooms_in_area as
-select count(*) as available_rooms
+select count(*), address_country, address_province_state, address_city
 from Room natural join Hotel
 where (room_number, hotel_ID) not in ((select room_number, hotel_ID
                                     from rental where check_in_date > '2023-04-03' and check_out_date < '2023-04-25')
                                     union
                                     (select room_number, hotel_ID
                                     from booking where scheduled_check_in_date > '2023-04-03' and scheduled_check_out_date < '2023-04-25' and canceled = false))
-                                and address_country = 'USA' and address_province_state <> 'FL' and address_city <> 'UNFOUOUHFOGUHFHGU';
+group by address_country, address_province_state, address_city;
