@@ -117,7 +117,7 @@ CREATE TABLE Customer (
 );
 
 CREATE TABLE Booking (
-    booking_ID INT,
+    booking_ID INT AUTO_INCREMENT,
     booking_date DATE NOT NULL,
     scheduled_check_in_date DATE NOT NULL,
     scheduled_check_out_date DATE NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE Booking (
 );
 
 CREATE TABLE Rental (
-  rental_ID INT,
+  rental_ID INT AUTO_INCREMENT,
   base_price INT NOT NULL,
   date_paid DATE NOT NULL,
   total_paid INT NOT NULL,
