@@ -50,7 +50,7 @@ from Room where hotel_ID = 103;
 
 -- number of available rooms per area
 create view available_rooms_in_area as
-select count(*)
+select count(*) as available_rooms
 from Room natural join Hotel
 where (room_number, hotel_ID) not in ((select room_number, hotel_ID
                                     from rental where check_in_date > '2023-04-03' and check_out_date < '2023-04-25')
