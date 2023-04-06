@@ -501,7 +501,6 @@ VALUES
     (5, 508, 5, 'Pool', 300, FALSE, NULL);
 
 -- capacity of all the rooms of a specific hotel
-
 create view hotel_total_room_capacity as
 select room_number, room_capacity
 from Room where hotel_ID = 103;
