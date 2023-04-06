@@ -30,8 +30,7 @@ class Database(object):
     
     # Action methods on the database.
 
-    # Method checks whether a user exists and returns 
-    # their role if they exist.
+    # Method checks whether a user exists and returns their role if they exist.
     def check_account_and_role(self, username, password): 
       query = self.cursor.execute(f"SELECT * FROM users WHERE username=(%s)", (username,))
       result = query.fetchall()
@@ -43,6 +42,21 @@ class Database(object):
         return ["Found User", user_type]
     
     # Add methods here as we use them.
+    def search(**kwargs): 
+      pass
+
+    def get_all_hotels(): 
+      pass
+
+    def get_hotel(id): 
+      pass
+
+    def get_all_hotel_chains(): 
+      pass
+
+    def get_hotel_chain(id): 
+      pass
+
 
 db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 

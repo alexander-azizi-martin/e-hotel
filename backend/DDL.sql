@@ -1,5 +1,13 @@
+CREATE TABLE Hotel_Chain (
+  chain_ID INT,
+  name VARCHAR(50) NOT NULL,
+  number_of_hotels INT NOT NULL,
+  PRIMARY KEY (chain_ID)
+);
+
 CREATE TABLE Hotel (
   hotel_ID INT,
+  chain_ID INT,
   number_of_rooms INT,
   address_street_name VARCHAR(50) NOT NULL,
   address_street_number INT NOT NULL,
@@ -9,6 +17,7 @@ CREATE TABLE Hotel (
   contact_email VARCHAR(50) NOT NULL,
   star_rating INT NOT NULL,
   PRIMARY KEY (hotel_ID),
+  FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE,
   CONSTRAINT uc_address UNIQUE (address_street_name, address_street_number, address_city, address_province_state, address_country)
 );
 
@@ -45,13 +54,6 @@ CREATE TABLE Hotel_Phone_Number (
   FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
 );
 
-CREATE TABLE Hotel_Chain (
-  chain_ID INT,
-  name VARCHAR(50) NOT NULL,
-  number_of_hotels INT NOT NULL,
-  PRIMARY KEY (chain_ID)
-);
-
 CREATE TABLE Hotel_Chain_Central_Office_Address (
   chain_ID INT,
   address_street_name VARCHAR(50) NOT NULL,
@@ -86,7 +88,7 @@ CREATE TABLE Room (
   is_extendable BOOLEAN NOT NULL,
   room_problems TEXT,
   PRIMARY KEY (room_number, hotel_ID),
-  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
+  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Amenity (

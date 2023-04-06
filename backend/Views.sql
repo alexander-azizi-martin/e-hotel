@@ -43,7 +43,6 @@ VALUES
 
 
 -- capacity of all the rooms of a specific hotel
-
 create view hotel_total_room_capacity as
 select hotel_id, room_number, room_capacity
 from Room;
