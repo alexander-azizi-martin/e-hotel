@@ -98,7 +98,9 @@ def test_check_account_and_role(db):
     print("Testing check_account_and_role...")
 
     # Test case 1: Valid customer credentials
-    assert db.check_account_and_role(123456789, "password", "customer") == ["Found User", "customer"]
+    result = db.check_account_and_role(123456789, "password", "customer")
+    assert result[0] == "Found User"
+    assert result[1] == "customer"
     print("Test case 1 passed")
 
     # Test case 2: Invalid customer password
@@ -106,7 +108,9 @@ def test_check_account_and_role(db):
     print("Test case 2 passed")
 
     # Test case 3: Valid employee credentials
-    assert db.check_account_and_role(987654321, "password", "employee") == ["Found User", "employee"]
+    result = db.check_account_and_role(987654321, "password", "employee")
+    assert result[0] == "Found User"
+    assert result[1] == "employee"
     print("Test case 3 passed")
 
     # Test case 4: Invalid employee password

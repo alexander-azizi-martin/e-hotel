@@ -325,8 +325,6 @@ class Database(object):
             print("Error inserting employee role:", e)
 
 
-    
-
 if __name__ == "__main__":
   db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
   all_hotels = db.get_all_hotels()
