@@ -155,9 +155,8 @@ CREATE TABLE Rental (
 );
 
 CREATE TABLE Users (
-    username VARCHAR(50) NOT NULL PRIMARY KEY,
+    user_SSN_SIN INT PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(10) NOT NULL,
     CHECK (role = 'customer' OR role = 'employee')
 );
-
