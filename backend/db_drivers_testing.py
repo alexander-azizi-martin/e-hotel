@@ -127,6 +127,54 @@ def test_check_account_and_role(db):
 
     print("All test cases for check_account_and_role passed")
 
+def test_insert_employee_role(db):
+    print("Inserting new employee role...")
+    db.insert_employee_role(987654321, 1, "Receptionist")
+    print("Inserted employee role Receptionist for employee ID 1.")
+
+    print("Inserting new employee role...")
+    db.insert_employee_role(987654321, 1, "Manager")
+    print("Inserted employee role Manager for employee ID 1.")
+
+    print("Inserting new employee role...")
+    db.insert_employee_role(987654321, 1, "Housekeeping")
+    print("Inserted employee role Housekeeping for employee ID 1.")
+
+    print("Inserting duplicate employee role...")
+    db.insert_employee_role(987654321, 1, "Receptionist")
+    print("Attempting to insert duplicate employee role Receptionist for employee ID 1.")
+
+    print("Printing all employee roles...")
+    employee_roles = db.get_employee_roles(987654321, 1)
+    print(employee_roles)
+    assert len(employee_roles) == 3
+    assert "receptionist" in employee_roles
+    assert "housekeeping" in employee_roles
+    assert employee_roles.count("receptionist") == 1
+    assert 'manager' == employee_roles[0]
+    print("test_insert_employee_role passed")
+
+def test_insert_room(db):
+    print("Inserting new room...")
+    db.insert_room(101, 1, 2, "Ocean", 250, True, "None")
+    print("Inserted room with room_number 101.")
+
+    print("Updating room...")
+    db.insert_room(101, 1, 3, "Ocean", 300, True, "None")
+    print("Updated room with room_number 101.")
+
+    print("Printing all rooms...")
+    rooms = db.get_all_rooms()
+    assert len(rooms) == 1
+    assert rooms[0][0] == 101
+    assert rooms[0][1] == 1
+    assert rooms[0][2] == 3
+    assert rooms[0][3] == "Ocean"
+    assert rooms[0][4] == 300
+    assert rooms[0][5] == True
+    assert rooms[0][6] == "None"
+    print("test_insert_room passed")
+
 if __name__ == "__main__":
     # Replace the following with your actual database connection details
     DB_USER = os.getenv('DB_USER')
@@ -178,14 +226,12 @@ if __name__ == "__main__":
         FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
         );
 
-        CREATE TABLE IF NOT EXISTS Employee_Role (
+        CREATE TABLE Employee_Role (
         employee_SSN_SIN INT,
         employee_ID INT,
-        hotel_ID INT NOT NULL,
         role VARCHAR(50) NOT NULL,
-        PRIMARY KEY (employee_SSN_SIN, employee_ID),
-        FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
-        FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
+        PRIMARY KEY (employee_SSN_SIN, employee_ID, role),
+        FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID)
         );
 
         CREATE TABLE IF NOT EXISTS Hotel_Phone_Number (
@@ -309,6 +355,10 @@ if __name__ == "__main__":
     test_insert_customer(test_db)
     test_insert_employee(test_db)
     test_check_account_and_role(test_db)
+    test_insert_employee_role(test_db)
+    test_insert_room(test_db)
+    print("--------------------------------")
+    print("ALL TESTS PASSED")
 
     # Close the database connection
     test_db.close()

@@ -86,10 +86,10 @@ class Database(object):
         return results
 
     def get_employee_roles(self, employee_SSN_SIN, employee_ID):
-        query = self.cursor.execute("SELECT role FROM Employee_Role WHERE employee_SSN_SIN=%s AND employee_ID=%s", (employee_SSN_SIN, employee_ID))
-        result = query.fetchall()
+        self.cursor.execute("SELECT role FROM Employee_Role WHERE Employee_Role.employee_SSN_SIN=%s AND Employee_Role.employee_ID=%s", (employee_SSN_SIN, employee_ID))
+        result = self.cursor.fetchall()
 
-        roles = [row[0] for row in result]
+        roles = [row[0].lower().strip() for row in result]
 
         # Move the manager role to the first position in the list, if it exists
         if 'manager' in roles:
@@ -230,6 +230,7 @@ class Database(object):
             self.commit()
         except Exception as e:
             print("Error inserting or updating hotel:", e)
+            self.connection.rollback()
 
     def insert_hotel_chain(self, chain_id, name=None, number_of_hotels=None):
         try:
@@ -265,6 +266,7 @@ class Database(object):
             self.commit()
         except Exception as e:
             print("Error inserting or updating hotel chain:", e)
+            self.connection.rollback()
 
     def insert_customer(self, customer_SSN_SIN, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date):
         try:
@@ -286,6 +288,7 @@ class Database(object):
 
         except Exception as e:
             print("Error inserting customer:", e)
+            self.connection.rollback()
 
     def insert_employee(self, employee_SSN_SIN, employee_ID, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_ID, is_manager):
         try:
@@ -307,23 +310,72 @@ class Database(object):
 
         except Exception as e:
             print("Error inserting employee:", e)
+            self.connection.rollback()
 
-    def insert_employee_role(self, employee_SSN_SIN, employee_ID, hotel_ID, role):
+    def insert_employee_role(self, employee_SSN_SIN, employee_ID, role):
         try:
-            # Check if the Employee_Role entry already exists with the same role
-            existing_employee_role = self.get_employee_role_by_role(employee_SSN_SIN, employee_ID, role)
+            # Check if the Employee_Role entry already exists with the same employee and role
+            self.cursor.execute(
+                "SELECT COUNT(*) FROM Employee_Role WHERE employee_SSN_SIN = %s AND employee_ID = %s AND role = %s",
+                (employee_SSN_SIN, employee_ID, role)
+            )
+            count = self.cursor.fetchone()[0]
 
-            if existing_employee_role:
+            if count > 0:
                 print("Error: Employee already has this role.")
             else:
                 # Insert a new employee role
-                self.cursor.execute("INSERT INTO Employee_Role (employee_SSN_SIN, employee_ID, hotel_ID, role) VALUES (%s, %s, %s, %s)",
-                                    (employee_SSN_SIN, employee_ID, hotel_ID, role))
-                self.commit()
-
+                self.cursor.execute(
+                    "INSERT INTO Employee_Role (employee_SSN_SIN, employee_ID, role) VALUES (%s, %s, %s)",
+                    (employee_SSN_SIN, employee_ID, role)
+                )
+                self.connection.commit()
+                print("Employee role inserted successfully.")
         except Exception as e:
             print("Error inserting employee role:", e)
+            self.connection.rollback()
+    
+    def insert_room(self, room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems=None):
+      try:
+          # Check if the room already exists
+          existing_room = self.get_room(room_number, hotel_id)
+          if existing_room:
+              # Update the room information if it exists
+              update_query = "UPDATE Room SET "
+              update_values = []
 
+              # Create a dictionary with column names and parameter values
+              columns_and_values = {
+                  "room_capacity": room_capacity,
+                  "view_type": view_type,
+                  "price_per_night": price_per_night,
+                  "is_extendable": is_extendable,
+                  "room_problems": room_problems
+              }
+
+              # Iterate through the dictionary and build the query
+              for column, value in columns_and_values.items():
+                  if value is not None:
+                      update_query += f"{column} = %s, "
+                      update_values.append(value)
+
+              # Remove the trailing comma and space
+              update_query = update_query.rstrip(', ')
+              update_query += " WHERE room_number = %s AND hotel_ID = %s"
+              update_values.append(room_number)
+              update_values.append(hotel_id)
+
+              self.cursor.execute(update_query, tuple(update_values))
+          else:
+              # Insert a new room if it doesn't exist
+              self.cursor.execute("""
+                  INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) 
+                  VALUES (%s, %s, %s, %s, %s, %s, %s)
+                  """, (room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems))
+          self.commit()
+      except Exception as e:
+          print("Error inserting or updating room:", e)
+          self.connection.rollback()
 
 if __name__ == "__main__":
   db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)

@@ -40,11 +40,9 @@ CREATE TABLE Employee (
 CREATE TABLE Employee_Role (
   employee_SSN_SIN INT,
   employee_ID INT,
-  hotel_ID INT NOT NULL,
   role VARCHAR(50) NOT NULL,
-  PRIMARY KEY (employee_SSN_SIN, employee_ID),
-  FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
-  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
+  PRIMARY KEY (employee_SSN_SIN, employee_ID, role),
+  FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID)
 );
 
 CREATE TABLE Hotel_Phone_Number (
