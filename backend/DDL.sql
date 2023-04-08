@@ -127,7 +127,7 @@ CREATE TABLE Booking (
     hotel_ID INT,
     PRIMARY KEY (booking_ID),
     FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
-    FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
+    FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID) ON DELETE SET NULL
 );
 
 CREATE TABLE Rental (
@@ -149,7 +149,7 @@ CREATE TABLE Rental (
   FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
   FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
   FOREIGN KEY (booking_ID) REFERENCES Booking(booking_ID),
-  FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
+  FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID) ON DELETE SET NULL
 );
 
 CREATE TABLE Users (

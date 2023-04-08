@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import psycopg2
 import datetime
+import random
 
 load_dotenv()
 
@@ -336,46 +337,132 @@ class Database(object):
             self.connection.rollback()
     
     def insert_room(self, room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems=None):
-      try:
-          # Check if the room already exists
-          existing_room = self.get_room(room_number, hotel_id)
-          if existing_room:
-              # Update the room information if it exists
-              update_query = "UPDATE Room SET "
-              update_values = []
+        try:
+            # Check if the room already exists
+            existing_room = self.get_room(room_number, hotel_id)
+            if existing_room:
+                # Update the room information if it exists
+                update_query = "UPDATE Room SET "
+                update_values = []
 
-              # Create a dictionary with column names and parameter values
-              columns_and_values = {
-                  "room_capacity": room_capacity,
-                  "view_type": view_type,
-                  "price_per_night": price_per_night,
-                  "is_extendable": is_extendable,
-                  "room_problems": room_problems
-              }
+                # Create a dictionary with column names and parameter values
+                columns_and_values = {
+                    "room_capacity": room_capacity,
+                    "view_type": view_type,
+                    "price_per_night": price_per_night,
+                    "is_extendable": is_extendable,
+                    "room_problems": room_problems
+                }
 
-              # Iterate through the dictionary and build the query
-              for column, value in columns_and_values.items():
-                  if value is not None:
-                      update_query += f"{column} = %s, "
-                      update_values.append(value)
+                # Iterate through the dictionary and build the query
+                for column, value in columns_and_values.items():
+                    if value is not None:
+                        update_query += f"{column} = %s, "
+                        update_values.append(value)
 
-              # Remove the trailing comma and space
-              update_query = update_query.rstrip(', ')
-              update_query += " WHERE room_number = %s AND hotel_ID = %s"
-              update_values.append(room_number)
-              update_values.append(hotel_id)
+                # Remove the trailing comma and space
+                update_query = update_query.rstrip(', ')
+                update_query += " WHERE room_number = %s AND hotel_ID = %s"
+                update_values.append(room_number)
+                update_values.append(hotel_id)
 
-              self.cursor.execute(update_query, tuple(update_values))
-          else:
-              # Insert a new room if it doesn't exist
-              self.cursor.execute("""
-                  INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) 
-                  VALUES (%s, %s, %s, %s, %s, %s, %s)
-                  """, (room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems))
-          self.commit()
-      except Exception as e:
-          print("Error inserting or updating room:", e)
-          self.connection.rollback()
+                self.cursor.execute(update_query, tuple(update_values))
+            else:
+                # Insert a new room if it doesn't exist
+                self.cursor.execute("""
+                    INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems))
+            self.commit()
+        except Exception as e:
+            print("Error inserting or updating room:", e)
+            self.connection.rollback()
+
+    def insert_booking(self, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
+
+        if check_in_date >= check_out_date:
+            print("Error: Check-in date must be earlier than check-out date.")
+            return
+
+        if check_in_date + datetime.timedelta(days=1) == check_out_date:
+            print("Error: Check-in date and check-out date cannot be the same day.")
+            return
+
+        try:
+            # Check if the customer exists
+            existing_customer = self.get_customer(customer_SSN_SIN)
+            if not existing_customer:
+                print("Error: Customer does not exist.")
+                return
+
+            # Check if the room exists
+            existing_room = self.get_room(room_number, hotel_id)
+            if not existing_room:
+                print("Error: Room does not exist.")
+                return
+
+            # Check for duplicate bookings
+            self.cursor.execute("""
+                SELECT * FROM Booking 
+                WHERE room_number = %s
+                AND hotel_ID = %s
+                AND (
+                    (scheduled_check_in_date <= %s AND scheduled_check_out_date >= %s) 
+                    OR (scheduled_check_out_date >= %s AND scheduled_check_out_date <= %s) 
+                    OR (scheduled_check_in_date >= %s AND scheduled_check_in_date <= %s)
+                )
+                AND canceled = False
+            """, (room_number, hotel_id, check_in_date, check_out_date, check_in_date, check_out_date, check_in_date, check_out_date))
+
+            existing_booking = self.cursor.fetchone()
+            if existing_booking:
+                print("Error: Duplicate booking found.")
+                return
+
+            # Insert the booking
+            self.cursor.execute("""
+                INSERT INTO Booking (booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID) 
+                VALUES (%s, %s, %s, false, %s, %s, %s)
+            """, (datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id))
+            self.commit()
+            print("Booking created successfully.")
+        except Exception as e:
+            print("Error inserting booking:", e)
+            self.connection.rollback()
+
+    def insert_rental(self, rental_id, booking_id):
+        try:
+            # Check if the rental already exists
+            existing_rental = self.get_rental(rental_id)
+            if existing_rental:
+                print("Error: Rental with the same ID already exists.")
+            else:
+                # Get the booking information
+                booking = self.get_booking(booking_id)
+
+                # Check if the booking exists
+                if not booking:
+                    print("Error: Booking not found.")
+                    return
+
+                # Extract the necessary information from the booking
+                customer_ssn_sin = booking[1]
+                employee_ssn_sin = booking[2]
+                employee_id = booking[3]
+                room_number = booking[4]
+                hotel_id = booking[5]
+                start_date = booking[6]
+                end_date = booking[7]
+
+                # Insert a new rental
+                self.cursor.execute("""
+                    INSERT INTO Rental (rental_ID, booking_ID, customer_SSN_SIN, employee_SSN_SIN, employee_ID, room_number, hotel_ID, start_date, end_date) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (rental_id, booking_id, customer_ssn_sin, employee_ssn_sin, employee_id, room_number, hotel_id, start_date, end_date))
+                self.commit()
+        except Exception as e:
+            print("Error inserting rental:", e)
+            self.connection.rollback()
 
 if __name__ == "__main__":
   db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)

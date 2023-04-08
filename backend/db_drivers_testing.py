@@ -175,6 +175,34 @@ def test_insert_room(db):
     assert rooms[0][6] == "None"
     print("test_insert_room passed")
 
+def test_insert_booking(db):
+    print("Inserting new booking...")
+    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 10), datetime.date(2023, 4, 14))
+    print("Inserted booking with customer SSN/SIN 123456789 and room number 101.")
+
+    print("Attempting to insert duplicate booking...")
+    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 11), datetime.date(2023, 4, 13))
+
+    print("Attempting to insert booking with invalid check-in and check-out dates...")
+    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 14), datetime.date(2023, 4, 10))
+
+    print("Attempting to insert booking with same check-in and check-out date...")
+    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 10), datetime.date(2023, 4, 10))
+
+    print("Printing all bookings...")
+    bookings = db.get_all_bookings()
+    print(bookings)
+    assert len(bookings) == 1
+    assert bookings[0][0] == 1
+    assert bookings[0][1] == datetime.date.today()
+    assert bookings[0][2] == datetime.date(2023, 4, 10)
+    assert bookings[0][3] == datetime.date(2023, 4, 14)
+    assert bookings[0][4] == False
+    assert bookings[0][5] == 123456789
+    assert bookings[0][6] == 101
+    assert bookings[0][7] == 1
+    print("test_insert_booking passed")
+
 if __name__ == "__main__":
     # Replace the following with your actual database connection details
     DB_USER = os.getenv('DB_USER')
@@ -357,6 +385,7 @@ if __name__ == "__main__":
     test_check_account_and_role(test_db)
     test_insert_employee_role(test_db)
     test_insert_room(test_db)
+    test_insert_booking(test_db)
     print("--------------------------------")
     print("ALL TESTS PASSED")
 
