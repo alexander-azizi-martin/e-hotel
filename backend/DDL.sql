@@ -126,7 +126,7 @@ CREATE TABLE Booking (
     room_number INT,
     hotel_ID INT,
     PRIMARY KEY (booking_ID),
-    FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
+    FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN) ON DELETE CASCADE,
     FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID) ON DELETE SET NULL
 );
 

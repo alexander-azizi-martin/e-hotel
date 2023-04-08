@@ -274,7 +274,70 @@ def test_convert_booking_to_rental(db):
     assert rental[7] == check_out_date
 
     print("test_convert_booking_to_rental passed")
- 
+
+def test_create_rental(db):
+
+    # Clear the tables
+    db.clear_table("Rental")
+    db.clear_table("Customer")
+    db.clear_table("Employee")
+    db.clear_table("Users")
+
+    # Add an employee
+    employee_ssn_sin = 123456789
+    employee_id = 1
+    password = "password123"
+    first_name = "John"
+    last_name = "Doe"
+    address_street_name = "Main St."
+    address_street_number = "123"
+    address_city = "New York"
+    address_province_state = "NY"
+    address_country = "USA"
+    hotel_id = 1
+    is_manager = True
+    db.insert_employee(employee_ssn_sin, employee_id, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_id, is_manager)
+
+    # Add a customer
+    customer_ssn_sin = 987654321
+    password = "password456"
+    first_name = "Jane"
+    last_name = "Doe"
+    address_street_name = "Broadway"
+    address_street_number = "456"
+    address_city = "New York"
+    address_province_state = "NY"
+    address_country = "USA"
+    registration_date = datetime.date.today()
+    db.insert_customer(customer_ssn_sin, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date)
+
+    check_in_date = datetime.date.today() + datetime.timedelta(days=3)
+    check_out_date = datetime.date.today() + datetime.timedelta(days=5)
+    total_paid = 300
+    discount = 0
+    additional_charges = 0
+    db.create_rental(101, hotel_id, customer_ssn_sin, check_in_date, check_out_date, total_paid, discount, additional_charges)
+
+    # Retrieve the rental information
+    rentals = db.get_all_rentals()
+    print(rentals)
+    assert len(rentals) == 1
+    rental = rentals[0]
+    print(rental[6])
+    print(rental)
+
+    # Check if the rental has been successfully created
+    assert rental[3] == total_paid
+    assert rental[4] == discount
+    assert rental[5] == additional_charges
+    assert rental[8] == customer_ssn_sin
+    assert rental[10] == 101
+    assert rental[11] == hotel_id
+    assert rental[6] == check_in_date
+    assert rental[7] == check_out_date
+
+    print("test_create_rental passed")
+
 if __name__ == "__main__":
     # Replace the following with your actual database connection details
     DB_USER = os.getenv('DB_USER')
@@ -415,7 +478,7 @@ if __name__ == "__main__":
             room_number INT,
             hotel_ID INT,
             PRIMARY KEY (booking_ID),
-            FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
+            FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN) ON DELETE CASCADE,
             FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID)
         );
 
@@ -459,6 +522,7 @@ if __name__ == "__main__":
     test_insert_room(test_db)
     test_insert_booking(test_db)
     test_convert_booking_to_rental(test_db)
+    test_create_rental(test_db)
     print("--------------------------------")
     print("ALL TESTS PASSED")
 

@@ -201,6 +201,7 @@ class Database(object):
         results = self.cursor.fetchall()
         return results
 
+
     ### INSERTION & UPDATION FUNCTIONS
     def insert_hotel(self, hotel_id, chain_id=None, number_of_rooms=None, address_street_name=None, address_street_number=None, 
                     address_city=None, address_province_state=None, address_country=None, contact_email=None, star_rating=None):
@@ -402,7 +403,6 @@ class Database(object):
 
 
     def insert_booking(self, booking_id, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
-
         if check_in_date >= check_out_date:
             print("Error: Check-in date must be earlier than check-out date.")
             return
@@ -453,6 +453,7 @@ class Database(object):
             print("Error inserting booking:", e)
             self.connection.rollback()
     
+
     def convert_booking_to_rental(self, booking_id, total_paid=None, discount=None, additional_charges=None):
         try:
             # Check if the booking exists and is not canceled
@@ -496,6 +497,85 @@ class Database(object):
             print("Error converting booking to rental:", e)
             traceback.print_exc()
             self.connection.rollback()
+
+
+    def create_rental(self, room_number, hotel_id, customer_SSN_SIN, check_in_date, check_out_date, total_paid=None, discount=None, additional_charges=None):
+        if check_in_date >= check_out_date:
+            print("Error: Check-in date must be earlier than check-out date.")
+            return
+
+        if check_in_date + datetime.timedelta(days=1) == check_out_date:
+            print("Error: Check-in date and check-out date cannot be the same day.")
+            return
+        
+        try:
+            # Check if the customer exists
+            existing_customer = self.get_customer(customer_SSN_SIN)
+            if not existing_customer:
+                print("Error: Customer does not exist.")
+                return
+
+            # Check if the room exists
+            existing_room = self.get_room(room_number, hotel_id)
+            if not existing_room:
+                print("Error: Room does not exist.")
+                return
+
+            # Check for duplicate rentals
+            self.cursor.execute("""
+                SELECT * FROM Rental 
+                WHERE room_number = %s
+                AND hotel_ID = %s
+                AND (
+                    (check_in_date <= %s AND check_out_date >= %s) 
+                    OR (check_out_date >= %s AND check_out_date <= %s) 
+                    OR (check_in_date >= %s AND check_in_date <= %s)
+                )
+            """, (room_number, hotel_id, check_in_date, check_out_date, check_in_date, check_out_date, check_in_date, check_out_date))
+            
+            existing_rental = self.cursor.fetchone()
+            if existing_rental:
+                print("Error: Duplicate booking found.")
+                return
+
+            # Choose a random employee to assign to the rental
+            employees = self.get_employees_by_hotel_id(hotel_id)
+            if not employees:
+                print("Error: No employees found for this hotel.")
+                return
+            employee = random.choice(employees)
+
+            # Create the rental
+            rental_data = {
+                'base_price': existing_room[4],
+                'date_paid': datetime.date.today(),
+                'total_paid': 0 if total_paid is None else total_paid,
+                'discount': 0 if discount is None else discount,
+                'additional_charges': 0 if additional_charges is None else additional_charges,
+                'check_in_date': check_in_date,
+                'check_out_date': check_out_date,
+                'customer_SSN_SIN': customer_SSN_SIN,
+                'booking_ID': None,
+                'room_number': room_number,
+                'hotel_ID': hotel_id,
+                'employee_ID': employee[1],
+                'employee_SSN_SIN': employee[0]
+            }
+            self.cursor.execute("""
+                INSERT INTO Rental (base_price, date_paid, total_paid, discount, additional_charges, check_in_date, check_out_date, customer_SSN_SIN, booking_ID, room_number, hotel_ID, employee_ID, employee_SSN_SIN)
+                VALUES (%(base_price)s, %(date_paid)s, %(total_paid)s, %(discount)s, %(additional_charges)s, %(check_in_date)s, %(check_out_date)s, %(customer_SSN_SIN)s, %(booking_ID)s, %(room_number)s, %(hotel_ID)s, %(employee_ID)s, %(employee_SSN_SIN)s)
+            """, rental_data)
+            self.commit()
+
+            print(f"Rental created successfully. Assigned to employee {employee[1]}.")
+
+        except Exception as e:
+            print("Error creating rental:", e)
+            traceback.print_exc()
+            self.connection.rollback()
+  
+    
+
 
 if __name__ == "__main__":
   db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
