@@ -37,4 +37,5 @@ next-env.d.ts
 
 # backend ignore
 back-env
+new-env
 .env
