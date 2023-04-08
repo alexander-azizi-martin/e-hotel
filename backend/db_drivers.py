@@ -573,15 +573,17 @@ class Database(object):
             traceback.print_exc()
             self.connection.rollback()
 
-
-    def search_hotels_and_rooms(self, city=None, star_rating=None, view_type=None, room_capacity=None, is_extendable=None, price_per_night=None, db=None):
+    # ONLY RETURNS HOTELS THAT HAVE ROOMS
+    def search_hotels_and_rooms(self, city=None, star_rating=None, view_type=None, room_capacity=None, is_extendable=None, price_per_night=None):
         query = """
             SELECT h.hotel_ID, h.chain_ID, h.number_of_rooms, h.address_street_name, h.address_street_number, 
                   h.address_city, h.address_province_state, h.address_country, h.contact_email, h.star_rating, 
                   r.room_number, r.room_capacity, r.view_type, r.price_per_night, r.is_extendable, r.room_problems
             FROM Hotel h
             JOIN Room r ON h.hotel_ID = r.hotel_ID
+            WHERE 1 = 1
         """
+
         params = {}
 
         if city is not None:
@@ -609,9 +611,11 @@ class Database(object):
             params['price_per_night'] = price_per_night
 
         query += " ORDER BY h.hotel_ID, r.room_number"
+        print(query)
 
         self.cursor.execute(query, params)
         rows = self.cursor.fetchall()
+        print(rows)
 
         hotels = []
         current_hotel = None

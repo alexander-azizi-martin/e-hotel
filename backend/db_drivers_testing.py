@@ -2,6 +2,7 @@ import os
 import datetime
 from dotenv import load_dotenv
 from db_drivers import Database
+import json
 load_dotenv()
 
 ### TESTING THE DB DRIVERS ###  
@@ -356,73 +357,19 @@ def test_search_hotels_and_rooms(db):
     db.cursor.execute("INSERT INTO Hotel_Chain (chain_ID, name, number_of_hotels) VALUES (2, 'Marriott', 1)")
     db.cursor.execute("INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (1, 1, 100, 'Main St', 123, 'New York', 'NY', 'USA', 'hilton@hilton.com', 4)")
     db.cursor.execute("INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (2, 1, 50, '2nd St', 456, 'New York', 'NY', 'USA', 'hilton@hilton.com', 5)")
-    db.cursor.execute("INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (3, 2, 200, '3rd St', 789, 'Chicago', 'IL', 'USA', 'marriott@marriott.com', 3)")
+    db.cursor.execute("INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (3, 2, 200, '3rd St', 789, 'Chicago', 'IL', 'USA', 'marriott@marriott.com', 2)")
     db.cursor.execute("INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (101, 1, 2, 'city', 100, True, NULL)")
     db.cursor.execute("INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (102, 1, 2, 'city', 110, False, 'Noisy')")
     db.cursor.execute("INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (201, 2, 4, 'ocean', 200, True, NULL)")
+    db.cursor.execute("INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems) VALUES (301, 3, 2, 'city', 150, True, NULL)")
     db.cursor.execute("INSERT INTO Has_Amenity (amenity_id, hotel_id, room_number) VALUES (1, 1, 101)")
     db.cursor.execute("INSERT INTO Has_Amenity (amenity_id, hotel_id, room_number) VALUES (2, 1, 102)")
     db.cursor.execute("INSERT INTO Has_Amenity (amenity_id, hotel_id, room_number) VALUES (1, 2, 201)")
     db.commit()
 
-    # Test with city
-    return db.search_hotels_and_rooms(city='New York')
-    print(result)
-    '''db.assertEqual(len(result), 2)
-    self.assertEqual(result[0]['hotel_ID'], 1)
-    self.assertEqual(result[0]['address_city'], 'New York')
-    self.assertEqual(len(result[0]['rooms']), 2)
-    self.assertEqual(result[0]['rooms'][0]['room_number'], 101)
-    self.assertEqual(result[0]['rooms'][0]['price_per_night'], 100)
-    self.assertEqual(len(result[0]['rooms'][0]['amenities']), 1)
-    self.assertEqual(result[0]['rooms'][1]['room_number'], 102)
-    self.assertEqual(result[0]['rooms'][1]['price_per_night'], 110)
-    self.assertEqual(len(result[0]['rooms'][1]['amenities']), 1)
-    self.assertEqual(result[1]['hotel_ID'], 2)
-    self.assertEqual(result[1]['address_city'], 'New York')
-    self.assertEqual(len(result[1]['rooms']), 1)
-    self.assertEqual(result[1]['rooms'][0]['room_number'], 201)
-    self.assertEqual(result[1]['rooms'][0]['price_per_night'], 200)
-    self.assertEqual(len(result[1]['rooms'][0]['amenities']), 1)'''
-
-    # Test with star rating
-    result = db.search_hotels_and_rooms(star_rating=4)
-    print(result)
-    '''self.assertEqual(len(result), 1)
-    self.assertEqual(result[0]['hotel_ID'], 1)
-    self.assertEqual(result[0]['star_rating'], 4)
-    self.assertEqual(len(result[0]['rooms']), 2)'''
-
     # Test with view type and room capacity
-    result = db.search_hotels_and_rooms(view_type='city', room_capacity=2)
-    print(result)
-    '''self.assertEqual(len(result), 1)
-    self.assertEqual(result[0]['hotel_ID'], 1)
-    self.assertEqual(len(result[0]['rooms']), 2)
-    self.assertEqual(result[0]['rooms'][0]['room_number'], 101)
-    self.assertEqual(result[0]['rooms'][0]['view_type'], 'city')
-    self.assertEqual(result[0]['rooms'][0]['room_capacity'], 2)
-    self.assertEqual(result[0]['rooms'][1]['room_number'], 102)
-    self.assertEqual(result[0]['rooms'][1]['view_type'], 'city')
-    self.assertEqual(result[0]['rooms'][1]['room_capacity'], 2)'''
-
-    # Test with is_extendable and price_per_night
-    result = db.search_hotels_and_rooms(is_extendable=True, price_per_night=100)
-    print(result)
-    '''self.assertEqual(len(result), 1)
-    self.assertEqual(result[0]['hotel_ID'], 1)
-    self.assertEqual(len(result[0]['rooms']), 1)
-    self.assertEqual(result[0]['rooms'][0]['room_number'], 101)
-    self.assertEqual(result[0]['rooms'][0]['is_extendable'], True)
-    self.assertEqual(result[0]['rooms'][0]['price_per_night'], 100)'''
-
-    # Test with no parameters
-    result = db.search_hotels_and_rooms()
-    print(result)
-    '''self.assertEqual(len(result), 3)
-    self.assertEqual(len(result[0]['rooms']), 2)
-    self.assertEqual(len(result[1]['rooms']), 1)
-    self.assertEqual(len(result[2]['rooms']), 0)'''
+    return db.search_hotels_and_rooms(star_rating=2)
+    
 
 def format_output(hotel_data):
     formatted_data = []
@@ -568,7 +515,7 @@ if __name__ == "__main__":
         hotel_id INT,
         room_number INT,
         PRIMARY KEY (amenity_id, hotel_id, room_number),
-        FOREIGN KEY (hotel_id, room_number) REFERENCES Room(hotel_ID, room_number)
+        FOREIGN KEY (hotel_id, room_number) REFERENCES Room(hotel_ID, room_number) ON DELETE CASCADE
         );
 
         CREATE TABLE IF NOT EXISTS Customer (
@@ -639,7 +586,8 @@ if __name__ == "__main__":
     test_insert_booking(test_db)
     test_convert_booking_to_rental(test_db)
     test_create_rental(test_db)
-    print(format_output(test_search_hotels_and_rooms(test_db)))
+    print(test_search_hotels_and_rooms(test_db))
+    print(json.dumps(test_search_hotels_and_rooms(test_db), indent=2))
     print("--------------------------------")
     print("ALL TESTS PASSED")
 
