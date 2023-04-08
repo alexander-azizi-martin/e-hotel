@@ -177,17 +177,17 @@ def test_insert_room(db):
 
 def test_insert_booking(db):
     print("Inserting new booking...")
-    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 10), datetime.date(2023, 4, 14))
+    db.insert_booking(1, 123456789, 101, 1, datetime.date(2023, 4, 10), datetime.date(2023, 4, 14))
     print("Inserted booking with customer SSN/SIN 123456789 and room number 101.")
 
     print("Attempting to insert duplicate booking...")
-    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 11), datetime.date(2023, 4, 13))
+    db.insert_booking(1, 123456789, 101, 1, datetime.date(2023, 4, 11), datetime.date(2023, 4, 13))
 
     print("Attempting to insert booking with invalid check-in and check-out dates...")
-    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 14), datetime.date(2023, 4, 10))
+    db.insert_booking(2, 123456789, 101, 1, datetime.date(2023, 4, 14), datetime.date(2023, 4, 10))
 
     print("Attempting to insert booking with same check-in and check-out date...")
-    db.insert_booking(123456789, 101, 1, datetime.date(2023, 4, 10), datetime.date(2023, 4, 10))
+    db.insert_booking(3, 123456789, 101, 1, datetime.date(2023, 4, 10), datetime.date(2023, 4, 10))
 
     print("Printing all bookings...")
     bookings = db.get_all_bookings()
@@ -203,6 +203,77 @@ def test_insert_booking(db):
     assert bookings[0][7] == 1
     print("test_insert_booking passed")
 
+
+def test_convert_booking_to_rental(db):
+    print("Converting booking to rental")
+
+    # Clear the tables
+    db.clear_table("Rental")
+    db.clear_table("Booking")
+    db.clear_table("Customer")
+    db.clear_table("Employee")
+    db.clear_table("Users")
+
+    # Add an employee
+    employee_ssn_sin = 123456789
+    employee_id = 1
+    password = "password123"
+    first_name = "John"
+    last_name = "Doe"
+    address_street_name = "Main St."
+    address_street_number = "123"
+    address_city = "New York"
+    address_province_state = "NY"
+    address_country = "USA"
+    hotel_id = 1
+    is_manager = True
+    db.insert_employee(employee_ssn_sin, employee_id, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_id, is_manager)
+
+    # Add a customer
+    customer_ssn_sin = 987654321
+    password = "password456"
+    first_name = "Jane"
+    last_name = "Doe"
+    address_street_name = "Broadway"
+    address_street_number = "456"
+    address_city = "New York"
+    address_province_state = "NY"
+    address_country = "USA"
+    registration_date = datetime.date.today()
+    db.insert_customer(customer_ssn_sin, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date)
+
+    # Add a booking
+    booking_id = 1
+    room_number = 101
+    check_in_date = datetime.date(2023, 4, 10)
+    check_out_date = datetime.date(2023, 4, 14)
+    db.insert_booking(booking_id, customer_ssn_sin, room_number, hotel_id, check_in_date, check_out_date)
+    print(db.get_all_bookings())
+
+    # Convert booking to rental
+    total_paid = 1200
+    discount = 0
+    additional_charges = 0
+    db.convert_booking_to_rental(booking_id, total_paid, discount, additional_charges)
+
+    # Retrieve the rental information
+    rentals = db.get_all_rentals()
+    assert len(rentals) == 1
+    rental = rentals[0]
+
+    # Check if the booking has been successfully converted to a rental
+    assert rental['booking_ID'] == booking_id
+    assert rental['total_paid'] == total_paid
+    assert rental['discount'] == discount
+    assert rental['additional_charges'] == additional_charges
+    assert rental['customer_SSN_SIN'] == customer_ssn_sin
+    assert rental['room_number'] == room_number
+    assert rental['hotel_ID'] == hotel_id
+    assert rental['check_in_date'] == check_in_date
+    assert rental['check_out_date'] == check_out_date
+
+    print("test_convert_booking_to_rental passed")
+ 
 if __name__ == "__main__":
     # Replace the following with your actual database connection details
     DB_USER = os.getenv('DB_USER')
@@ -259,7 +330,7 @@ if __name__ == "__main__":
         employee_ID INT,
         role VARCHAR(50) NOT NULL,
         PRIMARY KEY (employee_SSN_SIN, employee_ID, role),
-        FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID)
+        FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID) ON DELETE CASCADE
         );
 
         CREATE TABLE IF NOT EXISTS Hotel_Phone_Number (
@@ -348,7 +419,7 @@ if __name__ == "__main__":
         );
 
         CREATE TABLE IF NOT EXISTS Rental (
-        rental_ID SERIAL,
+        rental_ID INT,
         base_price INT NOT NULL,
         date_paid DATE NOT NULL,
         total_paid INT NOT NULL,
@@ -386,6 +457,7 @@ if __name__ == "__main__":
     test_insert_employee_role(test_db)
     test_insert_room(test_db)
     test_insert_booking(test_db)
+    test_convert_booking_to_rental(test_db)
     print("--------------------------------")
     print("ALL TESTS PASSED")
 

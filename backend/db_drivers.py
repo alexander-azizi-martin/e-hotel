@@ -5,6 +5,7 @@ import os
 import psycopg2
 import datetime
 import random
+import traceback
 
 load_dotenv()
 
@@ -29,6 +30,17 @@ class Database(object):
     def commit(self):
       self.connection.commit()
     
+    def clear_table(self, table_name):
+        try:
+            # Clear the table
+            self.cursor.execute(f"DELETE FROM {table_name}")
+            self.commit()
+            print(f"{table_name} table cleared.")
+
+        except Exception as e:
+            print(f"Error clearing {table_name} table:", e)
+            self.connection.rollback()
+
     ### Action methods on the database.
     # Method checks whether a user exists and returns their role if they exist.
     def check_account_and_role(self, ssn_sin, password, role):
@@ -73,10 +85,15 @@ class Database(object):
         results = self.cursor.fetchone()
         return results
 
-    def get_all_employees(self):
-        self.cursor.execute("SELECT * FROM Employee")
+    def get_employees_by_hotel_id(self, hotel_id):
+        self.cursor.execute("SELECT * FROM Employee WHERE hotel_ID = %s", (hotel_id,))
         results = self.cursor.fetchall()
         return results
+
+    def get_all_employees(self): 
+      self.cursor.execute("SELECT * FROM Employee")
+      results = self.cursor.fetchall()
+      return results
 
     def get_employee(self, employee_ssn_sin, employee_id=None):
         if employee_id is None:
@@ -233,6 +250,7 @@ class Database(object):
             print("Error inserting or updating hotel:", e)
             self.connection.rollback()
 
+
     def insert_hotel_chain(self, chain_id, name=None, number_of_hotels=None):
         try:
             # Check if the hotel chain already exists
@@ -269,6 +287,7 @@ class Database(object):
             print("Error inserting or updating hotel chain:", e)
             self.connection.rollback()
 
+
     def insert_customer(self, customer_SSN_SIN, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date):
         try:
             # Check if the customer already exists in the Customer table or an employee exists with the same SSN_SIN
@@ -291,6 +310,7 @@ class Database(object):
             print("Error inserting customer:", e)
             self.connection.rollback()
 
+
     def insert_employee(self, employee_SSN_SIN, employee_ID, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_ID, is_manager):
         try:
             # Check if the employee already exists in the Employee table or an customer exists with the same SSN_SIN
@@ -312,6 +332,7 @@ class Database(object):
         except Exception as e:
             print("Error inserting employee:", e)
             self.connection.rollback()
+
 
     def insert_employee_role(self, employee_SSN_SIN, employee_ID, role):
         try:
@@ -336,6 +357,7 @@ class Database(object):
             print("Error inserting employee role:", e)
             self.connection.rollback()
     
+
     def insert_room(self, room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems=None):
         try:
             # Check if the room already exists
@@ -378,7 +400,8 @@ class Database(object):
             print("Error inserting or updating room:", e)
             self.connection.rollback()
 
-    def insert_booking(self, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
+
+    def insert_booking(self, booking_id, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
 
         if check_in_date >= check_out_date:
             print("Error: Check-in date must be earlier than check-out date.")
@@ -421,47 +444,57 @@ class Database(object):
 
             # Insert the booking
             self.cursor.execute("""
-                INSERT INTO Booking (booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID) 
-                VALUES (%s, %s, %s, false, %s, %s, %s)
-            """, (datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id))
+                INSERT INTO Booking (booking_ID, booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID) 
+                VALUES (%s, %s, %s, %s, false, %s, %s, %s)
+            """, (booking_id, datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id))
             self.commit()
             print("Booking created successfully.")
         except Exception as e:
             print("Error inserting booking:", e)
             self.connection.rollback()
-
-    def insert_rental(self, rental_id, booking_id):
+    
+    def convert_booking_to_rental(self, booking_id, total_paid=None, discount=None, additional_charges=None):
         try:
-            # Check if the rental already exists
-            existing_rental = self.get_rental(rental_id)
-            if existing_rental:
-                print("Error: Rental with the same ID already exists.")
-            else:
-                # Get the booking information
-                booking = self.get_booking(booking_id)
+            # Check if the booking exists and is not canceled
+            existing_booking = self.get_booking(booking_id)
+            if not existing_booking or existing_booking[4]:
+                print("Error: Booking does not exist or has been canceled.")
+                return
 
-                # Check if the booking exists
-                if not booking:
-                    print("Error: Booking not found.")
-                    return
+            # Choose a random employee to assign to the rental
+            employees = self.get_employees_by_hotel_id(existing_booking[7])
+            if not employees:
+                print("Error: No employees found for this hotel.")
+                return
+            employee = random.choice(employees)
 
-                # Extract the necessary information from the booking
-                customer_ssn_sin = booking[1]
-                employee_ssn_sin = booking[2]
-                employee_id = booking[3]
-                room_number = booking[4]
-                hotel_id = booking[5]
-                start_date = booking[6]
-                end_date = booking[7]
+            # Create the rental
+            rental_data = {
+                'base_price': self.get_room(existing_booking[6], existing_booking[7])[4],
+                'date_paid': datetime.date.today(),
+                'total_paid': 0 if total_paid is None else total_paid,
+                'discount': 0 if discount is None else discount,
+                'additional_charges': 0 if additional_charges is None else additional_charges,
+                'check_in_date': existing_booking[2],
+                'check_out_date': existing_booking[3],
+                'customer_SSN_SIN': existing_booking[5],
+                'booking_ID': existing_booking[0],
+                'room_number': existing_booking[6],
+                'hotel_ID': existing_booking[7],
+                'employee_ID': employee[1],
+                'employee_SSN_SIN': employee[0]
+            }
+            self.cursor.execute("""
+                INSERT INTO Rental (base_price, date_paid, total_paid, discount, additional_charges, check_in_date, check_out_date, customer_SSN_SIN, booking_ID, room_number, hotel_ID, employee_ID, employee_SSN_SIN)
+                VALUES (%(base_price)s, %(date_paid)s, %(total_paid)s, %(discount)s, %(additional_charges)s, %(check_in_date)s, %(check_out_date)s, %(customer_SSN_SIN)s, %(booking_ID)s, %(room_number)s, %(hotel_ID)s, %(employee_ID)s, %(employee_SSN_SIN)s)
+            """, rental_data)
+            self.commit()
 
-                # Insert a new rental
-                self.cursor.execute("""
-                    INSERT INTO Rental (rental_ID, booking_ID, customer_SSN_SIN, employee_SSN_SIN, employee_ID, room_number, hotel_ID, start_date, end_date) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (rental_id, booking_id, customer_ssn_sin, employee_ssn_sin, employee_id, room_number, hotel_id, start_date, end_date))
-                self.commit()
+            print(f"Booking converted to rental successfully. Assigned to employee {employee['employee_ID']}.")
+
         except Exception as e:
-            print("Error inserting rental:", e)
+            print("Error converting booking to rental:", e)
+            traceback.print_exc()
             self.connection.rollback()
 
 if __name__ == "__main__":

@@ -42,7 +42,7 @@ CREATE TABLE Employee_Role (
   employee_ID INT,
   role VARCHAR(50) NOT NULL,
   PRIMARY KEY (employee_SSN_SIN, employee_ID, role),
-  FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID)
+  FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Hotel_Phone_Number (
@@ -117,7 +117,7 @@ CREATE TABLE Customer (
 );
 
 CREATE TABLE Booking (
-    booking_ID SERIAL,
+    booking_ID INT,
     booking_date DATE NOT NULL,
     scheduled_check_in_date DATE NOT NULL,
     scheduled_check_out_date DATE NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE Booking (
 );
 
 CREATE TABLE Rental (
-  rental_ID SERIAL,
+  rental_ID INT,
   base_price INT NOT NULL,
   date_paid DATE NOT NULL,
   total_paid INT NOT NULL,
