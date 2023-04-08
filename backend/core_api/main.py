@@ -3,6 +3,7 @@ from flask_restx import Api, Resource, fields
 from dotenv import load_dotenv
 import os
 import json
+import db_drivers
 
 load_dotenv()
 app = Flask(__name__)
@@ -38,6 +39,7 @@ employee_model = api.model('Employee', {
     'employee_ID': fields.Integer(required=True, description='Employee ID'),
     'first_name': fields.String(required=True, description='First name of the employee'),
     'last_name': fields.String(required=True, description='Last name of the employee'),
+    'password': fields.String(required=True, description='Password of the employee'),
     'address_street_name': fields.String(required=True, description='Street name of the employee address'),
     'address_street_number': fields.Integer(required=True, description='Street number of the employee address'),
     'address_city': fields.String(required=True, description='City of the employee address'),
@@ -112,12 +114,12 @@ customer_model = api.model('Customer', {
     'customer_SSN_SIN': fields.Integer(required=True, description='Customer SSN/SIN'),
     'first_name': fields.String(required=True, description='First name of the customer'),
     'last_name': fields.String(required=True, description='Last name of the customer'),
+    'password': fields.String(required=True, description='Password of the customer'), 
     'address_street_name': fields.String(required=True, description='Street name of the customer address'),
     'address_street_number': fields.Integer(required=True, description='Street number of the customer address'),
     'address_city': fields.String(required=True, description='City of the customer address'),
     'address_province_state': fields.String(required=True, description='Province or state of the customer address'),
-    'address_country': fields.String(required=True, description='Country of the customer address'),
-    'registration_date': fields.Date(required=True, description='Registration date of the customer')
+    'address_country': fields.String(required=True, description='Country of the customer address')
 })
 
 # Booking input model
@@ -150,13 +152,14 @@ rental_model = api.model('Rental', {
     'employee_SSN_SIN': fields.Integer(required=True, description='Employee SSN/SIN')
 })
 
-# Users input model
-users_model = api.model('Users', {
-    'username': fields.String(required=True, description='Username of the user'),
-    'password': fields.String(required=True, description='Password of the user'),
-    'role': fields.String(required=True, description='Role of the user', enum=['customer', 'employee'])
-})
 ### INPUT MODELS END ###
+@api.route('signup/customer')
+class CustomerSignUp(Resource): 
+    @api.expect(customer_model)
+    def post(self): 
+        data = request.get_json()
+        
+
 
 @api.route('/all_hotels')
 class Hotels(Resource):

@@ -611,11 +611,9 @@ class Database(object):
             params['price_per_night'] = price_per_night
 
         query += " ORDER BY h.hotel_ID, r.room_number"
-        print(query)
 
         self.cursor.execute(query, params)
         rows = self.cursor.fetchall()
-        print(rows)
 
         hotels = []
         current_hotel = None
