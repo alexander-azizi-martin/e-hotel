@@ -46,7 +46,6 @@ class Database(object):
     def check_account_and_role(self, ssn_sin, password, role):
         self.cursor.execute("SELECT * FROM Users WHERE user_SSN_SIN=%s", (ssn_sin,))
         result = self.cursor.fetchone()
-
         if not result:
             return ["Invalid SSN/SIN"]
         hashed_pass = result[1]
@@ -573,8 +572,78 @@ class Database(object):
             print("Error creating rental:", e)
             traceback.print_exc()
             self.connection.rollback()
-  
-    
+
+
+    def search_hotels_and_rooms(self, city=None, star_rating=None, view_type=None, room_capacity=None, is_extendable=None, price_per_night=None, db=None):
+        query = """
+            SELECT h.hotel_ID, h.chain_ID, h.number_of_rooms, h.address_street_name, h.address_street_number, 
+                  h.address_city, h.address_province_state, h.address_country, h.contact_email, h.star_rating, 
+                  r.room_number, r.room_capacity, r.view_type, r.price_per_night, r.is_extendable, r.room_problems
+            FROM Hotel h
+            JOIN Room r ON h.hotel_ID = r.hotel_ID
+        """
+        params = {}
+
+        if city is not None:
+            query += " AND h.address_city = %(city)s"
+            params['city'] = city
+
+        if star_rating is not None:
+            query += " AND h.star_rating = %(star_rating)s"
+            params['star_rating'] = star_rating
+
+        if view_type is not None:
+            query += " AND r.view_type = %(view_type)s"
+            params['view_type'] = view_type
+
+        if room_capacity is not None:
+            query += " AND r.room_capacity = %(room_capacity)s"
+            params['room_capacity'] = room_capacity
+
+        if is_extendable is not None:
+            query += " AND r.is_extendable = %(is_extendable)s"
+            params['is_extendable'] = is_extendable
+
+        if price_per_night is not None:
+            query += " AND r.price_per_night = %(price_per_night)s"
+            params['price_per_night'] = price_per_night
+
+        query += " ORDER BY h.hotel_ID, r.room_number"
+
+        self.cursor.execute(query, params)
+        rows = self.cursor.fetchall()
+
+        hotels = []
+        current_hotel = None
+
+        for row in rows:
+            if current_hotel is None or row[0] != current_hotel['hotel_ID']:
+                current_hotel = {
+                    'hotel_ID': row[0],
+                    'chain_ID': row[1],
+                    'number_of_rooms': row[2],
+                    'address_street_name': row[3],
+                    'address_street_number': row[4],
+                    'address_city': row[5],
+                    'address_province_state': row[6],
+                    'address_country': row[7],
+                    'contact_email': row[8],
+                    'star_rating': row[9],
+                    'rooms': []
+                }
+
+                hotels.append(current_hotel)
+
+            current_hotel['rooms'].append({
+                'room_number': row[10],
+                'room_capacity': row[11],
+                'view_type': row[12],
+                'price_per_night': row[13],
+                'is_extendable': row[14],
+                'room_problems': row[15]
+            })
+
+        return hotels
 
 
 if __name__ == "__main__":
