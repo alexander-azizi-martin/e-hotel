@@ -260,17 +260,18 @@ def test_convert_booking_to_rental(db):
     rentals = db.get_all_rentals()
     assert len(rentals) == 1
     rental = rentals[0]
+    print(rental)
 
     # Check if the booking has been successfully converted to a rental
-    assert rental['booking_ID'] == booking_id
-    assert rental['total_paid'] == total_paid
-    assert rental['discount'] == discount
-    assert rental['additional_charges'] == additional_charges
-    assert rental['customer_SSN_SIN'] == customer_ssn_sin
-    assert rental['room_number'] == room_number
-    assert rental['hotel_ID'] == hotel_id
-    assert rental['check_in_date'] == check_in_date
-    assert rental['check_out_date'] == check_out_date
+    assert rental[0] == booking_id
+    assert rental[3] == total_paid
+    assert rental[4] == discount
+    assert rental[5] == additional_charges
+    assert rental[8] == customer_ssn_sin
+    assert rental[10] == room_number
+    assert rental[11] == hotel_id
+    assert rental[6] == check_in_date
+    assert rental[7] == check_out_date
 
     print("test_convert_booking_to_rental passed")
  
@@ -419,7 +420,7 @@ if __name__ == "__main__":
         );
 
         CREATE TABLE IF NOT EXISTS Rental (
-        rental_ID INT,
+        rental_ID SERIAL,
         base_price INT NOT NULL,
         date_paid DATE NOT NULL,
         total_paid INT NOT NULL,

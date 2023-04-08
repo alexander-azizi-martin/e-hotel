@@ -490,7 +490,7 @@ class Database(object):
             """, rental_data)
             self.commit()
 
-            print(f"Booking converted to rental successfully. Assigned to employee {employee['employee_ID']}.")
+            print(f"Booking converted to rental successfully. Assigned to employee {employee[1]}.")
 
         except Exception as e:
             print("Error converting booking to rental:", e)
@@ -499,7 +499,4 @@ class Database(object):
 
 if __name__ == "__main__":
   db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
-  all_hotels = db.get_all_hotels()
-  print(all_hotels)
-  hotel = db.get_hotel(1021)
-  print(hotel)
+  print("Connection succesful.")

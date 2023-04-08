@@ -131,7 +131,7 @@ CREATE TABLE Booking (
 );
 
 CREATE TABLE Rental (
-  rental_ID INT,
+  rental_ID SERIAL,
   base_price INT NOT NULL,
   date_paid DATE NOT NULL,
   total_paid INT NOT NULL,
