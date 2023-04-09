@@ -47,6 +47,7 @@ class Database(object):
     ### Action methods on the database.
     # Method checks whether a user exists and returns their role if they exist.
     def check_account_and_role(self, ssn_sin, password, role):
+        print(password)
         self.cursor.execute("SELECT * FROM Users WHERE user_SSN_SIN=%s", (ssn_sin,))
         result = self.cursor.fetchone()
 
@@ -112,11 +113,6 @@ class Database(object):
         result = self.cursor.fetchall()
 
         roles = [row[0].lower().strip() for row in result]
-
-        # Move the manager role to the first position in the list, if it exists
-        if 'manager' in roles:
-            roles.remove('manager')
-            roles.insert(0, 'manager')
 
         return roles
 
@@ -331,8 +327,7 @@ class Database(object):
                 self.cursor.execute("INSERT INTO Employee (employee_SSN_SIN, employee_ID, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_ID, is_manager) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                                     (employee_SSN_SIN, employee_ID, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_ID, is_manager))
                 # Insert a new user
-                hashed_password = generate_password_hash(password)
-                self.cursor.execute("INSERT INTO Users (user_SSN_SIN, password, role) VALUES (%s, %s, %s)", (employee_SSN_SIN, hashed_password, 'employee'))
+                self.cursor.execute("INSERT INTO Users (user_SSN_SIN, password, role) VALUES (%s, %s, %s)", (employee_SSN_SIN, password, 'employee'))
                 self.commit()
 
         except Exception as e:

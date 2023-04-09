@@ -119,6 +119,7 @@ class EmployeeRegistration(Resource):
         address_country = data["address_country"]
         hotel_id = data["hotel_ID"]
         is_manager = data["is_manager"]
+        print(f"is manager{is_manager}")
         role = data["role"]
 
         try:
@@ -140,6 +141,7 @@ class EmployeeRegistration(Resource):
         except Exception as e:
             return {"message": f"Error: {str(e)}"}, 500
 
+
 @auth_namespace.route("/login")
 class Login(Resource):
     @auth_namespace.doc(responses={200: "Success", 400: "Invalid input", 401: "Unauthorized", 500: "Internal Server Error"})
@@ -158,13 +160,23 @@ class Login(Resource):
         result = current_app.db.check_account_and_role(user_ssn_sin, password, role)
         if result[0] == "Invalid SSN/SIN" or result[0] == "Invalid Password" or result[0] == "Invalid Role":
             return {"message": result[0]}, 401
+        
+        # Set is_manager to True if the user has the "manager" role
+        is_manager = False
+        if result[1] == "employee":
+            print(result)
+            if result[2][10]:
+                is_manager = True
 
-        # Create the JWT token
+        print(f"Checking for is_manager{is_manager}")
+        # Create the JWT token with is_manager included
         token_data = {
             "user_ssn_sin": user_ssn_sin,
-            "role": role
+            "role": role,
+            "is_manager": is_manager
         }
-        access_token = create_access_token(identity=token_data)
+
+        access_token = create_access_token(identity=user_ssn_sin, additional_claims=token_data)
 
         # Return the access token
         return {"access_token": access_token}, 200
