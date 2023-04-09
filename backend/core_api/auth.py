@@ -19,7 +19,7 @@ customer_model = auth_namespace.model('Customer', {
     'address_country': fields.String(required=True, description='Country of the customer address')
 })
 
-customer_update_model = auth_namespace.model('Customer', {
+customer_update_model = auth_namespace.model('CustomerUpdateModel', {
     'customer_SSN_SIN': fields.Integer(required=True, description='Customer SSN/SIN'),
     'first_name': fields.String(required=False, description='First name of the customer'),
     'last_name': fields.String(required=False, description='Last name of the customer'),
@@ -46,7 +46,7 @@ employee_model = auth_namespace.model('Employee', {
     'role': fields.String(required=True, description='Role of the employee at the hotel')
 })
 
-employee_update_model = auth_namespace.model('Employee', {
+employee_update_model = auth_namespace.model('EmployeeUpdateModel', {
     'employee_SSN_SIN': fields.Integer(required=True, description='Employee SSN/SIN'),
     'employee_ID': fields.Integer(required=True, description='Employee ID'),
     'first_name': fields.String(required=False, description='First name of the employee'),
@@ -120,9 +120,6 @@ class EmployeeRegistration(Resource):
     @auth_namespace.doc(responses={200: "Success", 400: "Invalid input", 409: "Conflict", 500: "Internal Server Error"})
     @auth_namespace.expect(employee_model)
     def post(self):
-        """
-        Register a new employee.
-        """
         data = request.json
 
         ssn_sin = data["employee_SSN_SIN"]
@@ -286,3 +283,79 @@ class CustomerDetails(Resource):
                 return {"message": "Customer not found."}, 404
         else:
             return {"message": "Unauthorized"}, 401
+
+
+@auth_namespace.route("/employees/<int:employee_SSN_SIN>")
+class EmployeeUpdate(Resource):
+    @jwt_required()
+    @auth_namespace.expect(employee_update_model)
+    def put(self, employee_SSN_SIN):
+        data = request.json
+
+        # Get the current user's SSN/SIN and role from the JWT token
+        current_user_ssn_sin = get_jwt_identity()
+        current_user_role = get_jwt().get("role")
+
+        # Only allow managers or employees to update their own information
+        if current_user_role != "manager" and current_user_ssn_sin != employee_SSN_SIN:
+            return {"message": "Unauthorized"}, 401
+
+        # Parse the data and pass it to the update_employee function
+        first_name = data.get("first_name")
+        last_name = data.get("last_name")
+        address_street_name = data.get("address_street_name")
+        address_street_number = data.get("address_street_number")
+        address_city = data.get("address_city")
+        address_province_state = data.get("address_province_state")
+        address_country = data.get("address_country")
+        hotel_ID = data.get("hotel_ID")
+        employee_ID = data.get("employee_ID")
+        promote_to_manager = data.get("promote_to_manager")
+        demote_from_manager = data.get("demote_from_manager")
+
+        success, message = current_app.db.update_employee(
+            employee_SSN_SIN, employee_ID, first_name, last_name,
+            address_street_name, address_street_number,
+            address_city, address_province_state, address_country,
+            hotel_ID, promote_to_manager, demote_from_manager
+        )
+
+        if success:
+            return {"message": message}, 200
+        else:
+            return {"message": message}, 500
+
+
+@auth_namespace.route("/employees/<int:employee_SSN_SIN>")
+class EmployeeDetails(Resource):
+    @jwt_required()
+    def get(self, employee_SSN_SIN):
+        # Get the current user's SSN/SIN and role from the JWT token
+        current_user_ssn_sin = get_jwt_identity()
+        current_user_role = get_jwt().get("role")
+
+        # Only allow managers or employees to see their own information
+        if current_user_role != "manager" and current_user_ssn_sin != employee_SSN_SIN:
+            return {"message": "Unauthorized"}, 401
+
+        # Get the employee's information from the database
+        employee_info = current_app.db.get_employee(employee_SSN_SIN)
+        print(f"employee info: {employee_info}")
+        if employee_info:
+            # Convert the result into a dictionary
+            employee_dict = {
+                "employee_SSN_SIN": employee_info[0],
+                "employee_ID": employee_info[1],
+                "first_name": employee_info[2],
+                "last_name": employee_info[3],
+                "address_street_name": employee_info[4],
+                "address_street_number": employee_info[5],
+                "address_city": employee_info[6],
+                "address_province_state": employee_info[7],
+                "address_country": employee_info[8],
+                "hotel_ID": employee_info[9],
+                "is_manager": employee_info[10]
+            }
+            return employee_dict, 200
+        else:
+            return {"message": "Employee not found."}, 404

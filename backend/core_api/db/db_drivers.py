@@ -306,7 +306,6 @@ class Database(object):
             existing_employee = self.get_employee(customer_SSN_SIN)
 
             if existing_customer or existing_employee:
-                print("we're finding an existing customer or employee.")
                 return (False, "Error: Customer or Employee with the same SSN/SIN already exists.")
 
             else:
@@ -328,7 +327,7 @@ class Database(object):
         try:
             # Check if the employee already exists in the Employee table or an customer exists with the same SSN_SIN
             existing_customer = self.get_customer(employee_SSN_SIN)
-            existing_employee = self.get_employee(employee_SSN_SIN, employee_ID)
+            existing_employee = self.get_employee(employee_SSN_SIN)
 
             if existing_employee or existing_customer:
                 return (False, "Error: Customer or Employee with the same SSN/SIN already exists.")
@@ -372,7 +371,7 @@ class Database(object):
             return (False, f"Error adding employee role: {e}")
     
 
-    def update_employee(self, employee_SSN_SIN, employee_ID, first_name=None, last_name=None, address_street_name=None, 
+    def update_employee(self, employee_SSN_SIN, employee_ID=None, first_name=None, last_name=None, address_street_name=None, 
                         address_street_number=None, address_city=None, address_province_state=None, 
                         address_country=None, hotel_ID=None, promote_to_manager=None, demote_from_manager=None):
 
@@ -381,7 +380,7 @@ class Database(object):
 
         try:
             # Check if the employee exists
-            existing_employee = self.get_employee(employee_SSN_SIN, employee_ID)
+            existing_employee = self.get_employee(employee_SSN_SIN)
 
             if not existing_employee:
                 return (False, "Error: Employee does not exist.")
@@ -393,6 +392,7 @@ class Database(object):
             columns_and_values = {
                 "first_name": first_name,
                 "last_name": last_name,
+                "employee_ID": employee_ID,
                 "address_street_name": address_street_name,
                 "address_street_number": address_street_number,
                 "address_city": address_city,
@@ -422,9 +422,8 @@ class Database(object):
 
             # Remove the trailing comma and space
             update_query = update_query.rstrip(', ')
-            update_query += " WHERE employee_SSN_SIN = %s AND employee_ID = %s"
+            update_query += " WHERE employee_SSN_SIN = %s"
             update_values.append(employee_SSN_SIN)
-            update_values.append(employee_ID)
 
             self.cursor.execute(update_query, tuple(update_values))
             self.commit()

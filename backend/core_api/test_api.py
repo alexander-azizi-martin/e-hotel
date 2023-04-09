@@ -633,6 +633,152 @@ class TestAuth(TestCase):
         with current_app.app_context():
             current_app.db.delete_customer(customer_ssn_sin)
 
+    def test_update_employee_successful(self):
+        with current_app.app_context():
+            # Test data
+            manager_SSN_SIN = 123453789
+            manager_ID = 1
+            manager_password = "manager_password123"
+            first_name = "Manager"
+            last_name = "Doe"
+            address_street_name = "Test Street"
+            address_street_number = 123
+            address_city = "Test City"
+            address_province_state = "Test State"
+            address_country = "Test Country"
+            role = "employee"
+            hotel_ID = 1
+            is_manager = True
+
+            # Create a manager
+            registration_response = self.client.post("/auth/employees", json={
+                "employee_SSN_SIN": manager_SSN_SIN,
+                "employee_ID": manager_ID,
+                "first_name": first_name,
+                "last_name": last_name,
+                "password": manager_password,
+                "address_street_name": address_street_name,
+                "address_street_number": address_street_number,
+                "address_city": address_city,
+                "address_province_state": address_province_state,
+                "address_country": address_country,
+                "hotel_ID": hotel_ID,
+                "is_manager": is_manager,
+                "role": "employee"
+            })
+
+            # Login as manager
+            login_response = self.client.post("/auth/login", json={
+                "user_SSN_SIN": manager_SSN_SIN,
+                "password": manager_password,
+                "role": "employee"
+            })
+            jwt_token = login_response.json["access_token"]
+
+            # Insert hotel chain
+            self.client.post("/hotel_chain/hotel_chain", json={
+                "chain_ID": 3,
+                "name": "Hotel Chain 3",
+                "number_of_hotels": 5
+            }, headers={'Authorization': f'Bearer {jwt_token}'})
+
+            # Insert hotel
+            response = self.client.post("/hotel/hotel", json={
+                "hotel_ID": 1,
+                "chain_ID": 3,
+                "number_of_rooms": 100,
+                "address_street_name": "Test Street",
+                "address_street_number": 123,
+                "address_city": "Test City",
+                "address_province_state": "Test State",
+                "address_country": "Test Country",
+                "contact_email": "test@email.com",
+                "star_rating": 4
+            }, headers={'Authorization': f'Bearer {jwt_token}'})
+
+            # Test data for employee
+            employee_SSN_SIN = 123456789
+            employee_ID = 987654321
+            first_name = "John"
+            last_name = "Doe"
+            password = "password123"
+            address_street_name = "Test Street"
+            address_street_number = 123
+            address_city = "Test City"
+            address_province_state = "Test State"
+            address_country = "Test Country"
+            role = "employee"
+            hotel_ID = 1
+            is_manager = False
+
+            # Register the employee
+            registration_response = self.client.post("/auth/employees", json={
+                "employee_SSN_SIN": employee_SSN_SIN,
+                "employee_ID": employee_ID,
+                "first_name": first_name,
+                "last_name": last_name,
+                "password": password,
+                "address_street_name": address_street_name,
+                "address_street_number": address_street_number,
+                "address_city": address_city,
+                "address_province_state": address_province_state,
+                "address_country": address_country,
+                "hotel_ID": hotel_ID,
+                "is_manager": is_manager,
+                "role": "employee"
+            })
+
+            # Login as the employee
+            login_response = self.client.post("/auth/login", json={
+                "user_SSN_SIN": employee_SSN_SIN,
+                "password": password,
+                "role": "employee"
+            })
+
+            access_token = login_response.json["access_token"]
+            headers = {'Authorization': f'Bearer {access_token}'}
+
+            # Update the employee's information
+            update_data = {
+                "first_name": "Jane",
+                "last_name": "Doe",
+                "address_street_name": "New Street",
+                "address_street_number": 456,
+                "address_city": "New City",
+                "address_province_state": "New State",
+                "address_country": "New Country"
+            }
+
+            update_response = self.client.put(f"/auth/employees/{employee_SSN_SIN}", headers=headers, json=update_data)
+
+            # Check if the registration response is successful
+            self.assertEqual(registration_response.status_code, 200, f"Failed to register employee: {registration_response.data}")
+
+            # Check if the login response is successful
+            self.assertEqual(login_response.status_code, 200, f"Failed to log in user: {login_response.data}")
+
+            # Check if the update response is successful
+            self.assertEqual(update_response.status_code, 200, f"Failed to update employee information: {update_response.data}")
+
+            # Check if the employee's data was updated in the database
+            employee_response = self.client.get(f"/auth/employees/{employee_SSN_SIN}", headers=headers)
+            employee_data = employee_response.json
+
+            # Check if the employee's data was updated
+            self.assertEqual(employee_data["first_name"], "Jane", "Unexpected first name update")
+            self.assertEqual(employee_data["last_name"], "Doe", "Unexpected last name update")
+            self.assertEqual(employee_data["address_street_name"], "New Street", "Unexpected street name update")
+            self.assertEqual(employee_data["address_street_number"], 456, "Unexpected street number update")
+            self.assertEqual(employee_data["address_city"], "New City", "Unexpected city update")
+            self.assertEqual(employee_data["address_province_state"], "New State", "Unexpected province/state update")
+            self.assertEqual(employee_data["address_country"], "New Country", "Unexpected country update")
+
+            # Clean up the test data
+            with current_app.app_context():
+                current_app.db.delete_employee(employee_SSN_SIN)
+                current_app.db.delete_employee(manager_SSN_SIN)
+                current_app.db.delete_hotel(1)
+                current_app.db.delete_hotel_chain(3)
 
 if __name__ == "__main__":
     unittest.main()
