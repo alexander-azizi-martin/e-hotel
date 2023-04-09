@@ -46,7 +46,7 @@ class TestAuth(TestCase):
         self.assertEqual(response.status_code, 200, f"Failed to register customer: {response.data}")
 
         # Check if the response contains the expected message
-        self.assertEqual(response.json["message"], "Customer successfully registered")
+        self.assertEqual(response.json["message"], "Customer successfully registered.")
     
     def test_employee_registration(self):
         # Test data
@@ -89,6 +89,57 @@ class TestAuth(TestCase):
 
         # Check if the response contains the expected message
         self.assertEqual(response.json["message"], "Employee registered successfully.")
+    
+    def test_customer_registration_conflict(self):
+        # Test data
+        ssn_sin = 123456789
+        first_name = "John"
+        last_name = "Doe"
+        password = "password123"
+        address_street_name = "Test Street"
+        address_street_number = 123
+        address_city = "Test City"
+        address_province_state = "Test State"
+        address_country = "Test Country"
+
+        # First registration attempt
+        response1 = self.client.post("/auth/customers", json={
+            "customer_SSN_SIN": ssn_sin,
+            "first_name": first_name,
+            "last_name": last_name,
+            "password": password,
+            "address_street_name": address_street_name,
+            "address_street_number": address_street_number,
+            "address_city": address_city,
+            "address_province_state": address_province_state,
+            "address_country": address_country,
+        })
+
+        # Second registration attempt with the same SSN_SIN
+        response2 = self.client.post("/auth/customers", json={
+            "customer_SSN_SIN": ssn_sin,
+            "first_name": first_name,
+            "last_name": last_name,
+            "password": password,
+            "address_street_name": address_street_name,
+            "address_street_number": address_street_number,
+            "address_city": address_city,
+            "address_province_state": address_province_state,
+            "address_country": address_country,
+        })
+
+        # Clean up the test user
+        with current_app.app_context():
+            current_app.db.delete_customer(ssn_sin)
+
+        # Check if the first response is successful
+        self.assertEqual(response1.status_code, 200, f"Failed to register customer: {response1.data}")
+
+        # Check if the second response returns a conflict error
+        self.assertEqual(response2.status_code, 409, f"Second registration attempt did not return a conflict error: {response2.data}")
+
+        # Check if the response contains the expected message
+        self.assertEqual(response2.json["message"], "Error: Customer or Employee with the same SSN/SIN already exists.")
     
 
     def test_login(self):
@@ -453,6 +504,134 @@ class TestAuth(TestCase):
         response = self.client.delete("/hotel/hotel/1", headers={'Authorization': f'Bearer {jwt_token}'})
         self.assertEqual(response.status_code, 200, f"Failed to delete hotel: {response.data}")
         self.assertEqual(response.json["message"], "Hotel removed successfully.", "Unexpected message")
+
+        self.client.delete("/hotel_chain/hotel_chain/3", headers={"Authorization": f"Bearer {jwt_token}"})
+    
+    def test_update_customer_successful(self):
+        # Test data
+        ssn_sin = 123456789
+        first_name = "John"
+        last_name = "Doe"
+        password = "password123"
+        address_street_name = "Test Street"
+        address_street_number = 123
+        address_city = "Test City"
+        address_province_state = "Test State"
+        address_country = "Test Country"
+        role = "customer"
+
+        # Register the customer
+        registration_response = self.client.post("/auth/customers", json={
+            "customer_SSN_SIN": ssn_sin,
+            "first_name": first_name,
+            "last_name": last_name,
+            "password": password,
+            "address_street_name": address_street_name,
+            "address_street_number": address_street_number,
+            "address_city": address_city,
+            "address_province_state": address_province_state,
+            "address_country": address_country,
+        })
+
+        # Login as the customer
+        login_response = self.client.post("/auth/login", json={
+            "user_SSN_SIN": ssn_sin,
+            "password": password,
+            "role": role
+        })
+
+        print(login_response.json)
+        access_token = login_response.json["access_token"]
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        # Update the customer's information
+        update_data = {
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "address_street_name": "New Street",
+            "address_street_number": 456,
+            "address_city": "New City",
+            "address_province_state": "New State",
+            "address_country": "New Country"
+        }
+
+        update_response = self.client.put(f"/auth/customers/{ssn_sin}", headers=headers, json=update_data)
+
+        # Check if the registration response is successful
+        self.assertEqual(registration_response.status_code, 200, f"Failed to register customer: {registration_response.data}")
+
+        # Check if the login response is successful
+        self.assertEqual(login_response.status_code, 200, f"Failed to log in user: {login_response.data}")
+
+        # Check if the update response is successful
+        self.assertEqual(update_response.status_code, 200, f"Failed to update customer information: {update_response.data}")
+
+        # Check if the customer's data was updated in the database
+        customer_response = self.client.get(f"/auth/customers/{ssn_sin}", headers=headers)
+        customer_data = customer_response.json
+        print(customer_data)
+
+        # Check if the customer's data was updated
+        self.assertEqual(customer_data["first_name"], "Jane", "Unexpected first name update")
+        self.assertEqual(customer_data["last_name"], "Doe", "Unexpected last name update")
+        self.assertEqual(customer_data["address_street_name"], "New Street", "Unexpected street name update")
+        self.assertEqual(customer_data["address_street_number"], 456, "Unexpected street number update")
+        self.assertEqual(customer_data["address_city"], "New City", "Unexpected city update")
+        self.assertEqual(customer_data["address_province_state"], "New State", "Unexpected province/state update")
+        self.assertEqual(customer_data["address_country"], "New Country", "Unexpected country update")
+        
+        # Clean up the test customer
+        with current_app.app_context():
+            current_app.db.delete_customer(ssn_sin)
+
+    def test_customer_details(self):
+        # Test data
+        customer_ssn_sin = 123456789
+        wrong_customer_ssn_sin = 123456788
+        customer_password = "password123"
+        first_name = "John"
+        last_name = "Doe"
+        address_street_name = "Test Street"
+        address_street_number = 123
+        address_city = "Test City"
+        address_province_state = "Test State"
+        address_country = "Test Country"
+
+        # Register the customer
+        registration_response = self.client.post("/auth/customers", json={
+            "customer_SSN_SIN": customer_ssn_sin,
+            "first_name": first_name,
+            "last_name": last_name,
+            "password": customer_password,
+            "address_street_name": address_street_name,
+            "address_street_number": address_street_number,
+            "address_city": address_city,
+            "address_province_state": address_province_state,
+            "address_country": address_country,
+        })
+        print("registratin was fine")
+
+        # Test that a customer can see their own information
+        customer_login_response = self.client.post("/auth/login", json={
+            "user_SSN_SIN": customer_ssn_sin,
+            "password": customer_password,
+            "role": "customer"
+        })
+        print("login was fine")
+
+        customer_access_token = customer_login_response.json["access_token"]
+        headers = {"Authorization": f"Bearer {customer_access_token}"}
+        customer_details_response = self.client.get(f"/auth/customers/{customer_ssn_sin}", headers=headers)
+        self.assertEqual(customer_details_response.status_code, 200, f"Failed to get customer details: {customer_details_response.data}")
+
+        # Test that a customer cannot see someone else's information
+        headers = {"Authorization": f"Bearer {customer_access_token}"}
+        customer_details_response = self.client.get(f"/auth/customers/{wrong_customer_ssn_sin}", headers=headers)
+        self.assertEqual(customer_details_response.status_code, 401, f"Customer was able to access someone else's information: {customer_details_response.data}")
+
+        # Clean up the test data
+        with current_app.app_context():
+            current_app.db.delete_customer(customer_ssn_sin)
 
 
 if __name__ == "__main__":

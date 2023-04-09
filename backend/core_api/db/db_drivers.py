@@ -47,7 +47,6 @@ class Database(object):
     ### Action methods on the database.
     # Method checks whether a user exists and returns their role if they exist.
     def check_account_and_role(self, ssn_sin, password, role):
-        print(password)
         self.cursor.execute("SELECT * FROM Users WHERE user_SSN_SIN=%s", (ssn_sin,))
         result = self.cursor.fetchone()
 
@@ -307,6 +306,7 @@ class Database(object):
             existing_employee = self.get_employee(customer_SSN_SIN)
 
             if existing_customer or existing_employee:
+                print("we're finding an existing customer or employee.")
                 return (False, "Error: Customer or Employee with the same SSN/SIN already exists.")
 
             else:
@@ -321,7 +321,7 @@ class Database(object):
             self.connection.rollback()
             return (False, f"Error inserting customer: {e}")
 
-        return (True, "Customer successfully registered")
+        return (True, "Customer successfully registered.")
 
 
     def insert_employee(self, employee_SSN_SIN, employee_ID, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_ID, is_manager):
@@ -331,7 +331,7 @@ class Database(object):
             existing_employee = self.get_employee(employee_SSN_SIN, employee_ID)
 
             if existing_employee or existing_customer:
-                print("Error: Employee already exists.")
+                return (False, "Error: Customer or Employee with the same SSN/SIN already exists.")
 
             else:
                 # Insert a new employee
@@ -342,8 +342,10 @@ class Database(object):
                 self.commit()
 
         except Exception as e:
-            print("Error inserting employee:", e)
             self.connection.rollback()
+            return (False, f"Error inserting employee: {e}")
+        
+        return (True, "Employee successfully registered")
 
 
     def insert_employee_role(self, employee_SSN_SIN, employee_ID, role):
@@ -356,7 +358,7 @@ class Database(object):
             count = self.cursor.fetchone()[0]
 
             if count > 0:
-                print("Error: Employee already has this role.")
+                return (False, "Error: Employee already possesses the role.")
             else:
                 # Insert a new employee role
                 self.cursor.execute(
@@ -364,12 +366,75 @@ class Database(object):
                     (employee_SSN_SIN, employee_ID, role)
                 )
                 self.connection.commit()
-                print("Employee role inserted successfully.")
+                return (True, "Employee role succesfully added.")
         except Exception as e:
-            print("Error inserting employee role:", e)
             self.connection.rollback()
+            return (False, f"Error adding employee role: {e}")
     
 
+    def update_employee(self, employee_SSN_SIN, employee_ID, first_name=None, last_name=None, address_street_name=None, 
+                        address_street_number=None, address_city=None, address_province_state=None, 
+                        address_country=None, hotel_ID=None, promote_to_manager=None, demote_from_manager=None):
+
+        if promote_to_manager is not None and demote_from_manager is not None:
+            return "Error: Both promote_to_manager and demote_from_manager cannot be set at the same time."
+
+        try:
+            # Check if the employee exists
+            existing_employee = self.get_employee(employee_SSN_SIN, employee_ID)
+
+            if not existing_employee:
+                return (False, "Error: Employee does not exist.")
+
+            update_query = "UPDATE Employee SET "
+            update_values = []
+
+            # Create a dictionary with column names and parameter values
+            columns_and_values = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "address_street_name": address_street_name,
+                "address_street_number": address_street_number,
+                "address_city": address_city,
+                "address_province_state": address_province_state,
+                "address_country": address_country,
+                "hotel_ID": hotel_ID,
+            }
+
+            # Iterate through the dictionary and build the query
+            for column, value in columns_and_values.items():
+                if value is not None:
+                    update_query += f"{column} = %s, "
+                    update_values.append(value)
+
+            # Update manager role if necessary
+            if promote_to_manager is not None or demote_from_manager is not None:
+                if promote_to_manager:
+                    update_query += "is_manager = %s, "
+                    update_values.append(True)
+                else:
+                    update_query += "is_manager = %s, "
+                    update_values.append(False)
+
+            # Check if any values were added to the query
+            if len(update_values) == 0:
+                return (False, "Error: No values provided to update.")
+
+            # Remove the trailing comma and space
+            update_query = update_query.rstrip(', ')
+            update_query += " WHERE employee_SSN_SIN = %s AND employee_ID = %s"
+            update_values.append(employee_SSN_SIN)
+            update_values.append(employee_ID)
+
+            self.cursor.execute(update_query, tuple(update_values))
+            self.commit()
+            return (True, "Employee updated successfully.")
+
+        except Exception as e:
+            self.connection.rollback()
+            return (False, f"Error updating employee: {e}")
+
+    
     def insert_room(self, room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems=None):
         try:
             # Check if the room already exists
@@ -658,6 +723,45 @@ class Database(object):
             })
 
         return hotels
+    
+
+    def update_customer(self, customer_SSN_SIN, first_name=None, last_name=None, address_street_name=None, address_street_number=None, address_city=None, address_province_state=None, address_country=None):
+        try:
+            columns_and_values = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "address_street_name": address_street_name,
+                "address_street_number": address_street_number,
+                "address_city": address_city,
+                "address_province_state": address_province_state,
+                "address_country": address_country
+            }
+
+            # Check if any values were passed in
+            if all(v is None for v in columns_and_values.values()):
+                return "Error: No values provided to update."
+
+            update_query = "UPDATE Customer SET "
+            update_values = []
+
+            for column, value in columns_and_values.items():
+                if value is not None:
+                    update_query += f"{column} = %s, "
+                    update_values.append(value)
+
+            update_query = update_query.rstrip(', ')
+            update_query += " WHERE customer_SSN_SIN = %s"
+            update_values.append(customer_SSN_SIN)
+
+            self.cursor.execute(update_query, tuple(update_values))
+            self.commit()
+
+        except Exception as e:
+            self.connection.rollback()
+            return (False, f"Error updating customer: {e}")
+
+        return (True, "Customer information successfully updated")
+
 
     def delete_customer(self, ssn_sin): 
         print("running")
@@ -686,6 +790,8 @@ class Database(object):
         except Exception as e:
             print("Error deleting hotel chain:", e)
             self.connection.rollback() 
+    
+
 
 
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
