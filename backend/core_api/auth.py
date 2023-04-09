@@ -4,7 +4,6 @@ from flask import Flask, request, jsonify, make_response
 from flask_jwt_extended import jwt_required, create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-import hashlib
 
 auth_namespace = Namespace("auth", description="All routes under this namespace concern authentication of customers and employees.")
 

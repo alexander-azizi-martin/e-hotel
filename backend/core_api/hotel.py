@@ -20,8 +20,8 @@ hotel_model = hotel_namespace.model('Hotel', {
 })
 
 hotel_update_model = hotel_namespace.model('HotelUpdate', {
-    'hotel_ID': fields.String(required=True, description='ID of the hotel'),
-    'chain_ID': fields.String(required=True, description='ID of the hotel chain'),
+    'hotel_ID': fields.Integer(required=True, description='Hotel ID'),
+    'chain_ID': fields.Integer(required=True, description='Hotel chain ID'),
     'number_of_rooms': fields.Integer(required=False, description='Number of rooms in the hotel'),
     'address_street_name': fields.String(required=False, description='Street name of the hotel address'),
     'address_street_number': fields.Integer(required=False, description='Street number of the hotel address'),
@@ -56,7 +56,7 @@ class Hotel(Resource):
         star_rating = data["star_rating"]
 
         try:
-            existing_hotel = current_app.db.get_hotel(self, hotel_id)
+            existing_hotel = current_app.db.get_hotel(hotel_id)
             if existing_hotel:
                 return {"message": "Hotel with the given ID already exists."}, 409
 
@@ -88,7 +88,7 @@ class Hotel(Resource):
         star_rating = data.get("star_rating")
 
         try:
-            existing_hotel = current_app.db.get_hotel(self, hotel_id)
+            existing_hotel = current_app.db.get_hotel(hotel_id)
             if not existing_hotel:
                 return {"message": "Hotel with the given ID does not exist."}, 404
 
