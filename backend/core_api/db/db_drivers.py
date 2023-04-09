@@ -6,15 +6,17 @@ import psycopg2
 import datetime
 import random
 import traceback
+import bcrypt
+import hashlib
 
 load_dotenv()
-
 # SETUP
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
+TEST_DB_NAME = os.getenv('TEST_DB_NAME')
 
 # We need an object oriented way to connect to and communicate with the database.
 class Database(object): 
@@ -22,6 +24,7 @@ class Database(object):
     def __init__(self, dbname, user, password, host, port):
         self.connection = psycopg2.connect(dbname = dbname, user = user, password = password, host = host, port = port)
         self.cursor = self.connection.cursor()
+        self.connection_details = f"dbname={dbname} user={user} password={password} host={host} port={port}"
 
     # Methods to close connection and commit changes to the database.
     def close(self):
@@ -46,9 +49,11 @@ class Database(object):
     def check_account_and_role(self, ssn_sin, password, role):
         self.cursor.execute("SELECT * FROM Users WHERE user_SSN_SIN=%s", (ssn_sin,))
         result = self.cursor.fetchone()
+
         if not result:
             return ["Invalid SSN/SIN"]
         hashed_pass = result[1]
+
         if check_password_hash(hashed_pass, password):
             user_type = result[2]
             if user_type == role:
@@ -295,20 +300,21 @@ class Database(object):
             existing_employee = self.get_employee(customer_SSN_SIN)
 
             if existing_customer or existing_employee:
-                print("Error: Customer or employee with the same SSN/SIN already exists.")
+                return (False, "Error: Customer or Employee with the same SSN/SIN already exists.")
 
             else:
                 # Insert a new customer
                 self.cursor.execute("INSERT INTO Customer (customer_SSN_SIN, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
                                     (customer_SSN_SIN, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date))
                 # Insert a new user
-                hashed_password = generate_password_hash(password)
-                self.cursor.execute("INSERT INTO Users (user_SSN_SIN, password, role) VALUES (%s, %s, %s)", (customer_SSN_SIN, hashed_password, 'customer'))
+                self.cursor.execute("INSERT INTO Users (user_SSN_SIN, password, role) VALUES (%s, %s, %s)", (customer_SSN_SIN, password, 'customer'))
                 self.commit()
 
         except Exception as e:
-            print("Error inserting customer:", e)
             self.connection.rollback()
+            return (False, f"Error inserting customer: {e}")
+
+        return (True, "Customer successfully registered")
 
 
     def insert_employee(self, employee_SSN_SIN, employee_ID, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, hotel_ID, is_manager):
@@ -647,7 +653,17 @@ class Database(object):
 
         return hotels
 
+    def delete_customer(self, ssn_sin): 
+        print("running")
+        self.cursor.execute("DELETE FROM Customer WHERE customer_SSN_SIN = %s", (ssn_sin,))
+        self.cursor.execute("DELETE FROM Users WHERE user_SSN_SIN = %s", (ssn_sin,))
+        self.commit()
 
-if __name__ == "__main__":
-  db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
-  print("Connection succesful.")
+    def delete_employee(self, ssn_sin): 
+        print("running")
+        self.cursor.execute("DELETE FROM Employee WHERE employee_SSN_SIN = %s", (ssn_sin,))
+        self.cursor.execute("DELETE FROM Users WHERE user_SSN_SIN = %s", (ssn_sin,))
+        self.commit()
+
+#db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+#test_db = Database(TEST_DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
