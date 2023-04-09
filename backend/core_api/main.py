@@ -10,11 +10,13 @@ from hotel import hotel_namespace
 from hotel_chain import hotel_chain_namespace
 from room import room_namespace
 from booking import booking_namespace
+from db.db_drivers import Database
 import click
 
 def create_app(config): 
     app = Flask(__name__)
     app.config.from_object(config)
+    app.db = Database(config.DB_NAME, config.DB_USER, config.DB_PASSWORD, config.DB_HOST, config.DB_PORT)
     CORS(app)
     JWTManager(app)
     api = Api(app, doc="/docs")

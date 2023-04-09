@@ -26,6 +26,6 @@ class TestConfig(Config):
     DB_HOST = os.getenv('DB_HOST')
     DB_PORT = os.getenv('DB_PORT')
     TESTING = True
-    TESTING_DB_NAME = os.getenv('TEST_DB_NAME')
+    DB_NAME = os.getenv('TEST_DB_NAME')
     DEBUG = True
     SWAGGER_UI_REQUEST_HEADERS = {'Content-Type': 'application/json'}

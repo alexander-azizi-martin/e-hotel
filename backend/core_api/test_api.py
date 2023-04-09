@@ -11,7 +11,7 @@ class TestAuth(TestCase):
 
     def create_app(self):
         app = create_app(TestConfig)
-        app.db = Database(TestConfig.TESTING_DB_NAME, TestConfig.DB_USER, TestConfig.DB_PASSWORD, TestConfig.DB_HOST, TestConfig.DB_PORT)
+        # app.db = Database(TestConfig.TESTING_DB_NAME, TestConfig.DB_USER, TestConfig.DB_PASSWORD, TestConfig.DB_HOST, TestConfig.DB_PORT)
         return app
 
     def test_customer_registration(self):
