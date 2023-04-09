@@ -161,20 +161,24 @@ class Login(Resource):
         if result[0] == "Invalid SSN/SIN" or result[0] == "Invalid Password" or result[0] == "Invalid Role":
             return {"message": result[0]}, 401
         
+        token_data = {
+                "user_ssn_sin": user_ssn_sin,
+                "first_name": result[2][2],
+                "last_name": result[2][3],
+                "role": role,
+            }
+        
         # Set is_manager to True if the user has the "manager" role
         is_manager = False
+
         if result[1] == "employee":
             print(result)
             if result[2][10]:
                 is_manager = True
 
-        print(f"Checking for is_manager{is_manager}")
-        # Create the JWT token with is_manager included
-        token_data = {
-            "user_ssn_sin": user_ssn_sin,
-            "role": role,
-            "is_manager": is_manager
-        }
+            # Create the JWT token with is_manager included
+            token_data["is_manager"] = is_manager 
+            token_data["hotel_id"] = result[2][9]
 
         access_token = create_access_token(identity=user_ssn_sin, additional_claims=token_data)
 

@@ -264,6 +264,7 @@ class TestAuth(TestCase):
         # Check if the is_manager value is True in the access token
         access_token = login_response.json["access_token"]
         token_data = decode_token(access_token)
+        print(token_data)
         self.assertEqual(token_data["is_manager"], True, "is_manager value is not True in the access token")
 
 if __name__ == "__main__":
