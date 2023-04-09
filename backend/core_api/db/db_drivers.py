@@ -85,9 +85,20 @@ class Database(object):
         results = self.cursor.fetchall()
         return results
 
-    def get_hotel_chain(self, chain_id):
-        self.cursor.execute("SELECT * FROM Hotel_Chain WHERE chain_ID = %s", (chain_id,))
-        results = self.cursor.fetchone()
+    def get_hotel_chain(self, chain_id=None, name=None):
+        if chain_id is not None and name is not None:
+            self.cursor.execute("""
+                SELECT * FROM Hotel_Chain 
+                WHERE chain_ID = %s OR name = %s
+            """, (chain_id, name))
+        elif chain_id is not None:
+            self.cursor.execute("SELECT * FROM Hotel_Chain WHERE chain_ID = %s", (chain_id,))
+        elif name is not None:
+            self.cursor.execute("SELECT * FROM Hotel_Chain WHERE name = %s", (name,))
+        else:
+            raise ValueError("Either chain_id or name must be provided.")
+
+        results = self.cursor.fetchall()
         return results
 
     def get_employees_by_hotel_id(self, hotel_id):
@@ -659,6 +670,15 @@ class Database(object):
         self.cursor.execute("DELETE FROM Employee WHERE employee_SSN_SIN = %s", (ssn_sin,))
         self.cursor.execute("DELETE FROM Users WHERE user_SSN_SIN = %s", (ssn_sin,))
         self.commit()
+    
+    def delete_hotel_chain(self, chain_id):
+        try:
+            self.cursor.execute("DELETE FROM Hotel_Chain WHERE chain_ID = %s", (chain_id,))
+            self.commit()
+        except Exception as e:
+            print("Error deleting hotel chain:", e)
+            self.connection.rollback()
+
 
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 #test_db = Database(TEST_DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)

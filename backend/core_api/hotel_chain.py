@@ -1,6 +1,7 @@
 from flask import request
+from flask import current_app
 from flask_restx import Resource, Namespace, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from db.db_drivers import Database
 
 hotel_chain_namespace = Namespace("hotel_chain", description="All routes under this namespace concern hotel chain operations.")
@@ -14,50 +15,108 @@ hotel_chain_model = hotel_chain_namespace.model('HotelChain', {
 @hotel_chain_namespace.route("/hotel_chain")
 class HotelChain(Resource):
     @hotel_chain_namespace.doc(responses={200: "Success", 400: "Invalid input", 409: "Conflict", 500: "Internal Server Error"})
+    def get(self):
+        try:
+            all_hotel_chains = current_app.db.get_all_hotel_chains()
+            hotel_chains_json = []
+
+            for hotel_chain in all_hotel_chains:
+                hotel_chains_json.append({
+                    'chain_ID': hotel_chain[0],
+                    'name': hotel_chain[1],
+                    'number_of_hotels': hotel_chain[2]
+                })
+
+            return hotel_chains_json, 200
+        except Exception as e:
+            return {"message": f"Error retrieving hotel chains: {e}"}, 500
+
+
+    @hotel_chain_namespace.doc(responses={200: "Success", 400: "Invalid input", 409: "Conflict", 500: "Internal Server Error"})
     @hotel_chain_namespace.expect(hotel_chain_model)
     @jwt_required()
     def post(self):
-        employee_id = get_jwt_identity()
-        current_employee = Database.get_employee_by_id(employee_id)
-
-        if not current_employee or not current_employee["is_manager"]:
+        token_data = get_jwt()
+        if not token_data.get("is_manager", False):
             return {"message": "Unauthorized!"}, 401
 
         data = request.json
-        # Save hotel chain to database
-        # ...
+        chain_id = data["chain_ID"]
+        name = data["name"]
+        number_of_hotels = data["number_of_hotels"]
 
-        return {"message": "Hotel chain added successfully."}, 200
+        try:
+            existing_hotel_chain = current_app.db.get_hotel_chain(chain_id, name)
+            if existing_hotel_chain:
+                return {"message": "Hotel chain with the given ID already exists."}, 409
 
-    @hotel_chain_namespace.doc(responses={200: "Success", 400: "Invalid input", 500: "Internal Server Error"})
+            current_app.db.insert_hotel_chain(chain_id, name, number_of_hotels)
+            return {"message": "Hotel chain added successfully."}, 201
+
+        except Exception as e:
+            return {"message": f"Error adding hotel chain: {e}"}, 500
+
+
+    @hotel_chain_namespace.doc(responses={200: "Success", 400: "Invalid input", 401: "Unauthorized", 500: "Internal Server Error"})
     @hotel_chain_namespace.expect(hotel_chain_model)
     @jwt_required()
     def put(self):
-        employee_id = get_jwt_identity()
-        current_employee = Database.get_employee_by_id(employee_id)
-
-        if not current_employee or not current_employee["is_manager"]:
+        token_data = get_jwt()
+        if not token_data.get("is_manager", False):
             return {"message": "Unauthorized!"}, 401
 
         data = request.json
-        # Update hotel chain in the database
-        # ...
+        chain_id = data["chain_ID"]
+        name = data["name"]
+        number_of_hotels = data["number_of_hotels"]
 
-        return {"message": "Hotel chain updated successfully."}, 200
+        try:
+            existing_hotel_chain = current_app.db.get_hotel_chain(chain_id)
+            if not existing_hotel_chain:
+                return {"message": "Hotel chain with the given ID does not exist."}, 404
+
+            current_app.db.insert_hotel_chain(chain_id, name, number_of_hotels)
+            return {"message": "Hotel chain updated successfully."}, 200
+
+        except Exception as e:
+            return {"message": f"Error updating hotel chain: {e}"}, 500
+
 
 @hotel_chain_namespace.route("/hotel_chain/<int:chain_ID>")
 class HotelChainByID(Resource):
     @hotel_chain_namespace.doc(responses={200: "Success", 404: "Not found", 500: "Internal Server Error"})
+    def get(self, chain_ID):
+        try:
+            hotel_chain = current_app.db.get_hotel_chain(chain_ID)
+            if not hotel_chain:
+                return {"message": "Hotel chain not found."}, 404
+
+            hotel_chain_json = {
+                'chain_ID': hotel_chain[0],
+                'name': hotel_chain[1],
+                'number_of_hotels': hotel_chain[2]
+            }
+            return hotel_chain_json, 200
+
+        except Exception as e:
+            return {"message": f"Error retrieving hotel chain: {e}"}, 500
+
+    @hotel_chain_namespace.doc(responses={200: "Success", 401: "Unauthorized", 404: "Not found", 500: "Internal Server Error"})
     @jwt_required()
     def delete(self, chain_ID):
-        employee_id = get_jwt_identity()
-        current_employee = Database.get_employee_by_id(employee_id)
-
-        if not current_employee or not current_employee["is_manager"]:
+        token_data = get_jwt()
+        if not token_data.get("is_manager", False):
             return {"message": "Unauthorized!"}, 401
 
-        # Delete hotel chain from the database
-        # ...
+        try:
+            existing_hotel_chain = current_app.db.get_hotel_chain(chain_ID)
+            if not existing_hotel_chain:
+                return {"message": "Hotel chain with the given ID does not exist."}, 404
 
-        return {"message": "Hotel chain deleted successfully."}, 200
+            current_app.db.delete_hotel_chain(chain_ID)
+            return {"message": "Hotel chain removed successfully."}, 200
+
+        except Exception as e:
+            return {"message": f"Error removing hotel chain: {e}"}, 500
+
 

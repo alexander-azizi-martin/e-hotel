@@ -4,7 +4,7 @@ from flask_testing import TestCase
 from main import create_app
 from db.db_drivers import Database
 from config import TestConfig
-from flask_jwt_extended import decode_token
+from flask_jwt_extended import decode_token, get_jwt
 import json
 
 class TestAuth(TestCase):
@@ -264,8 +264,95 @@ class TestAuth(TestCase):
         # Check if the is_manager value is True in the access token
         access_token = login_response.json["access_token"]
         token_data = decode_token(access_token)
-        print(token_data)
         self.assertEqual(token_data["is_manager"], True, "is_manager value is not True in the access token")
+    
+    def test_hotel_chains(self):
+        with current_app.app_context():
+            employee_ssn_sin = 123453789
+            employee_id = 1
+            password = "password123"
+            first_name = "John"
+            last_name = "Doe"
+            address_street_name = "Arrow Street"
+            address_street_number = 123
+            address_city = "Test City"
+            address_province_state = "Test State"
+            address_country = "Test Country"
+            hotel_id = 1
+            is_manager = True
+
+            # Register the employee
+            registration_response = self.client.post("/auth/employees", json={
+                "employee_SSN_SIN": employee_ssn_sin,
+                "employee_ID": employee_id,
+                "first_name": first_name,
+                "last_name": last_name,
+                "password": password,
+                "address_street_name": address_street_name,
+                "address_street_number": address_street_number,
+                "address_city": address_city,
+                "address_province_state": address_province_state,
+                "address_country": address_country,
+                "hotel_ID": hotel_id,
+                "is_manager": is_manager,
+                "role": "employee"
+            })
+
+            # Make a request to the /auth/login endpoint
+            login_response = self.client.post("/auth/login", json={
+                "user_SSN_SIN": employee_ssn_sin,
+                "password": password,
+                "role": "employee"
+            })
+
+            jwt_token = json.loads(login_response.data.decode())['access_token']
+
+            # Make a request to add a hotel chain with the manager's JWT token
+            response = self.client.post("/hotel_chain/hotel_chain", json={
+                "chain_ID": 3,
+                "name": "Hotel Chain 3",
+                "number_of_hotels": 5
+            }, headers={'Authorization': f'Bearer {jwt_token}'})
+
+            # Check if the response is successful
+            self.assertEqual(response.status_code, 201, f"Failed to add hotel chain: {response.data}")
+
+            # Check if the response contains the expected message
+            self.assertEqual(response.json["message"], "Hotel chain added successfully.", "Unexpected message")
+
+            response = self.client.put("/hotel_chain/hotel_chain", json={
+                "chain_ID": 1,
+                "name": "New Hotel Chain 1",
+                "number_of_hotels": 6
+            }, headers={"Authorization": f"Bearer {jwt_token}"})
+            self.assertEqual(response.status_code, 200, f"Failed to update hotel chain: {response.data}")
+            self.assertEqual(response.json["message"], "Hotel chain updated successfully.", "Unexpected message")
+            hotel_chain = current_app.db.get_hotel_chain(1)
+            self.assertIsNotNone(hotel_chain, "Hotel chain not found in the database")
+            self.assertEqual(hotel_chain[0][1], "New Hotel Chain 1", "Incorrect hotel chain name")
+            self.assertEqual(hotel_chain[0][2], 6, "Incorrect number of hotels")
+
+            # Delete the hotel chain using the manager's JWT
+            response = self.client.delete("/hotel_chain/hotel_chain/1", headers={"Authorization": f"Bearer {jwt_token}"})
+            self.assertEqual(response.status_code, 200, f"Failed to delete hotel chain: {response.data}")
+
+            # Confirm that the hotel chain was deleted
+            response = self.client.get("/hotel_chain/hotel_chain/1")
+            self.assertEqual(response.status_code, 404, "Hotel chain still exists in the database")
+
+            # Check if the hotel chain was added to the database
+            with current_app.app_context():
+                hotel_chain = current_app.db.get_hotel_chain(3)
+                print(hotel_chain)
+                self.assertIsNotNone(hotel_chain, "Hotel chain not found in the database")
+                self.assertEqual(hotel_chain[0][0], 3, "Incorrect hotel chain id")
+                self.assertEqual(hotel_chain[0][1], "Hotel Chain 3", "Incorrect hotel chain number")
+
+                # Clean up the test data
+                current_app.db.delete_hotel_chain(3)
+                current_app.db.delete_employee(employee_ssn_sin)
+
+    
 
 if __name__ == "__main__":
     unittest.main()
