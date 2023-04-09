@@ -12,6 +12,12 @@ hotel_chain_model = hotel_chain_namespace.model('HotelChain', {
     'number_of_hotels': fields.Integer(required=True, description='Number of hotels in the chain')
 })
 
+hotel_chain_update_model = hotel_chain_namespace.model('HotelChainUpdate', {
+    'chain_ID': fields.Integer(required=True, description='Hotel chain ID'),
+    'name': fields.String(required=False, description='Hotel chain name'),
+    'number_of_hotels': fields.Integer(required=False, description='Number of hotels in the chain')
+})
+
 @hotel_chain_namespace.route("/hotel_chain")
 class HotelChain(Resource):
     @hotel_chain_namespace.doc(responses={200: "Success", 400: "Invalid input", 409: "Conflict", 500: "Internal Server Error"})
@@ -58,7 +64,7 @@ class HotelChain(Resource):
 
 
     @hotel_chain_namespace.doc(responses={200: "Success", 400: "Invalid input", 401: "Unauthorized", 500: "Internal Server Error"})
-    @hotel_chain_namespace.expect(hotel_chain_model)
+    @hotel_chain_namespace.expect(hotel_chain_update_model)
     @jwt_required()
     def put(self):
         token_data = get_jwt()
@@ -67,8 +73,8 @@ class HotelChain(Resource):
 
         data = request.json
         chain_id = data["chain_ID"]
-        name = data["name"]
-        number_of_hotels = data["number_of_hotels"]
+        name = data.get("name")
+        number_of_hotels = data.get("number_of_hotels")
 
         try:
             existing_hotel_chain = current_app.db.get_hotel_chain(chain_id)
@@ -118,5 +124,3 @@ class HotelChainByID(Resource):
 
         except Exception as e:
             return {"message": f"Error removing hotel chain: {e}"}, 500
-
-

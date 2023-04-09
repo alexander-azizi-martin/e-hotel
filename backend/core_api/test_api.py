@@ -352,8 +352,6 @@ class TestAuth(TestCase):
                 current_app.db.delete_hotel_chain(3)
                 current_app.db.delete_employee(employee_ssn_sin)
 
-    
-
 if __name__ == "__main__":
     unittest.main()
 

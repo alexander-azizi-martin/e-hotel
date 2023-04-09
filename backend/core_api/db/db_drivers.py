@@ -678,6 +678,14 @@ class Database(object):
         except Exception as e:
             print("Error deleting hotel chain:", e)
             self.connection.rollback()
+    
+    def delete_hotel(self, hotel_id):
+        try:
+            self.cursor.execute("DELETE FROM Hotel WHERE hotel_ID = %s", (hotel_id,))
+            self.commit()
+        except Exception as e:
+            print("Error deleting hotel chain:", e)
+            self.connection.rollback() 
 
 
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
