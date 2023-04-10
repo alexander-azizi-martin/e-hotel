@@ -158,3 +158,79 @@ CREATE TABLE Users (
     role VARCHAR(10) NOT NULL,
     CHECK (role = 'customer' OR role = 'employee')
 );
+
+--Index creation 
+create index hotel_ID on hotel(hotel_id);
+
+create index room_number on room(room_number);
+
+--Triggers for incrementing hotels on insert, decrementing number of hotels on delete
+CREATE OR REPLACE FUNCTION incr_number_of_hotels()
+RETURNS TRIGGER AS
+    $$
+BEGIN
+    UPDATE Hotel_Chain
+    SET number_of_hotels = number_of_hotels + 1
+    WHERE chain_ID = NEW.chain_ID;
+    RETURN NEW;
+END;
+$$ 
+    LANGUAGE plpgsql;
+
+CREATE TRIGGER incr_hotel_trigger
+AFTER INSERT ON Hotel
+FOR EACH ROW
+EXECUTE FUNCTION incr_number_of_hotels();
+
+CREATE OR REPLACE FUNCTION decr_number_of_hotels()
+RETURNS TRIGGER AS
+    $$
+BEGIN
+    UPDATE Hotel_Chain
+    SET number_of_hotels = number_of_hotels - 1
+    WHERE chain_ID = OLD.chain_ID;
+    RETURN OLD;
+END;
+$$ 
+    LANGUAGE plpgsql;
+
+CREATE TRIGGER decr_hotel_trigger
+AFTER DELETE ON Hotel
+FOR EACH ROW
+EXECUTE FUNCTION decr_number_of_hotels();
+
+
+--Triggers for incrementing number of rooms in hotel on insert, decrementing number of rooms in hotel on delete
+CREATE OR REPLACE FUNCTION incr_number_of_rooms()
+RETURNS TRIGGER AS 
+    $$
+BEGIN
+  UPDATE Hotel
+  SET number_of_rooms = number_of_rooms + 1
+  WHERE hotel_ID = NEW.hotel_ID;
+  RETURN NEW;
+END;
+$$ 
+    LANGUAGE plpgsql;
+
+CREATE TRIGGER incr_room_trigger
+AFTER INSERT ON Room
+FOR EACH ROW
+EXECUTE FUNCTION incr_number_of_rooms();
+
+CREATE OR REPLACE FUNCTION decr_number_of_rooms()
+RETURNS TRIGGER AS
+    $$
+BEGIN
+  UPDATE Hotel
+  SET number_of_rooms = number_of_rooms - 1
+  WHERE hotel_ID = OLD.hotel_ID;
+  RETURN OLD;
+END;
+$$ 
+    LANGUAGE plpgsql;
+
+CREATE TRIGGER decr_room_trigger
+AFTER DELETE ON Room
+FOR EACH ROW
+EXECUTE FUNCTION decr_number_of_rooms();
