@@ -26,6 +26,7 @@ class TestAvailableRooms(TestCase):
 
         # Make a request to the /room/available-rooms endpoint
         response = self.client.get(f"/room/available-rooms?start_date={start_date}&end_date={end_date}")
+        print(f"response {response.json}")
 
         # Check if the response is successful
         self.assertEqual(response.status_code, 200, f"Failed to get available rooms: {response.data}")

@@ -190,6 +190,9 @@ class AvailableRooms(Resource):
             end_date = datetime.strptime(end_date, date_format).date()
         except ValueError:
             return {"message": "Invalid date format. Please use YYYY-MM-DD format."}, 400
+        
+        if start_date >= end_date:
+            return {"message": "Start date cannot be later than or to equal to end date."}, 400
 
         try:
             rooms_per_area = current_app.db.get_rooms_per_area_by_date(start_date, end_date)
