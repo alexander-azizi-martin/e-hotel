@@ -3,8 +3,9 @@ import jwt from "jwt-simple";
 import Cookies from "js-cookie";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useForm, isNotEmpty, hasLength } from "@mantine/form";
 import Link from "next/link";
+import { useForm, isNotEmpty, hasLength } from "@mantine/form";
+import { message } from "antd";
 import {
   TextInput,
   PasswordInput,
@@ -46,19 +47,19 @@ export default function SignUp() {
   });
 
   const handleSubmit = form.onSubmit(async (info) => {
-    const res = await axios.post("http://127.0.0.1:5000/auth/customers", {
-      customer_SSN_SIN: info.ssn,
-      first_name: info.firstName,
-      last_name: info.lastName,
-      address_street_name: info.streetName,
-      address_street_number: info.streetNumber,
-      address_city: info.city,
-      address_province_state: info.region,
-      address_country: info.country,
-      password: info.password,
-    });
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/auth/customers", {
+        customer_SSN_SIN: info.ssn,
+        first_name: info.firstName,
+        last_name: info.lastName,
+        address_street_name: info.streetName,
+        address_street_number: info.streetNumber,
+        address_city: info.city,
+        address_province_state: info.region,
+        address_country: info.country,
+        password: info.password,
+      });
 
-    if (res.status == 200) {
       const nextRes = await axios.post("http://127.0.0.1:5000/auth/login", {
         user_SSN_SIN: info.ssn,
         password: info.password,
@@ -67,8 +68,8 @@ export default function SignUp() {
 
       Cookies.set("access_token", nextRes.data["access_token"]);
       router.push("/");
-    } else {
-      form.setErrors({ ssn: res.data.message });
+    } catch (error: any) {
+      message.error(error.response.data.message);
     }
   });
 

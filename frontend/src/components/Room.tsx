@@ -7,9 +7,10 @@ import {
   Center,
   Button,
 } from "@mantine/core";
+import { RoomInfo } from "~/types";
 
 interface RoomProps {
-
+  room: RoomInfo;
 }
 
 export default function Room() {

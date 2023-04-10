@@ -14,3 +14,20 @@ export interface RoomInfo {
     is_extendable: boolean;
     room_problems: string;
 }
+
+export interface BookingInfo {
+    booking_ID: number;
+    booking_date: string;
+    scheduled_check_in_date: string;
+    scheduled_check_out_date: string;
+    canceled: boolean;
+    customer_SSN_SIN: number;
+    room_number: number;
+    hotel_ID: number;
+}
+
+export interface HotelChainInfo {
+    chain_ID: number;
+    name: string;
+    number_of_hotels: number;
+}

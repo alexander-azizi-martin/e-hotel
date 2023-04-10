@@ -27,11 +27,17 @@ interface UserInfo {
   region: string;
 }
 
-export default function User(props: UserInfo) {
+export default function Account(props: UserInfo) {
   const token = useToken();
 
-  const [firstName, setFirstName] = useLocalStorage({ key: 'firstName', defaultValue: '' });
-  const [lastName, setLastName] = useLocalStorage({ key: 'lastName', defaultValue: '' });
+  const [firstName, setFirstName] = useLocalStorage({
+    key: "firstName",
+    defaultValue: "",
+  });
+  const [lastName, setLastName] = useLocalStorage({
+    key: "lastName",
+    defaultValue: "",
+  });
 
   const form = useForm({
     initialValues: {
@@ -49,26 +55,28 @@ export default function User(props: UserInfo) {
   });
 
   const handleSubmit = form.onSubmit(async (info) => {
-    const res = await axios.put(
-      `http://127.0.0.1:5000/auth/customers/${token.user_ssn_sin}`,
-      {
-        first_name: info.firstName,
-        last_name: info.lastName,
-        address_street_name: info.streetName,
-        address_street_number: info.streetNumber,
-        address_city: info.city,
-        address_province_state: info.region,
-        address_country: info.country,
-      },
-      {
-        headers: { Authorization: `Bearer ${Cookies.get("access_token")}` },
-      }
-    );
+    try {
+      const res = await axios.put(
+        `http://127.0.0.1:5000/auth/customers/${token.user_ssn_sin}`,
+        {
+          first_name: info.firstName,
+          last_name: info.lastName,
+          address_street_name: info.streetName,
+          address_street_number: info.streetNumber,
+          address_city: info.city,
+          address_province_state: info.region,
+          address_country: info.country,
+        },
+        {
+          headers: { Authorization: `Bearer ${Cookies.get("access_token")}` },
+        }
+      );
 
-    if (res.status == 200) {
       setFirstName(info.firstName);
       setLastName(info.lastName);
       message.success("Updated user info");
+    } catch {
+      message.error("Something went wrong while trying to update your account");
     }
   });
 

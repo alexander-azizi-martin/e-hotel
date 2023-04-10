@@ -94,9 +94,8 @@ class Booking(Resource):
         customer_SSN_SIN = get_jwt_identity()
         try:
             bookings = current_app.db.get_all_bookings(customer_SSN_SIN)
-            parsed_bookings = []
-            for booking in bookings:
-                parsed_booking = {
+            parsed_bookings = [
+                {
                     "booking_ID": booking[0],
                     "booking_date": booking[1],
                     "scheduled_check_in_date": booking[2],
@@ -106,7 +105,9 @@ class Booking(Resource):
                     "room_number": booking[6],
                     "hotel_ID": booking[7]
                 }
-            parsed_bookings.append(parsed_booking)
+                for booking in bookings
+            ]
+
             return parsed_bookings, 200
         except Exception as e:
             return {"message": f"Error getting bookings: {str(e)}"}, 500

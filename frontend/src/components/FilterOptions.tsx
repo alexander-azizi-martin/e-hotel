@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useState, useEffect } from "react";
 import { useToggle } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import {
@@ -17,6 +19,7 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { IconAdjustments } from "@tabler/icons";
+import { HotelChainInfo } from "~/types";
 
 export default function FilterOptions() {
   const [open, toggle] = useToggle();
@@ -24,12 +27,24 @@ export default function FilterOptions() {
     initialValues: {
       minPrice: 0,
       maxPrice: 100,
-      hotelChain: "",
+      hotelChain: null,
       category: 0,
       numberOfRooms: null,
       roomCapacity: "any",
     },
   });
+
+  const [hotelChains, setHotelChains] = useState<HotelChainInfo[]>([]);
+
+  useEffect(() => {
+    axios
+      .get<HotelChainInfo[]>("http://127.0.0.1:5000/hotel_chain/hotel_chain")
+      .then((res) => {
+        const { data } = res;
+
+        setHotelChains(data);
+      });
+  }, []);
 
   return (
     <>
@@ -110,42 +125,17 @@ export default function FilterOptions() {
             <Flex direction="column" rowGap="8px">
               <Text>Hotel Chain</Text>
               <Radio.Group {...form.getInputProps("hotelChain")}>
-                <Radio
-                  value="Chain1"
-                  label="Chain1"
-                  onClick={() => {
-                    if (form.values.hotelChain === "Chain1") {
-                      form.setValues({ hotelChain: "" });
-                    }
-                  }}
-                />
-                <Radio
-                  value="Chain2"
-                  label="Chain2"
-                  onClick={() => {
-                    if (form.values.hotelChain === "Chain2") {
-                      form.setValues({ hotelChain: "" });
-                    }
-                  }}
-                />
-                <Radio
-                  value="Chain3"
-                  label="Chain3"
-                  onClick={() => {
-                    if (form.values.hotelChain === "Chain3") {
-                      form.setValues({ hotelChain: "" });
-                    }
-                  }}
-                />
-                <Radio
-                  value="Chain4"
-                  label="Chain4"
-                  onClick={() => {
-                    if (form.values.hotelChain === "Chain4") {
-                      form.setValues({ hotelChain: "" });
-                    }
-                  }}
-                />
+                {hotelChains.map((chain) => (
+                  <Radio
+                    value={chain.chain_ID}
+                    label={chain.name}
+                    onClick={() => {
+                      if (form.values.hotelChain === chain.chain_ID) {
+                        form.setValues({ hotelChain: null });
+                      }
+                    }}
+                  />
+                ))}
               </Radio.Group>
             </Flex>
 

@@ -1,8 +1,9 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import { useForm, isNotEmpty, hasLength } from "@mantine/form";
 import Link from "next/link";
+import { useForm, isNotEmpty, hasLength } from "@mantine/form";
+import { message } from "antd";
 import {
   TextInput,
   PasswordInput,
@@ -11,6 +12,8 @@ import {
   Stack,
   Center,
   Group,
+  NumberInput,
+  Radio,
 } from "@mantine/core";
 
 export default function SignUp() {
@@ -18,15 +21,19 @@ export default function SignUp() {
 
   const form = useForm({
     initialValues: {
-      ssn: "",
+      ssn: null,
       firstName: "",
       lastName: "",
       password: "",
       city: "",
       streetName: "",
-      streetNumber: "",
+      streetNumber: null,
+      employeeId: null,
+      hotelId: null,
       country: "",
       region: "",
+      role: "",
+      isManager: "no",
     },
     validate: {
       ssn: isNotEmpty("Enter your ssn"),
@@ -37,25 +44,38 @@ export default function SignUp() {
       city: isNotEmpty("Enter your city"),
       country: isNotEmpty("Enter your country"),
       region: isNotEmpty("Enter your region"),
+      employeeId: isNotEmpty("Enter your employee id"),
+      hotelId: isNotEmpty("Enter your hotelId"),
+      role: isNotEmpty("Enter your role"),
       password: hasLength({ min: 6 }, "Password must be at least 6 characters"),
+    },
+    transformValues(values) {
+      return {
+        ...values,
+        isManager: values.isManager === "yes",
+      };
     },
   });
 
   const handleSubmit = form.onSubmit(async (info) => {
-    const res = await axios.post("/customers", {
-      customer_SSN_SIN: info.ssn,
-      first_name: info.firstName,
-      last_name: info.lastName,
-      address_street_name: info.streetName,
-      address_street_number: info.streetNumber,
-      address_city: info.city,
-      address_province_state: info.region,
-      address_country: info.country,
-      password: info.password,
-    });
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/auth/customers", {
+        customer_SSN_SIN: info.ssn,
+        first_name: info.firstName,
+        last_name: info.lastName,
+        address_street_name: info.streetName,
+        address_street_number: info.streetNumber,
+        address_city: info.city,
+        address_province_state: info.region,
+        address_country: info.country,
+        password: info.password,
+        role: info.role,
+        is_manager: info.isManager,
+        hotel_id: info.hotelId,
+        employee_id: info.employeeId,
+      });
 
-    if (res.status == 200) {
-      const nextRes = await axios.post("/login", {
+      const nextRes = await axios.post("http://127.0.0.1:5000/auth/login", {
         user_SSN_SIN: info.ssn,
         password: info.password,
         role: "customer",
@@ -63,19 +83,49 @@ export default function SignUp() {
 
       Cookies.set("access_token", nextRes.data["access_token"]);
       router.push("/");
-    } else {
-      form.setErrors({ ssn: res.data.message });
+    } catch (error: any) {
+      message.error(error.response.data.message);
     }
   });
 
   return (
     <Center sx={{ height: "100%" }}>
       <Stack spacing="md">
-        <TextInput
+        <NumberInput
           placeholder="SSN"
           label="SSN"
           {...form.getInputProps("ssn")}
         />
+
+        <Group align="center">
+          <NumberInput
+            placeholder="Hotel ID"
+            label="Hotel ID"
+            {...form.getInputProps("hotelId")}
+          />
+          <NumberInput
+            placeholder="Employee ID"
+            label="Employee ID"
+            {...form.getInputProps("employeeId")}
+          />
+        </Group>
+        <Group align="center">
+          <TextInput
+            placeholder="Role"
+            label="Role"
+            {...form.getInputProps("role")}
+          />
+          <Radio.Group
+            name="Is Manager"
+            label="Is Manager"
+            {...form.getInputProps("isManager")}
+          >
+            <Group mt="xs">
+              <Radio value="yes" label="Yes" />
+              <Radio value="no" label="No" />
+            </Group>
+          </Radio.Group>
+        </Group>
         <Group align="center">
           <TextInput
             placeholder="First Name"
@@ -94,7 +144,7 @@ export default function SignUp() {
             label="Street Name"
             {...form.getInputProps("streetName")}
           />
-          <TextInput
+          <NumberInput
             placeholder="Street Number"
             label="Street Number"
             {...form.getInputProps("streetNumber")}
@@ -122,7 +172,6 @@ export default function SignUp() {
           label="Password"
           {...form.getInputProps("password")}
         />
-
         <Text>
           Already have an account{" "}
           <Link href="/login" style={{ textDecoration: "unset" }}>

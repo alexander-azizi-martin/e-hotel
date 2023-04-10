@@ -16,6 +16,7 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { Token } from "~/types";
+import { message } from "antd";
 
 export default function Login() {
   const router = useRouter();
@@ -34,19 +35,17 @@ export default function Login() {
   });
 
   const handleSubmit = form.onSubmit(async ({ ssn, password, role }) => {
-    const res = await axios.post("http://127.0.0.1:5000/auth/login", {
-      user_SSN_SIN: ssn,
-      password,
-      role,
-    });
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/auth/login", {
+        user_SSN_SIN: ssn,
+        password,
+        role,
+      });
 
-    console.log(role);
-
-    if (res.status == 200) {
       Cookies.set("access_token", res.data["access_token"]);
-      router.push("/");
-    } else {
-      form.setErrors({ password: "Incorrect password" });
+      router.push(role === "customer" ? "/" : "/employee");
+    } catch {
+      message.error("SSN and password do not match");
     }
   });
 
