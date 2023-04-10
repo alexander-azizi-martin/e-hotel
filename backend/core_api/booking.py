@@ -1,81 +1,134 @@
 from flask import Flask, request, jsonify
+from flask import current_app
 from flask_restx import Resource, Namespace, fields
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 from db.db_drivers import Database
 
 booking_namespace = Namespace("booking", description="All routes under this namespace concern booking operations.")
 
 booking_model = booking_namespace.model('Booking', {
     'booking_ID': fields.Integer(required=True, description='Booking ID'),
-    'booking_date': fields.Date(required=True, description='Date of booking'),
     'scheduled_check_in_date': fields.Date(required=True, description='Scheduled check-in date'),
     'scheduled_check_out_date': fields.Date(required=True, description='Scheduled check-out date'),
     'canceled': fields.Boolean(required=True, description='Indicates if the booking is canceled'),
-    'customer_SSN_SIN': fields.Integer(required=True, description='Customer SSN/SIN'),
     'room_number': fields.Integer(required=True, description='Room number'),
     'hotel_ID': fields.Integer(required=True, description='Hotel ID')
 })
 
+booking_update_model = booking_namespace.model('Booking', {
+    'booking_ID': fields.Integer(required=True, description='Booking ID'),
+    'scheduled_check_in_date': fields.Date(required=False, description='Scheduled check-in date'),
+    'scheduled_check_out_date': fields.Date(required=False, description='Scheduled check-out date'),
+    'canceled': fields.Boolean(required=False, description='Indicates if the booking is canceled'),
+    'room_number': fields.Integer(required=False, description='Room number'),
+    'hotel_ID': fields.Integer(required=False, description='Hotel ID')
+})
+
 @booking_namespace.route("/booking")
 class Booking(Resource):
-    @booking_namespace.doc(responses={200: "Success", 400: "Invalid input", 409: "Conflict", 500: "Internal Server Error"})
+    @booking_namespace.doc(responses={201: "Created", 400: "Invalid input", 401: "Unauthorized"})
     @booking_namespace.expect(booking_model)
     @jwt_required()
     def post(self):
-        user_id = get_jwt_identity()
-        current_user = Database.get_user_by_id(user_id)
-
-        if not current_user or current_user["role"] != "customer":
+        token_data = get_jwt()
+        if token_data["role"] != "customer":
             return {"message": "Unauthorized!"}, 401
 
+        customer_SSN_SIN = get_jwt_identity()
         data = request.json
-        # Save booking to database
-        # ...
+        try:
+            current_app.db.insert_booking(
+                data["booking_ID"], 
+                customer_SSN_SIN, 
+                data["room_number"], 
+                data["hotel_ID"], 
+                data["scheduled_check_in_date"], 
+                data["scheduled_check_out_date"]
+            )
+        except Exception as e:
+            return {"message": str(e)}, 400
 
-        return {"message": "Booking added successfully."}, 200
+        return {"message": "Booking added successfully."}, 201
 
-    @booking_namespace.doc(responses={200: "Success", 400: "Invalid input", 500: "Internal Server Error"})
+    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 404: "Booking does not exist", 400: "Bad request", 500: "Internal Server Error" })
     @booking_namespace.expect(booking_model)
     @jwt_required()
     def put(self):
-        user_id = get_jwt_identity()
-        current_user = Database.get_user_by_id(user_id)
-
-        if not current_user or current_user["role"] != "customer":
+        token_data = get_jwt()
+        if token_data["role"] != "customer":
             return {"message": "Unauthorized!"}, 401
 
+        customer_SSN_SIN = get_jwt_identity()
         data = request.json
-        # Check if the booking belongs to the current user
-        # ...
+        booking_id = data["booking_ID"]
+        room_number = data.get("room_number")
+        hotel_id = data.get("hotel_ID")
+        check_in_date = data.get("scheduled_check_in_date")
+        check_out_date = data.get("scheduled_check_out_date")
 
-        # Update booking in the database
-        # ...
+        existing_booking = current_app.db.get_booking(booking_id)
+        if not existing_booking:
+            return {"message": "Booking does not exist."}, 404
+        
+        if existing_booking[5] != customer_SSN_SIN:
+            return {"message": "Unauthorized!"}, 401
+        
+        if check_in_date and check_out_date and check_in_date >= check_out_date:
+            return {"message": "Check-in date must be before check-out date."}, 400
+        
+        try:
+            current_app.db.update_booking(
+                booking_id,
+                customer_SSN_SIN, 
+                room_number,
+                hotel_id,
+                check_in_date,
+                check_out_date,
+            )
+            return {"message": "Booking updated successfully."}, 200
+        except Exception as e:
+            return {"message": f"Error updating booking: {str(e)}"}, 500
 
-        return {"message": "Booking updated successfully."}, 200
+    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 500: "Internal Server Error"})
+    @jwt_required()
+    def get(self):
+        customer_SSN_SIN = get_jwt_identity()
+        try:
+            bookings = current_app.db.get_all_bookings(customer_SSN_SIN)
+            parsed_bookings = []
+            for booking in bookings:
+                parsed_booking = {
+                    "booking_ID": booking[0],
+                    "booking_date": booking[1],
+                    "scheduled_check_in_date": booking[2],
+                    "scheduled_check_out_date": booking[3],
+                    "canceled": booking[4],
+                    "customer_SSN_SIN": booking[5],
+                    "room_number": booking[6],
+                    "hotel_ID": booking[7]
+                }
+            parsed_bookings.append(parsed_booking)
+            return parsed_bookings, 200
+        except Exception as e:
+            return {"message": f"Error getting bookings: {str(e)}"}, 500
 
 @booking_namespace.route("/booking/<int:booking_ID>")
 class BookingByID(Resource):
-    @booking_namespace.doc(responses={200: "Success", 404: "Not found", 500: "Internal Server Error"})
+
+    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 404: "Booking does not exist", 500: "Internal Server Error"})
     @jwt_required()
     def delete(self, booking_ID):
-        user_id = get_jwt_identity()
-        current_user = Database.get_user_by_id(user_id)
+        customer_SSN_SIN = get_jwt_identity()
+        existing_booking = current_app.db.get_booking(booking_ID)
 
-        if not current_user:
+        if not existing_booking:
+            return {"message": "Booking does not exist."}, 404
+        
+        if existing_booking[5] != customer_SSN_SIN:
             return {"message": "Unauthorized!"}, 401
-
-        is_manager = False
-        if current_user["role"] == "employee":
-            current_employee = Database.get_employee_by_id(user_id)
-            is_manager = current_employee["is_manager"]
-
-        # Check if the current user is a manager and the booking is for their hotel
-        # ...
-
-        # Check if the booking belongs to the current user
-        # ...
-
-        # Delete booking from the database
-        # ...
-
-        return {"message": "Booking deleted successfully."}, 200
+        
+        try:
+            current_app.db.delete_booking(booking_ID)
+            return {"message": "Booking deleted successfully."}, 200
+        except Exception as e:
+            return {"message": f"Error deleting booking: {str(e)}"}, 500

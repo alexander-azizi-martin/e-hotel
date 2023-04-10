@@ -160,4 +160,3 @@ class HotelByID(Resource):
 
         except Exception as e:
             return {"message": f"Error removing hotel: {e}"}, 500
-

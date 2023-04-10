@@ -377,11 +377,11 @@ class Database(object):
         results = self.cursor.fetchall()
         return results
 
-    def get_all_bookings(self):
-        self.cursor.execute("SELECT * FROM Booking")
+    def get_all_bookings(self, ssn_sin):
+        self.cursor.execute("SELECT * FROM Booking WHERE customer_SSN_SIN = %s", (ssn_sin,))
         results = self.cursor.fetchall()
         return results
-
+        
     def get_booking(self, booking_id):
         self.cursor.execute("SELECT * FROM Booking WHERE booking_ID = %s", (booking_id,))
         results = self.cursor.fetchone()
@@ -665,25 +665,21 @@ class Database(object):
 
     def insert_booking(self, booking_id, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
         if check_in_date >= check_out_date:
-            print("Error: Check-in date must be earlier than check-out date.")
-            return
+            raise Exception("Error: Check-in date must be earlier than check-out date.")
 
         if check_in_date + datetime.timedelta(days=1) == check_out_date:
-            print("Error: Check-in date and check-out date cannot be the same day.")
-            return
+            raise Exception("Error: Check-in date and check-out date cannot be the same day.")
 
         try:
             # Check if the customer exists
             existing_customer = self.get_customer(customer_SSN_SIN)
             if not existing_customer:
-                print("Error: Customer does not exist.")
-                return
+                raise Exception("Error: Customer does not exist.")
 
             # Check if the room exists
             existing_room = self.get_room(room_number, hotel_id)
             if not existing_room:
-                print("Error: Room does not exist.")
-                return
+                raise Exception("Error: Room does not exist.")
 
             # Check for duplicate bookings
             self.cursor.execute("""
@@ -700,8 +696,7 @@ class Database(object):
 
             existing_booking = self.cursor.fetchone()
             if existing_booking:
-                print("Error: Duplicate booking found.")
-                return
+                raise Exception("Error: Duplicate booking found.")
 
             # Insert the booking
             self.cursor.execute("""
@@ -709,10 +704,50 @@ class Database(object):
                 VALUES (%s, %s, %s, %s, false, %s, %s, %s)
             """, (booking_id, datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id))
             self.commit()
-            print("Booking created successfully.")
+
         except Exception as e:
-            print("Error inserting booking:", e)
             self.connection.rollback()
+            raise e
+    
+
+    def update_booking(self, booking_id, customer_SSN_SIN=None, room_number=None, hotel_id=None, check_in_date=None, check_out_date=None):
+        try:
+            # Check if the booking exists
+            existing_booking = self.get_booking(booking_id)
+            if not existing_booking:
+                raise Exception("Error: Booking does not exist.")
+
+            # Build the update query
+            update_query = "UPDATE Booking SET "
+            update_values = []
+
+            # Create a dictionary with column names and parameter values
+            columns_and_values = {
+                "customer_SSN_SIN": customer_SSN_SIN,
+                "room_number": room_number,
+                "hotel_ID": hotel_id,
+                "scheduled_check_in_date": check_in_date,
+                "scheduled_check_out_date": check_out_date
+            }
+
+            # Iterate through the dictionary and build the query
+            for column, value in columns_and_values.items():
+                if value is not None:
+                    update_query += f"{column} = %s, "
+                    update_values.append(value)
+
+            # Remove the trailing comma and space
+            update_query = update_query.rstrip(', ')
+            update_query += " WHERE booking_ID = %s"
+            update_values.append(booking_id)
+
+            # Execute the update query
+            self.cursor.execute(update_query, tuple(update_values))
+            self.commit()
+
+        except Exception as e:
+            self.connection.rollback()
+            raise e
     
 
     def convert_booking_to_rental(self, booking_id, total_paid=None, discount=None, additional_charges=None):
