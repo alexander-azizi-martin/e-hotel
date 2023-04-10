@@ -25,6 +25,8 @@ class Database(object):
         self.connection = psycopg2.connect(dbname = dbname, user = user, password = password, host = host, port = port)
         self.cursor = self.connection.cursor()
         self.connection_details = f"dbname={dbname} user={user} password={password} host={host} port={port}"
+        self.create_tables()
+        # self.setup_test_data()
 
     # Methods to close connection and commit changes to the database.
     def close(self):
@@ -32,6 +34,190 @@ class Database(object):
 
     def commit(self):
       self.connection.commit()
+
+    def insert_test_data(self): 
+        s = """INSERT INTO Hotel_Chain (chain_ID, name, number_of_hotels) VALUES (1, 'Hilton', 8);
+            INSERT INTO Hotel
+                (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
+            VALUES
+                (1, 1, 200, 'Main St', 123, 'New York', 'NY', 'USA', 'hilton1@example.com', 5)"""
+        try:
+            self.cursor.execute(s)
+            self.commit()
+        except Exception as e:
+            traceback.print_exc()
+        
+
+    def create_tables(self): 
+        s = """
+        CREATE TABLE IF NOT EXISTS Hotel_Chain (
+        chain_ID INT,
+        name VARCHAR(50) NOT NULL,
+        number_of_hotels INT NOT NULL,
+        PRIMARY KEY (chain_ID)
+        );
+
+        CREATE TABLE IF NOT EXISTS Hotel (
+        hotel_ID INT,
+        chain_ID INT,
+        number_of_rooms INT,
+        address_street_name VARCHAR(50) NOT NULL,
+        address_street_number INT NOT NULL,
+        address_city VARCHAR(50) NOT NULL,
+        address_province_state VARCHAR(50) NOT NULL,
+        address_country VARCHAR(50) NOT NULL,
+        contact_email VARCHAR(50) NOT NULL,
+        star_rating INT NOT NULL,
+        PRIMARY KEY (hotel_ID),
+        FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE,
+        CONSTRAINT uc_address UNIQUE (address_street_name, address_street_number, address_city, address_province_state, address_country)
+        );
+
+        CREATE TABLE IF NOT EXISTS Employee (
+        employee_SSN_SIN INT,
+        employee_ID INT,
+        first_name VARCHAR(50) NOT NULL,
+        last_name VARCHAR(50) NOT NULL,
+        address_street_name VARCHAR(50) NOT NULL,
+        address_street_number INT NOT NULL,
+        address_city VARCHAR(50) NOT NULL,
+        address_province_state VARCHAR(50) NOT NULL,
+        address_country VARCHAR(50) NOT NULL,
+        hotel_ID INT NOT NULL,
+        is_manager BOOLEAN NOT NULL,
+        PRIMARY KEY (employee_SSN_SIN, employee_ID),
+        FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS Employee_Role (
+        employee_SSN_SIN INT,
+        employee_ID INT,
+        role VARCHAR(50) NOT NULL,
+        PRIMARY KEY (employee_SSN_SIN, employee_ID, role),
+        FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS Hotel_Phone_Number (
+        hotel_ID INT,
+        phone_number VARCHAR(20),
+        PRIMARY KEY (hotel_ID, phone_number),
+        FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS Hotel_Chain_Central_Office_Address (
+        chain_ID INT,
+        address_street_name VARCHAR(50) NOT NULL,
+        address_street_number INT NOT NULL,
+        address_city VARCHAR(50) NOT NULL,
+        address_province_state VARCHAR(50) NOT NULL,
+        address_country VARCHAR(50) NOT NULL,
+        PRIMARY KEY (chain_ID),
+        FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS Hotel_Chain_Contact_Email (
+        chain_ID INT,
+        contact_email VARCHAR(50) NOT NULL,
+        PRIMARY KEY (chain_ID),
+        FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS Hotel_Chain_Phone_Number (
+        chain_ID INT,
+        phone_number VARCHAR(12),
+        PRIMARY KEY (chain_ID, phone_number),
+        FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS Room (
+        room_number INT,
+        hotel_ID INT,
+        room_capacity INT NOT NULL,
+        view_type VARCHAR(50) NOT NULL,
+        price_per_night INT NOT NULL,
+        is_extendable BOOLEAN NOT NULL,
+        room_problems TEXT,
+        PRIMARY KEY (room_number, hotel_ID),
+        FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS Amenity (
+        amenity_id INT,
+        amenity_name VARCHAR(50)
+        NOT NULL,
+        PRIMARY KEY (amenity_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS Has_Amenity (
+        amenity_id INT,
+        hotel_id INT,
+        room_number INT,
+        PRIMARY KEY (amenity_id, hotel_id, room_number),
+        FOREIGN KEY (hotel_id, room_number) REFERENCES Room(hotel_ID, room_number) ON DELETE CASCADE,
+        FOREIGN KEY (amenity_id) REFERENCES Amenity(amenity_id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS Customer (
+        customer_SSN_SIN INT,
+        first_name VARCHAR(50) NOT NULL,
+        last_name VARCHAR(50) NOT NULL,
+        address_street_name VARCHAR(50) NOT NULL,
+        address_street_number INT NOT NULL,
+        address_city VARCHAR(50) NOT NULL,
+        address_province_state VARCHAR(50) NOT NULL,
+        address_country VARCHAR(50) NOT NULL,
+        registration_date DATE NOT NULL,
+        PRIMARY KEY (customer_SSN_SIN)
+        );
+
+        CREATE TABLE IF NOT EXISTS Booking (
+        booking_ID INT,
+        booking_date DATE NOT NULL,
+        scheduled_check_in_date DATE NOT NULL,
+        scheduled_check_out_date DATE NOT NULL,
+        canceled BOOLEAN NOT NULL DEFAULT false,
+        customer_SSN_SIN INT,
+        room_number INT,
+        hotel_ID INT,
+        PRIMARY KEY (booking_ID),
+        FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN) ON DELETE CASCADE,
+        FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS Rental (
+        rental_ID SERIAL,
+        base_price INT NOT NULL,
+        date_paid DATE NOT NULL,
+        total_paid INT NOT NULL,
+        discount INT NOT NULL,
+        additional_charges INT NOT NULL,
+        check_in_date DATE NOT NULL,
+        check_out_date DATE NOT NULL,
+        customer_SSN_SIN INT,
+        booking_ID INT,
+        room_number INT,
+        hotel_ID INT,
+        employee_ID INT,
+        employee_SSN_SIN INT,
+        PRIMARY KEY (rental_ID),
+        FOREIGN KEY (customer_SSN_SIN) REFERENCES Customer(customer_SSN_SIN),
+        FOREIGN KEY (employee_SSN_SIN, employee_ID) REFERENCES Employee(employee_SSN_SIN, employee_ID),
+        FOREIGN KEY (booking_ID) REFERENCES Booking(booking_ID),
+        FOREIGN KEY (room_number, hotel_ID) REFERENCES Room(room_number, hotel_ID) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS Users (
+        user_SSN_SIN INT PRIMARY KEY,
+        password VARCHAR(1024) NOT NULL,
+        role VARCHAR(10) NOT NULL,
+        CHECK (role = 'customer' OR role = 'employee')
+        ); 
+        """
+        try:
+            self.cursor.execute(s)
+            self.commit()
+        except Exception as e:
+            traceback.print_exc()
     
     def clear_table(self, table_name):
         try:
@@ -783,5 +969,74 @@ class Database(object):
         self.cursor.execute("DELETE FROM Room WHERE room_number = %s AND hotel_ID = %s", (room_number, hotel_id))
         self.commit()
 
+    def setup_test_data(self):
+        # Insert sample data into the tables
+        sample_data = """
+        -- Hotel Chain
+        INSERT INTO Hotel_Chain (chain_ID, name, number_of_hotels) VALUES (1, 'Hilton', 8);
+
+        -- Hotel
+        INSERT INTO Hotel
+            (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
+        VALUES
+            (1, 1, 200, 'Main St', 123, 'New York', 'NY', 'USA', 'hilton1@example.com', 5),
+            (2, 1, 150, 'Ocean Ave', 456, 'San Francisco', 'CA', 'USA', 'hilton2@example.com', 4);
+
+        -- Room
+        INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+        VALUES
+            (1, 1, 2, 'city', 100, true, ''),
+            (2, 1, 4, 'city', 150, true, ''),
+            (1, 2, 2, 'ocean', 120, true, ''),
+            (2, 2, 4, 'ocean', 180, true, '');
+
+        -- Customer
+        INSERT INTO Customer (customer_SSN_SIN, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date)
+        VALUES
+            (123456789, 'John', 'Doe', 'Main St', 123, 'New York', 'NY', 'USA', '2023-01-01');
+
+        -- Booking
+        INSERT INTO Booking (booking_ID, booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID)
+        VALUES
+            (1, '2023-03-01', '2023-04-05', '2023-04-15', false, 123456789, 1, 1);
+        """
+        try:
+            self.cursor.execute(sample_data)
+            self.commit()
+        except Exception as e:
+            traceback.print_exc()
+            self.connection.rollback()
+
+    def get_rooms_per_area_by_date(self, start_date, end_date):
+
+        view_definition_string = """
+        CREATE OR REPLACE VIEW available_rooms_in_area AS
+        SELECT address_country, address_province_state, address_city, COUNT(*)
+        FROM Room NATURAL JOIN Hotel
+        WHERE (room_number, hotel_ID) NOT IN (
+            (
+                SELECT room_number, hotel_ID
+                FROM rental
+                WHERE check_in_date > %s AND check_out_date < %s
+            )
+            UNION
+            (
+                SELECT room_number, hotel_ID
+                FROM booking
+                WHERE scheduled_check_in_date > %s AND scheduled_check_out_date < %s AND canceled = false
+            )
+        )
+        GROUP BY address_country, address_province_state, address_city;
+
+        SELECT * FROM available_rooms_in_area;
+        """
+
+        self.cursor.execute(view_definition_string, (start_date, end_date, start_date, end_date,))
+        results = self.cursor.fetchall()
+        return results
+
+
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
-#test_db = Database(TEST_DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+if __name__ == '__main__':
+    test_db = Database(TEST_DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+    print(test_db.get_rooms_per_area_by_date('2023-04-03', '2023-04-25'))

@@ -111,7 +111,7 @@ class HotelSearch(Resource):
 
         try:
             hotels = current_app.db.search_hotels_and_rooms(city=city, star_rating=star_rating, view_type=view_type, room_capacity=room_capacity, is_extendable=is_extendable, price_per_night=price_per_night)
-            return jsonify(hotels), 200
+            return hotels, 200
 
         except Exception as e:
             return {"message": f"Error searching hotels: {e}"}, 500

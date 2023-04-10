@@ -3,6 +3,7 @@ from flask import current_app
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 from db.db_drivers import Database
+from datetime import datetime
 
 room_namespace = Namespace("room", description="All routes under this namespace concern room operations.")
 
@@ -120,17 +121,6 @@ class Room(Resource):
         except Exception as e:
             return {"message": f"Error updating room: {e}"}, 500
 
-"""CREATE TABLE Room (
-  room_number INT,
-  hotel_ID INT,
-  room_capacity INT NOT NULL,
-  view_type VARCHAR(50) NOT NULL,
-  price_per_night INT NOT NULL,
-  is_extendable BOOLEAN NOT NULL,
-  room_problems TEXT,
-  PRIMARY KEY (room_number, hotel_ID),
-  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID) ON DELETE CASCADE
-);"""
 
 @room_namespace.route("/room/<int:hotel_ID>/<int:room_number>")
 class RoomByID(Resource):
@@ -173,3 +163,45 @@ class RoomByID(Resource):
         except Exception as e:
             return {"message": f"Error removing room: {e}"}, 500
 
+
+@room_namespace.route("/available-rooms")
+class AvailableRooms(Resource):
+    @room_namespace.doc(
+        params={
+            "start_date": "Start date for the period (YYYY-MM-DD format)",
+            "end_date": "End date for the period (YYYY-MM-DD format)",
+        },
+        responses={
+            200: "Success",
+            400: "Bad Request",
+            500: "Internal Server Error",
+        },
+    )
+    def get(self):
+        start_date = request.args.get("start_date")
+        end_date = request.args.get("end_date")
+
+        if not start_date or not end_date:
+            return {"message": "Both start_date and end_date parameters are required."}, 400
+
+        date_format = "%Y-%m-%d"
+        try:
+            start_date = datetime.strptime(start_date, date_format).date()
+            end_date = datetime.strptime(end_date, date_format).date()
+        except ValueError:
+            return {"message": "Invalid date format. Please use YYYY-MM-DD format."}, 400
+
+        try:
+            rooms_per_area = current_app.db.get_rooms_per_area_by_date(start_date, end_date)
+            result = [
+                {
+                    "country": item[0],
+                    "state_province": item[1],
+                    "city": item[2],
+                    "available_rooms": item[3],
+                }
+                for item in rooms_per_area
+            ]
+            return result
+        except Exception as e:
+            return {"message": f"Error retrieving available rooms: {e}"}, 500
