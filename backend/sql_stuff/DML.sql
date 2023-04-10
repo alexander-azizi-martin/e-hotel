@@ -515,5 +515,3 @@ where (room_number, hotel_ID) not in ((select room_number, hotel_ID
                                     (select room_number, hotel_ID
                                     from booking where scheduled_check_in_date > '2023-04-03' and scheduled_check_out_date < '2023-04-25' and canceled = false))
                                 and address_country = 'USA' and address_province_state <> 'FL' and address_city <> 'UNFOUOUHFOGUHFHGU';
-
-
