@@ -3,7 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import jwt from "jwt-simple";
 import { useLocalStorage } from "@mantine/hooks";
-import { useForm, isNotEmpty, hasLength } from "@mantine/form";
+import { useForm, isNotEmpty } from "@mantine/form";
 import { message } from "antd";
 import {
   TextInput,
@@ -13,11 +13,13 @@ import {
   Stack,
   Center,
   Group,
+  NumberInput,
+  Radio,
 } from "@mantine/core";
 import Header from "~/components/Header";
 import useToken from "~/utils/useToken";
 
-interface UserInfo {
+interface EmployeeInfo {
   firstName: string;
   lastName: string;
   city: string;
@@ -25,17 +27,27 @@ interface UserInfo {
   streetNumber: string;
   country: string;
   region: string;
+  employee_ID: number;
+  hotel_ID: number;
+  is_manager: boolean;
 }
 
-export default function Account(props: UserInfo) {
+export default function Account(props: EmployeeInfo) {
   const token = useToken();
 
-  const [firstName, setFirstName] = useLocalStorage({ key: 'firstName', defaultValue: '' });
-  const [lastName, setLastName] = useLocalStorage({ key: 'lastName', defaultValue: '' });
+  const [firstName, setFirstName] = useLocalStorage({
+    key: "firstName",
+    defaultValue: "",
+  });
+  const [lastName, setLastName] = useLocalStorage({
+    key: "lastName",
+    defaultValue: "",
+  });
 
   const form = useForm({
     initialValues: {
       ...props,
+      is_manager: props.is_manager ? "yes" : "no",
     },
     validate: {
       firstName: isNotEmpty("Enter your first name"),
@@ -45,30 +57,54 @@ export default function Account(props: UserInfo) {
       city: isNotEmpty("Enter your city"),
       country: isNotEmpty("Enter your country"),
       region: isNotEmpty("Enter your region"),
+      employee_ID: isNotEmpty("Enter your employee ID"),
+      hotel_ID: isNotEmpty("Enter your hotel ID"),
+    },
+    transformValues(values) {
+      return {
+        ...values,
+        is_manager: values.is_manager === "yes",
+      };
     },
   });
 
   const handleSubmit = form.onSubmit(async (info) => {
-    const res = await axios.put(
-      `http://127.0.0.1:5000/auth/customers/${token.user_ssn_sin}`,
-      {
-        first_name: info.firstName,
-        last_name: info.lastName,
-        address_street_name: info.streetName,
-        address_street_number: info.streetNumber,
-        address_city: info.city,
-        address_province_state: info.region,
-        address_country: info.country,
-      },
-      {
-        headers: { Authorization: `Bearer ${Cookies.get("access_token")}` },
-      }
-    );
+    try {
+      let promote_to_manager;
+      let demote_from_manager;
 
-    if (res.status == 200) {
+      if (props.is_manager && !info.is_manager) {
+        demote_from_manager = true;
+      }
+      if (!props.is_manager && info.is_manager) {
+        promote_to_manager = true;
+      }
+
+      const res = await axios.put(
+        `http://127.0.0.1:5000/auth/customers/${token.user_ssn_sin}`,
+        {
+          first_name: info.firstName,
+          last_name: info.lastName,
+          address_street_name: info.streetName,
+          address_street_number: info.streetNumber,
+          address_city: info.city,
+          address_province_state: info.region,
+          address_country: info.country,
+          hotel_ID: info.hotel_ID,
+          employee_ID: info.employee_ID,
+          promote_to_manager,
+          demote_from_manager,
+        },
+        {
+          headers: { Authorization: `Bearer ${Cookies.get("access_token")}` },
+        }
+      );
+
       setFirstName(info.firstName);
       setLastName(info.lastName);
-      message.success("Updated user info");
+      message.success("Updated employee info");
+    } catch {
+      message.error("Something went wrong while trying to update your account");
     }
   });
 
@@ -78,6 +114,18 @@ export default function Account(props: UserInfo) {
       <main>
         <Center sx={{ height: "100%", marginTop: "50px" }}>
           <Stack spacing="md">
+            <Group align="center">
+              <NumberInput
+                placeholder="Hotel ID"
+                label="Hotel ID"
+                {...form.getInputProps("hotel_ID")}
+              />
+              <TextInput
+                placeholder="Employee ID"
+                label="Employee ID"
+                {...form.getInputProps("employee_ID")}
+              />
+            </Group>
             <Group align="center">
               <TextInput
                 placeholder="First Name"
@@ -119,6 +167,16 @@ export default function Account(props: UserInfo) {
                 {...form.getInputProps("region")}
               />
             </Group>
+            <Radio.Group
+              name="Is Manager"
+              label="Is Manager"
+              {...form.getInputProps("isManager")}
+            >
+              <Group mt="xs">
+                <Radio value="yes" label="Yes" />
+                <Radio value="no" label="No" />
+              </Group>
+            </Radio.Group>
 
             <Button type="submit" onClick={handleSubmit as any}>
               Update
@@ -130,7 +188,7 @@ export default function Account(props: UserInfo) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<UserInfo> = async (
+export const getServerSideProps: GetServerSideProps<EmployeeInfo> = async (
   context
 ) => {
   const access_token = context.req.cookies["access_token"];
@@ -161,7 +219,7 @@ export const getServerSideProps: GetServerSideProps<UserInfo> = async (
       region: data.address_province_state,
       employee_ID: data.address_province_state,
       hotel_ID: data.address_province_state,
-      is_manager: data.is_manager
+      is_manager: data.is_manager,
     },
   };
 };
