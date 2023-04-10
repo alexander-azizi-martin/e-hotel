@@ -67,6 +67,12 @@ login_model = auth_namespace.model("Login", {
     "role": fields.String()
 })
 
+add_employee_role_model = auth_namespace.model('AddEmployeeRole', {
+    'employee_SSN_SIN': fields.Integer(required=True, description='Employee SSN/SIN'),
+    'employee_ID': fields.Integer(required=True, description='Employee ID'),
+    'role': fields.String(required=True, description='Role of the employee at the hotel')
+})
+
 @auth_namespace.route("/customers")
 class CustomerRegistration(Resource):
     @auth_namespace.doc(responses={200: "Success", 400: "Invalid input", 409: "Conflict", 500: "Internal Server Error"})
@@ -197,11 +203,9 @@ class Login(Resource):
                 "role": role,
             }
         
-        # Set is_manager to True if the user has the "manager" role
         is_manager = False
 
         if result[1] == "employee":
-            print(result)
             if result[2][10]:
                 is_manager = True
 
@@ -230,7 +234,6 @@ class CustomerUpdate(Resource):
         if current_user_role == "customer" and current_user_ssn_sin != customer_SSN_SIN:
             return {"message": "Unauthorized"}, 401
 
-        print(data)
         # Parse the data and pass it to the update_customer function
         first_name = data.get("first_name")
         last_name = data.get("last_name")
@@ -257,12 +260,11 @@ class CustomerDetails(Resource):
     def get(self, customer_SSN_SIN):
         # Get the current user's SSN/SIN and role from the JWT token
         current_user_ssn_sin = get_jwt_identity()
-        print(current_user_ssn_sin)
-        current_user_role = get_jwt().get("role")
-        print(current_user_role)
+        jwt_claims = get_jwt()
+        is_manager = jwt_claims.get("is_manager", False)
 
         # Only allow managers or customers to see customer information
-        if current_user_role == "manager" or current_user_ssn_sin == customer_SSN_SIN:
+        if is_manager or current_user_ssn_sin == customer_SSN_SIN:
             # Get the customer's information from the database
             customer_info = current_app.db.get_customer(customer_SSN_SIN)
             if customer_info:
@@ -294,10 +296,11 @@ class EmployeeUpdate(Resource):
 
         # Get the current user's SSN/SIN and role from the JWT token
         current_user_ssn_sin = get_jwt_identity()
-        current_user_role = get_jwt().get("role")
+        jwt_claims = get_jwt()
+        is_manager = jwt_claims.get("is_manager", False)
 
         # Only allow managers or employees to update their own information
-        if current_user_role != "manager" and current_user_ssn_sin != employee_SSN_SIN:
+        if not is_manager and current_user_ssn_sin != employee_SSN_SIN:
             return {"message": "Unauthorized"}, 401
 
         # Parse the data and pass it to the update_employee function
@@ -330,17 +333,19 @@ class EmployeeUpdate(Resource):
 class EmployeeDetails(Resource):
     @jwt_required()
     def get(self, employee_SSN_SIN):
+        
         # Get the current user's SSN/SIN and role from the JWT token
         current_user_ssn_sin = get_jwt_identity()
-        current_user_role = get_jwt().get("role")
+        jwt_claims = get_jwt()
+        is_manager = jwt_claims.get("is_manager", False)
 
         # Only allow managers or employees to see their own information
-        if current_user_role != "manager" and current_user_ssn_sin != employee_SSN_SIN:
+        if not is_manager and current_user_ssn_sin != employee_SSN_SIN:
             return {"message": "Unauthorized"}, 401
 
         # Get the employee's information from the database
         employee_info = current_app.db.get_employee(employee_SSN_SIN)
-        print(f"employee info: {employee_info}")
+
         if employee_info:
             # Convert the result into a dictionary
             employee_dict = {

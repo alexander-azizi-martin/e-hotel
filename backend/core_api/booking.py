@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask import current_app
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
-from db.db_drivers import Database
 
 booking_namespace = Namespace("booking", description="All routes under this namespace concern booking operations.")
 
@@ -122,13 +121,13 @@ class BookingByID(Resource):
         existing_booking = current_app.db.get_booking(booking_ID)
 
         if not existing_booking:
-            return {"message": "Booking does not exist."}, 404
+            return {"message": "Booking does not exist or already has been cancelled."}, 404
         
         if existing_booking[5] != customer_SSN_SIN:
             return {"message": "Unauthorized!"}, 401
         
-        try:
-            current_app.db.delete_booking(booking_ID)
-            return {"message": "Booking deleted successfully."}, 200
-        except Exception as e:
-            return {"message": f"Error deleting booking: {str(e)}"}, 500
+        success, message = current_app.db.cancel_booking(booking_ID)
+        if success:
+            return {"message": message}, 200
+        else:
+            return {"message": message}, 500

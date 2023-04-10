@@ -11,7 +11,6 @@ from hotel_chain import hotel_chain_namespace
 from room import room_namespace
 from booking import booking_namespace
 from db.db_drivers import Database
-import click
 
 def create_app(config): 
     app = Flask(__name__)

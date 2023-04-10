@@ -2,7 +2,6 @@ from flask import request
 from flask import current_app
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt
-from db.db_drivers import Database
 
 hotel_chain_namespace = Namespace("hotel_chain", description="All routes under this namespace concern hotel chain operations.")
 

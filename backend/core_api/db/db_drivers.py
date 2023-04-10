@@ -6,8 +6,6 @@ import psycopg2
 import datetime
 import random
 import traceback
-import bcrypt
-import hashlib
 
 load_dotenv()
 # SETUP
@@ -383,7 +381,7 @@ class Database(object):
         return results
         
     def get_booking(self, booking_id):
-        self.cursor.execute("SELECT * FROM Booking WHERE booking_ID = %s", (booking_id,))
+        self.cursor.execute("SELECT * FROM Booking WHERE booking_ID = %s AND canceled = FALSE", (booking_id,))
         results = self.cursor.fetchone()
         return results
 
@@ -1041,6 +1039,23 @@ class Database(object):
         except Exception as e:
             traceback.print_exc()
             self.connection.rollback()
+    
+    def cancel_booking(self, booking_id):
+        try:
+            self.cursor.execute(
+                "UPDATE Booking SET canceled = TRUE WHERE booking_ID = %s",
+                (booking_id,)
+            )
+            self.conn.commit()
+
+            # Check if any rows were affected (i.e., the booking was found and updated)
+            if self.cursor.rowcount > 0:
+                return True, "Booking successfully canceled."
+            else:
+                return False, "Booking not found."
+        except Exception as e:
+            self.conn.rollback()
+            return False, f"Error: {str(e)}"
 
     def get_rooms_per_area_by_date(self, start_date, end_date):
 
