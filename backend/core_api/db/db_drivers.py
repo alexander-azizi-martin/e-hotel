@@ -902,7 +902,7 @@ class Database(object):
             params['is_extendable'] = is_extendable
 
         if price_per_night is not None:
-            query += " AND r.price_per_night = %(price_per_night)s"
+            query += " AND r.price_per_night <= %(price_per_night)s"
             params['price_per_night'] = price_per_night
 
         query += " ORDER BY h.hotel_ID, r.room_number"

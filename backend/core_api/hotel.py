@@ -101,12 +101,14 @@ class Hotel(Resource):
 class HotelSearch(Resource):
     @hotel_namespace.doc(responses={200: "Success", 500: "Internal Server Error"})
     def get(self):
-        city = request.args.get('city')
-        star_rating = request.args.get('star_rating')
-        view_type = request.args.get('view_type')
-        room_capacity = request.args.get('room_capacity')
-        is_extendable = request.args.get('is_extendable')
-        price_per_night = request.args.get('price_per_night')
+        city = request.args.get('city', None)
+        star_rating = request.args.get('star_rating', None)
+        view_type = request.args.get('view_type', None)
+        room_capacity = request.args.get('room_capacity', None)
+        is_extendable = request.args.get('is_extendable', None)
+        price_per_night = request.args.get('price_per_night', None)
+        start_date = request.args.get('start_date', None)
+        end_date = request.args.get('end_date', None)
 
         try:
             hotels = current_app.db.search_hotels_and_rooms(city=city, star_rating=star_rating, view_type=view_type, room_capacity=room_capacity, is_extendable=is_extendable, price_per_night=price_per_night)
