@@ -49,7 +49,7 @@ CREATE TABLE Hotel_Phone_Number (
   hotel_ID INT,
   phone_number VARCHAR(20),
   PRIMARY KEY (hotel_ID, phone_number),
-  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
+  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Hotel_Chain_Central_Office_Address (
@@ -60,21 +60,21 @@ CREATE TABLE Hotel_Chain_Central_Office_Address (
   address_province_state VARCHAR(50) NOT NULL,
   address_country VARCHAR(50) NOT NULL,
   PRIMARY KEY (chain_ID),
-  FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID)
+  FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Hotel_Chain_Contact_Email (
   chain_ID INT,
   contact_email VARCHAR(50) NOT NULL,
   PRIMARY KEY (chain_ID),
-  FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID)
+  FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Hotel_Chain_Phone_Number (
   chain_ID INT,
   phone_number VARCHAR(12),
   PRIMARY KEY (chain_ID, phone_number),
-  FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID)
+  FOREIGN KEY (chain_ID) REFERENCES Hotel_Chain(chain_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Room (
@@ -92,7 +92,7 @@ CREATE TABLE Room (
 CREATE TABLE Amenity (
   amenity_id INT,
   amenity_name VARCHAR(50) NOT NULL,
-  PRIMARY KEY (amenity_id)
+  PRIMARY KEY (amenity_id) 
 );
 
 CREATE TABLE Has_Amenity (
@@ -100,7 +100,7 @@ CREATE TABLE Has_Amenity (
   hotel_id INT,
   room_number INT,
   PRIMARY KEY (amenity_id, hotel_id, room_number),
-  FOREIGN KEY (hotel_id, room_number) REFERENCES Room(hotel_ID, room_number)
+  FOREIGN KEY (hotel_id, room_number) REFERENCES Room(hotel_ID, room_number) ON DELETE CASCADE
 );
 
 CREATE TABLE Customer (

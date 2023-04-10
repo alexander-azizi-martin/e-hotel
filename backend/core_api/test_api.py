@@ -780,6 +780,76 @@ class TestAuth(TestCase):
                 current_app.db.delete_hotel(1)
                 current_app.db.delete_hotel_chain(3)
 
+    def test_insert_update_delete_room(self):
+        # Register an employee with manager role and get their JWT token
+        jwt_token = self.get_manager_token()
+
+        # Insert a hotel chain and hotel
+        self.client.post("/hotel_chain/hotel_chain", json={
+            "chain_ID": 1,
+            "name": "Hotel Chain 1",
+            "number_of_hotels": 1
+        }, headers={"Authorization": f"Bearer {jwt_token}"})
+
+        self.client.post("/hotel/hotel", json={
+            "hotel_ID": 1,
+            "chain_ID": 1,
+            "number_of_rooms": 100,
+            "address_street_name": "Test Street",
+            "address_street_number": 123,
+            "address_city": "Test City",
+            "address_province_state": "Test State",
+            "address_country": "Test Country",
+            "contact_email": "test@example.com",
+            "star_rating": 4
+        }, headers={"Authorization": f"Bearer {jwt_token}"})
+
+        # Insert a new room
+        response = self.client.post("/room/room", json={
+            "room_number": 1,
+            "hotel_ID": 1,
+            "room_capacity": 2,
+            "view_type": "ocean",
+            "price_per_night": 100,
+            "is_extendable": True,
+            "room_problems": "None"
+        }, headers={"Authorization": f"Bearer {jwt_token}"})
+
+        self.assertEqual(response.status_code, 201, f"Failed to insert room: {response.data}")
+        self.assertEqual(response.json["message"], "Room added successfully.", "Unexpected message")
+
+        # Update the room
+        response = self.client.put("/room/room", json={
+            "room_number": 1,
+            "hotel_ID": 1,
+            "room_capacity": 4,
+            "view_type": "ocean",
+            "price_per_night": 200,
+            "is_extendable": False,
+            "room_problems": "None"
+        }, headers={"Authorization": f"Bearer {jwt_token}"})
+
+        self.assertEqual(response.status_code, 200, f"Failed to update room: {response.data}")
+        self.assertEqual(response.json["message"], "Room updated successfully.", "Unexpected message")
+
+        # Get the updated room
+        response = self.client.get("/room/room/1/1")
+        self.assertEqual(response.status_code, 200, f"Failed to get updated room: {response.data}")
+
+        updated_room = response.json
+        self.assertEqual(updated_room["room_capacity"], 4, "Unexpected room capacity")
+        self.assertEqual(updated_room["price_per_night"], 200, "Unexpected price per night")
+        self.assertEqual(updated_room["is_extendable"], False, "Unexpected value for is_extendable")
+
+        # Delete the room
+        response = self.client.delete("/room/room/1/1", headers={"Authorization": f"Bearer {jwt_token}"})
+        self.assertEqual(response.status_code, 200, f"Failed to delete room: {response.data}")
+        self.assertEqual(response.json["message"], "Room removed successfully.", "Unexpected message")
+
+        # Delete the hotel and hotel chain
+        self.client.delete("/hotel/hotel/1", headers={"Authorization": f"Bearer {jwt_token}"})
+        self.client.delete("/hotel_chain/hotel_chain/1", headers={"Authorization": f"Bearer {jwt_token}"})
+
 if __name__ == "__main__":
     unittest.main()
 

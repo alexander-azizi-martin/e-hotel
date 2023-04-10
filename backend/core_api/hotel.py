@@ -42,7 +42,6 @@ class Hotel(Resource):
         token_data = get_jwt()
         if not token_data.get("is_manager", False):
             return {"message": "Unauthorized!"}, 401
-
         data = request.json
         hotel_id = data["hotel_ID"]
         chain_id = data["chain_ID"]
@@ -101,7 +100,7 @@ class Hotel(Resource):
 
 @hotel_namespace.route("/hotel/search")
 class HotelSearch(Resource):
-    @hotel_namespace.doc(responses={200: "Success", 400: "Invalid input", 500: "Internal Server Error"})
+    @hotel_namespace.doc(responses={200: "Success", 500: "Internal Server Error"})
     def get(self):
         city = request.args.get('city')
         star_rating = request.args.get('star_rating')

@@ -258,8 +258,8 @@ class Database(object):
                           address_city, address_province_state, address_country, contact_email, star_rating))
             self.commit()
         except Exception as e:
-            print("Error inserting or updating hotel:", e)
             self.connection.rollback()
+            raise e
 
 
     def insert_hotel_chain(self, chain_id, name=None, number_of_hotels=None):
@@ -295,8 +295,8 @@ class Database(object):
                                     (chain_id, name, number_of_hotels))
             self.commit()
         except Exception as e:
-            print("Error inserting or updating hotel chain:", e)
             self.connection.rollback()
+            raise e
 
 
     def insert_customer(self, customer_SSN_SIN, password, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date):
@@ -434,7 +434,7 @@ class Database(object):
             return (False, f"Error updating employee: {e}")
 
     
-    def insert_room(self, room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems=None):
+    def insert_room(self, room_number, hotel_id, room_capacity=None, view_type=None, price_per_night=None, is_extendable=None, room_problems=None):
         try:
             # Check if the room already exists
             existing_room = self.get_room(room_number, hotel_id)
@@ -473,8 +473,8 @@ class Database(object):
                     """, (room_number, hotel_id, room_capacity, view_type, price_per_night, is_extendable, room_problems))
             self.commit()
         except Exception as e:
-            print("Error inserting or updating room:", e)
             self.connection.rollback()
+            raise e
 
 
     def insert_booking(self, booking_id, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
@@ -761,37 +761,27 @@ class Database(object):
 
         return (True, "Customer information successfully updated")
 
-
     def delete_customer(self, ssn_sin): 
-        print("running")
         self.cursor.execute("DELETE FROM Customer WHERE customer_SSN_SIN = %s", (ssn_sin,))
         self.cursor.execute("DELETE FROM Users WHERE user_SSN_SIN = %s", (ssn_sin,))
         self.commit()
 
     def delete_employee(self, ssn_sin): 
-        print("running")
         self.cursor.execute("DELETE FROM Employee WHERE employee_SSN_SIN = %s", (ssn_sin,))
         self.cursor.execute("DELETE FROM Users WHERE user_SSN_SIN = %s", (ssn_sin,))
         self.commit()
     
     def delete_hotel_chain(self, chain_id):
-        try:
-            self.cursor.execute("DELETE FROM Hotel_Chain WHERE chain_ID = %s", (chain_id,))
-            self.commit()
-        except Exception as e:
-            print("Error deleting hotel chain:", e)
-            self.connection.rollback()
+        self.cursor.execute("DELETE FROM Hotel_Chain WHERE chain_ID = %s", (chain_id,))
+        self.commit()
     
     def delete_hotel(self, hotel_id):
-        try:
-            self.cursor.execute("DELETE FROM Hotel WHERE hotel_ID = %s", (hotel_id,))
-            self.commit()
-        except Exception as e:
-            print("Error deleting hotel chain:", e)
-            self.connection.rollback() 
+        self.cursor.execute("DELETE FROM Hotel WHERE hotel_ID = %s", (hotel_id,))
+        self.commit()
     
-
-
+    def delete_room(self, room_number, hotel_id):
+        self.cursor.execute("DELETE FROM Room WHERE room_number = %s AND hotel_ID = %s", (room_number, hotel_id))
+        self.commit()
 
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 #test_db = Database(TEST_DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
