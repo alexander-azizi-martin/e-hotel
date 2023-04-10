@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import Link from "next/link";
 import { Flex, Text, Divider, Center } from "@mantine/core";
 import { IconBed } from "@tabler/icons";
@@ -5,8 +6,13 @@ import FilterOptions from "./FilterOptions";
 import SearchBar from "./SearchBar";
 import DateRangePicker from "./DateRangePicker";
 import UserMenu from "./UserMenu";
+import { Token } from "~/types";
 
-export default function Header() {
+interface HeaderProps {
+  displayFilter?: boolean;
+}
+
+export default function Header(props: HeaderProps) {
   return (
     <header>
       <Flex
@@ -14,7 +20,7 @@ export default function Header() {
         align="center"
         wrap="wrap"
         sx={{
-          height: "65px",
+          minHeight: "65px",
           padding: "10px",
         }}
       >
@@ -27,20 +33,25 @@ export default function Header() {
           </Center>
         </Link>
 
-        <Flex
-          align="center"
-          justify="center"
-          rowGap="20px"
-          columnGap="30px"
-          wrap="wrap"
-          sx={{ "@media (max-width: 1115px)": { order: 3 } }}
-        >
-          <FilterOptions />
-          <SearchBar />
-          <DateRangePicker startDateLabel="Check In" endDateLabel="Check Out" />
-        </Flex>
+        {props.displayFilter && (
+          <Flex
+            align="center"
+            justify="center"
+            rowGap="20px"
+            columnGap="30px"
+            wrap="wrap"
+            sx={{ "@media (max-width: 1115px)": { order: 3 } }}
+          >
+            <FilterOptions />
+            <SearchBar />
+            <DateRangePicker
+              startDateLabel="Check In"
+              endDateLabel="Check Out"
+            />
+          </Flex>
+        )}
 
-        <UserMenu username="username" />
+        <UserMenu />
       </Flex>
 
       <Divider />
