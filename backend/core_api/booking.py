@@ -6,7 +6,6 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_j
 booking_namespace = Namespace("booking", description="All routes under this namespace concern booking operations.")
 
 booking_model = booking_namespace.model('Booking', {
-    'booking_ID': fields.Integer(required=True, description='Booking ID'),
     'scheduled_check_in_date': fields.Date(required=True, description='Scheduled check-in date'),
     'scheduled_check_out_date': fields.Date(required=True, description='Scheduled check-out date'),
     'canceled': fields.Boolean(required=True, description='Indicates if the booking is canceled'),
@@ -15,7 +14,6 @@ booking_model = booking_namespace.model('Booking', {
 })
 
 booking_update_model = booking_namespace.model('Booking', {
-    'booking_ID': fields.Integer(required=True, description='Booking ID'),
     'scheduled_check_in_date': fields.Date(required=False, description='Scheduled check-in date'),
     'scheduled_check_out_date': fields.Date(required=False, description='Scheduled check-out date'),
     'canceled': fields.Boolean(required=False, description='Indicates if the booking is canceled'),
@@ -37,7 +35,6 @@ class Booking(Resource):
         data = request.json
         try:
             current_app.db.insert_booking(
-                data["booking_ID"], 
                 customer_SSN_SIN, 
                 data["room_number"], 
                 data["hotel_ID"], 

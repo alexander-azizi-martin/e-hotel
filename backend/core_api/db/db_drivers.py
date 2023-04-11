@@ -659,7 +659,7 @@ class Database(object):
             raise e
 
 
-    def insert_booking(self, booking_id, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
+    def insert_booking(self, customer_SSN_SIN, room_number, hotel_id, check_in_date, check_out_date):
         if check_in_date >= check_out_date:
             raise Exception("Error: Check-in date must be earlier than check-out date.")
 
@@ -696,9 +696,9 @@ class Database(object):
 
             # Insert the booking
             self.cursor.execute("""
-                INSERT INTO Booking (booking_ID, booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID) 
-                VALUES (%s, %s, %s, %s, false, %s, %s, %s)
-            """, (booking_id, datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id))
+                INSERT INTO Booking (booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID) 
+                VALUES (%s, %s, %s, false, %s, %s, %s)
+            """, (datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id))
             self.commit()
 
         except Exception as e:

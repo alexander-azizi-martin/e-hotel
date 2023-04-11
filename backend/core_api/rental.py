@@ -1,12 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import request
 from flask import current_app
 from flask_restx import Resource, Namespace, fields
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt
 
 rental_namespace = Namespace("rental", description="All routes under this namespace concern rental operations.")
 
 rental_model = rental_namespace.model('Rental', {
-    'rental_ID': fields.Integer(required=True, description='Rental ID'),
     'base_price': fields.Integer(required=True, description='Base price of the rental'),
     'date_paid': fields.Date(required=True, description='Date the rental was paid'),
     'total_paid': fields.Integer(required=True, description='Total amount paid for the rental'),
@@ -24,8 +23,22 @@ rental_model = rental_namespace.model('Rental', {
 
 @rental_namespace.route("/rental")
 class Rental(Resource):
-    pass
+    
+    @jwt_required()
+    def get(self):
+        # Implement logic to retrieve all rentals associated with a customer by SSN/SIN
+        pass
 
-@rental_namespace.route("/rental/<int:rental_ID>")
-class RentalByID(Resource):
-    pass
+    @jwt_required()
+    def post(self):
+        # Implement logic to convert a booking to a rental
+        pass
+
+@rental_namespace.route("/rental/create")
+class CreateRental(Resource):
+    
+    @jwt_required()
+    def post(self):
+        # Implement logic to create a rental for a customer
+        pass
+

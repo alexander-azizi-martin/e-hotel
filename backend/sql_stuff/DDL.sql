@@ -117,7 +117,7 @@ CREATE TABLE Customer (
 );
 
 CREATE TABLE Booking (
-    booking_ID INT,
+    booking_ID SERIAL,
     booking_date DATE NOT NULL,
     scheduled_check_in_date DATE NOT NULL,
     scheduled_check_out_date DATE NOT NULL,
