@@ -134,7 +134,7 @@ class BookingByID(Resource):
 
 @booking_namespace.route("/employee_bookings/<int:ssn_sin>")
 class BookingByCustomerSSN_SIN(Resource):
-    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 500: "Internal Server Error"})
+    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 500: "Internal Server Error", 404: "No Bookings Found"})
     @jwt_required()
     def get(self, ssn_sin):
         token_data = get_jwt()
@@ -167,7 +167,7 @@ class BookingByCustomerSSN_SIN(Resource):
 
 @booking_namespace.route("/all_bookings")
 class AllBookings(Resource):
-    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 500: "Internal Server Error"})
+    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 500: "Internal Server Error", 404: "No Bookings Found"})
     @jwt_required()
     def get(self):
         token_data = get_jwt()
@@ -176,6 +176,9 @@ class AllBookings(Resource):
         
         try:
             all_bookings = current_app.db.get_all_bookings()
+            if not all_bookings:
+                return {"message": "No bookings found."}, 404
+
             parsed_bookings = [
                 {
                     "booking_ID": booking[0],

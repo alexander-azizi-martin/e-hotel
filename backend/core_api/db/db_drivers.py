@@ -383,7 +383,6 @@ class Database(object):
         
         results = self.cursor.fetchall()
         return results
-
         
     def get_booking(self, booking_id):
         self.cursor.execute("SELECT * FROM Booking WHERE booking_ID = %s AND canceled = FALSE", (booking_id,))
