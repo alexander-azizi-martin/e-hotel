@@ -10,6 +10,7 @@ from hotel import hotel_namespace
 from hotel_chain import hotel_chain_namespace
 from room import room_namespace
 from booking import booking_namespace
+from rental import rental_namespace
 from db.db_drivers import Database
 
 def create_app(config): 
@@ -23,6 +24,6 @@ def create_app(config):
     api.add_namespace(hotel_chain_namespace)
     api.add_namespace(room_namespace)
     api.add_namespace(booking_namespace)
-    #api.add_namespace(rental_namespace)
+    api.add_namespace(rental_namespace)
     api.add_namespace(auth_namespace)
     return app
