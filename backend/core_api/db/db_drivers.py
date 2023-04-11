@@ -746,20 +746,12 @@ class Database(object):
             raise e
     
 
-    def convert_booking_to_rental(self, booking_id, total_paid=None, discount=None, additional_charges=None):
+    def convert_booking_to_rental(self, booking_id, employee_ssn_sin, employee_id, total_paid=None, discount=None, additional_charges=None):
         try:
             # Check if the booking exists and is not canceled
             existing_booking = self.get_booking(booking_id)
             if not existing_booking or existing_booking[4]:
-                print("Error: Booking does not exist or has been canceled.")
-                return
-
-            # Choose a random employee to assign to the rental
-            employees = self.get_employees_by_hotel_id(existing_booking[7])
-            if not employees:
-                print("Error: No employees found for this hotel.")
-                return
-            employee = random.choice(employees)
+                return (False, "Error: Booking does not exist or has been canceled.")
 
             # Create the rental
             rental_data = {
@@ -774,8 +766,8 @@ class Database(object):
                 'booking_ID': existing_booking[0],
                 'room_number': existing_booking[6],
                 'hotel_ID': existing_booking[7],
-                'employee_ID': employee[1],
-                'employee_SSN_SIN': employee[0]
+                'employee_ID': employee_id,
+                'employee_SSN_SIN': employee_ssn_sin
             }
             self.cursor.execute("""
                 INSERT INTO Rental (base_price, date_paid, total_paid, discount, additional_charges, check_in_date, check_out_date, customer_SSN_SIN, booking_ID, room_number, hotel_ID, employee_ID, employee_SSN_SIN)
@@ -783,37 +775,49 @@ class Database(object):
             """, rental_data)
             self.commit()
 
-            print(f"Booking converted to rental successfully. Assigned to employee {employee[1]}.")
+            return (True, "Booking converted to rental successfully.")
 
         except Exception as e:
-            print("Error converting booking to rental:", e)
-            traceback.print_exc()
             self.connection.rollback()
+            return (False, f"Error converting booking: {e}")
 
 
-    def create_rental(self, room_number, hotel_id, customer_SSN_SIN, check_in_date, check_out_date, total_paid=None, discount=None, additional_charges=None):
+    def create_rental(self, employee_ssn_sin, employee_id, room_number, hotel_id, customer_SSN_SIN, check_in_date, check_out_date, total_paid=None, discount=None, additional_charges=None):
         if check_in_date >= check_out_date:
-            print("Error: Check-in date must be earlier than check-out date.")
-            return
+            return (False, "Error: Check-in date must be earlier than check-out date.")
 
         if check_in_date + datetime.timedelta(days=1) == check_out_date:
-            print("Error: Check-in date and check-out date cannot be the same day.")
-            return
+            return (False, "Error: Check-in date and check-out date cannot be the same day.")
         
         try:
             # Check if the customer exists
             existing_customer = self.get_customer(customer_SSN_SIN)
             if not existing_customer:
-                print("Error: Customer does not exist.")
-                return
+                return (False, "Error: Customer does not exist.")
 
             # Check if the room exists
             existing_room = self.get_room(room_number, hotel_id)
             if not existing_room:
-                print("Error: Room does not exist.")
-                return
+                return (False, "Error: Room does not exist.")
 
-            # Check for duplicate rentals
+            # Check for overlapping bookings
+            self.cursor.execute("""
+                SELECT * FROM Booking 
+                WHERE room_number = %s
+                AND hotel_ID = %s
+                AND (
+                    (scheduled_check_in_date <= %s AND scheduled_check_out_date >= %s) 
+                    OR (scheduled_check_out_date >= %s AND scheduled_check_in_date <= %s) 
+                    OR (scheduled_check_in_date >= %s AND scheduled_check_in_date <= %s)
+                )
+                AND canceled = false
+            """, (room_number, hotel_id, check_in_date, check_out_date, check_in_date, check_out_date, check_in_date, check_out_date))
+            
+            overlapping_booking = self.cursor.fetchone()
+            if overlapping_booking:
+                return (False, "Error: Overlapping booking found.")
+            
+            # Check for overlapping rentals
             self.cursor.execute("""
                 SELECT * FROM Rental 
                 WHERE room_number = %s
@@ -827,15 +831,7 @@ class Database(object):
             
             existing_rental = self.cursor.fetchone()
             if existing_rental:
-                print("Error: Duplicate booking found.")
-                return
-
-            # Choose a random employee to assign to the rental
-            employees = self.get_employees_by_hotel_id(hotel_id)
-            if not employees:
-                print("Error: No employees found for this hotel.")
-                return
-            employee = random.choice(employees)
+                return (False, "Error: Overlapping rental found.")
 
             # Create the rental
             rental_data = {
@@ -850,8 +846,8 @@ class Database(object):
                 'booking_ID': None,
                 'room_number': room_number,
                 'hotel_ID': hotel_id,
-                'employee_ID': employee[1],
-                'employee_SSN_SIN': employee[0]
+                'employee_ID': employee_id,
+                'employee_SSN_SIN': employee_ssn_sin
             }
             self.cursor.execute("""
                 INSERT INTO Rental (base_price, date_paid, total_paid, discount, additional_charges, check_in_date, check_out_date, customer_SSN_SIN, booking_ID, room_number, hotel_ID, employee_ID, employee_SSN_SIN)
@@ -859,12 +855,11 @@ class Database(object):
             """, rental_data)
             self.commit()
 
-            print(f"Rental created successfully. Assigned to employee {employee[1]}.")
+            return (True, f"Rental created successfully.")
 
         except Exception as e:
-            print("Error creating rental:", e)
-            traceback.print_exc()
             self.connection.rollback()
+            return (False, f"Error creating rental:{e}")
 
     # ONLY RETURNS HOTELS THAT HAVE ROOMS
     def search_hotels_and_rooms(self, start_date, end_date, hotel_chain=None, city=None, star_rating=None, view_type=None, room_capacity=None, is_extendable=None, price_per_night=None):

@@ -5,23 +5,20 @@ from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 
 rental_namespace = Namespace("rental", description="All routes under this namespace concern rental operations.")
 
-rental_model = rental_namespace.model('Rental', {
-    'base_price': fields.Integer(required=True, description='Base price of the rental'),
-    'date_paid': fields.Date(required=True, description='Date the rental was paid'),
+create_rental_model = rental_namespace.model('CreateRental', {
     'total_paid': fields.Integer(required=True, description='Total amount paid for the rental'),
     'discount': fields.Integer(required=True, description='Discount applied to the rental'),
     'additional_charges': fields.Integer(required=True, description='Additional charges for the rental'),
     'check_in_date': fields.Date(required=True, description='Check-in date'),
     'check_out_date': fields.Date(required=True, description='Check-out date'),
     'customer_SSN_SIN': fields.Integer(required=True, description='Customer SSN/SIN'),
-    'booking_ID': fields.Integer(required=True, description='Booking ID'),
     'room_number': fields.Integer(required=True, description='Room number'),
     'hotel_ID': fields.Integer(required=True, description='Hotel ID'),
     'employee_ID': fields.Integer(required=True, description='Employee ID'),
-    'employee_SSN_SIN': fields.Integer(required=True, description='Employee SSN/SIN')
 })
 
-conv_booking_to_rental_model = rental_namespace.conv_booking_to_rental_model('ConvertToRental', {
+conv_booking_to_rental_model = rental_namespace.model('ConvertToRental', {
+    'employee_ID': fields.Integer(required=True, description='Employee ID'),
     'total_paid': fields.Integer(required=True, description='Total amount paid for the rental'),
     'discount': fields.Integer(required=True, description='Discount applied to the rental'),
     'additional_charges': fields.Integer(required=True, description='Additional charges for the rental'),
@@ -30,7 +27,7 @@ conv_booking_to_rental_model = rental_namespace.conv_booking_to_rental_model('Co
 @rental_namespace.route("/rental")
 class Rental(Resource):
     @rental_namespace.doc(responses={201: "Created", 400: "Invalid input", 401: "Unauthorized"})
-    @rental_namespace.expect(rental_model)
+    @rental_namespace.expect(create_rental_model)
     @jwt_required()
     def post(self):
         token_data = get_jwt()
@@ -40,24 +37,24 @@ class Rental(Resource):
         employee_SSN_SIN = get_jwt_identity()
         data = request.json
         try:
-            current_app.db.insert_rental(
-                data["base_price"],
-                data["date_paid"],
-                data["total_paid"],
-                data["discount"],
-                data["additional_charges"],
-                data["check_in_date"],
-                data["check_out_date"],
-                data["customer_SSN_SIN"],
+            success, message = current_app.db.create_rental(
+                employee_SSN_SIN,
+                data["employee_ID"],
                 data["room_number"],
                 data["hotel_ID"],
-                data["employee_ID"],
-                employee_SSN_SIN
+                data["customer_SSN_SIN"],
+                data["check_in_date"],
+                data["check_out_date"],
+                data.get("total_paid", None),
+                data.get("discount", None),
+                data.get("additional_charges", None)
             )
+            if not success:
+                return {"message": message}, 400
         except Exception as e:
             return {"message": str(e)}, 400
 
-        return {"message": "Rental added successfully."}, 201
+        return {"message": message}, 201
 
 
 @rental_namespace.route("/rentals/<int:customer_SSN_SIN>")
@@ -106,22 +103,36 @@ class RentalsByCustomer(Resource):
 @rental_namespace.route("/rental/convert/<int:booking_id>")
 class ConvertBookingToRental(Resource):
     @rental_namespace.doc(responses={201: "Created", 400: "Invalid input", 401: "Unauthorized"})
+    @rental_namespace.expect(conv_booking_to_rental_model)
     @jwt_required()
     def post(self, booking_id):
+
+        employee_ssn_sin = get_jwt_identity()
         token_data = get_jwt()
+        employee_id = token_data.get("employee_id", None)
+
         if token_data["role"] != "employee":
             return {"message": "Unauthorized!"}, 401
+        
+        if not employee_id: 
+            return {"message": "Employee ID not provided."}, 400
+
+        employee = current_app.db.get_employee(employee_ssn_sin=employee_ssn_sin)
+
+        if not employee or employee[1] != employee_id:
+            return {"message": "Employee ID mismatch or employee not found!"}, 401
 
         data = request.json
-        try:
-            current_app.db.convert_booking_to_rental(
-                booking_id,
-                data.get("total_paid", None),
-                data.get("discount", None),
-                data.get("additional_charges", None)
-            )
-        except Exception as e:
-            return {"message": str(e)}, 400
+        success, message = current_app.db.convert_booking_to_rental(
+            booking_id,
+            employee_ssn_sin,
+            employee_id,
+            data.get("total_paid", None),
+            data.get("discount", None),
+            data.get("additional_charges", None)
+        )
 
-        return {"message": "Booking converted to rental successfully."}, 201
+        if not success:
+            return {"message": message}, 400
 
+        return {"message": message}, 201
