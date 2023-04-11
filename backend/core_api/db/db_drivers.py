@@ -210,6 +210,10 @@ class Database(object):
         role VARCHAR(10) NOT NULL,
         CHECK (role = 'customer' OR role = 'employee')
         ); 
+
+        CREATE OR REPLACE VIEW hotel_total_room_capacity AS
+        SELECT name AS hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
+        FROM Room NATURAL JOIN hotel_chain;
         """
         try:
             self.cursor.execute(s)
@@ -977,40 +981,6 @@ class Database(object):
             })
 
         return list(hotels.values())
-
-        '''
-        hotels = []
-        current_hotel = None
-
-        for row in rows:
-            if current_hotel is None or row[0] != current_hotel['hotel_ID']:
-                current_hotel = {
-                    'hotel_ID': row[0],
-                    'chain_ID': row[1],
-                    'number_of_rooms': row[2],
-                    'address_street_name': row[3],
-                    'address_street_number': row[4],
-                    'address_city': row[5],
-                    'address_province_state': row[6],
-                    'address_country': row[7],
-                    'contact_email': row[8],
-                    'star_rating': row[9],
-                    'rooms': []
-                }
-
-                hotels.append(current_hotel)
-
-            current_hotel['rooms'].append({
-                'room_number': row[10],
-                'room_capacity': row[11],
-                'view_type': row[12],
-                'price_per_night': row[13],
-                'is_extendable': row[14],
-                'room_problems': row[15]
-            })
-
-        return hotels
-        '''
     
 
     def update_customer(self, customer_SSN_SIN, first_name=None, last_name=None, address_street_name=None, address_street_number=None, address_city=None, address_province_state=None, address_country=None):
@@ -1154,6 +1124,20 @@ class Database(object):
         self.cursor.execute(view_definition_string, (start_date, end_date, start_date, end_date,))
         results = self.cursor.fetchall()
         return results
+    
+    def get_rooms_capacity(self, hotel_id):
+
+        query = """
+        SELECT hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
+        FROM hotel_total_room_capacity
+        WHERE hotel_id = %s;
+        """
+
+        self.cursor.execute(query, (hotel_id,))
+        results = self.cursor.fetchall()
+
+        return results
+
 
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 if __name__ == '__main__':
