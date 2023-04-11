@@ -13,7 +13,7 @@ export default function AddRoom() {
     try {
       const access_token = Cookies.get("access_token");
 
-      await axios.post("/room/room", values, {
+      await axios.post("http://127.0.0.1:5000/room/room", values, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 

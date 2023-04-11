@@ -13,7 +13,7 @@ export default function AddHotel() {
     try {
       const access_token = Cookies.get("access_token");
 
-      await axios.post("/hotel/hotel", values, {
+      await axios.post("http://127.0.0.1:5000/hotel/hotel", values, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 
