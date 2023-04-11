@@ -27,7 +27,7 @@ export default function Room(props: RoomProps) {
   const [opened, { open, close }] = useDisclosure();
   //   const [hotel, setHotel] = useState<HotelInfo | null>();
   const [room, setRoom] = useState(props.room);
-  const [deleted, setDeleted] = useState(false);
+  const [display, setDisplay] = useState(true);
   const [startDate, endDate] = useSearchQuery((state) => [
     state.startDate,
     state.endDate,
@@ -55,7 +55,7 @@ export default function Room(props: RoomProps) {
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
 
-      setDeleted(true);
+      setDisplay(false);
       message.success("Room successfully deleted");
     } catch (error: any) {
       message.error(error.response.data.message);
@@ -76,7 +76,7 @@ export default function Room(props: RoomProps) {
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
 
-      setDeleted(true);
+      setDisplay(false);
       message.success("Room successfully booked");
     } catch (error: any) {
       message.error(error.response.data.message);
@@ -106,6 +106,8 @@ export default function Room(props: RoomProps) {
       message.error(error.response.data.message);
     }
   };
+
+  if (!display) return <></>;
 
   return (
     <Paper shadow="xs" p="lg">

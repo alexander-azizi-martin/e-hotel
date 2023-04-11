@@ -24,7 +24,10 @@ import { HotelChainInfo } from "~/types";
 
 export default function FilterOptions() {
   const [open, toggle] = useToggle();
-  const setSearchQuery = useSearchQuery((state) => state.setQuery);
+  const [setSearchQuery] = useSearchQuery((state) => [
+    state.setQuery,
+    state.setDateRange,
+  ]);
 
   const form = useForm({
     initialValues: {

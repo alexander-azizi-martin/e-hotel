@@ -8,13 +8,7 @@ interface SearchQuery {
   category: null | number;
   numberOfRooms: null | number;
   roomCapacity: string;
-  startDateSet: (startDate: string) => void;
-  endDateSet: (endDate: string) => void;
-  maxPriceSet: (maxPrice: number) => void;
-  hotelChainSet: (hotelChain: string) => void;
-  categorySet: (category: number) => void;
-  numberOfRoomsSet: (numberOfRooms: number) => void;
-  roomCapacitySet: (roomCapacity: string) => void;
+  setDateRange: (dateRange: string[]) => void;
   setQuery: (query: SearchQueryOptional) => void;
 }
 
@@ -36,17 +30,12 @@ const useSearchQuery = create<SearchQuery>((set) => ({
   category: null,
   numberOfRooms: null,
   roomCapacity: "any",
-  startDateSet: (startDate: string) =>
-    set((state) => ({ ...state, startDate })),
-  endDateSet: (endDate: string) => set((state) => ({ ...state, endDate })),
-  maxPriceSet: (maxPrice: number) => set((state) => ({ ...state, maxPrice })),
-  hotelChainSet: (hotelChain: string) =>
-    set((state) => ({ ...state, hotelChain })),
-  categorySet: (category: number) => set((state) => ({ ...state, category })),
-  numberOfRoomsSet: (numberOfRooms: number) =>
-    set((state) => ({ ...state, numberOfRooms })),
-  roomCapacitySet: (roomCapacity: string) =>
-    set((state) => ({ ...state, roomCapacity })),
+  setDateRange: (dateRange: string[]) =>
+    set((state) => ({
+      ...state,
+      startDate: dateRange[0],
+      endDate: dateRange[1],
+    })),
   setQuery: (query: SearchQueryOptional) =>
     set((state) => ({ ...state, ...query })),
 }));

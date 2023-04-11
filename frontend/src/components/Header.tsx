@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { Flex, Text, Divider, Center } from "@mantine/core";
 import { IconBed } from "@tabler/icons";
-import FilterOptions from "./FilterOptions";
-import SearchBar from "./SearchBar";
-import DateRangePicker from "./DateRangePicker";
-import UserMenu from "./UserMenu";
+import FilterOptions from "~/components/FilterOptions";
+import SearchBar from "~/components/SearchBar";
+import DateRangePicker from "~/components/DateRangePicker";
+import UserMenu from "~/components/UserMenu";
+import useSearchQuery from "~/utils/useSearchQuery";
 
 interface HeaderProps {
   displayFilter?: boolean;
 }
 
 export default function Header(props: HeaderProps) {
+  const setDateRange = useSearchQuery((state) => state.setDateRange);
+
   return (
     <header>
       <Flex
@@ -45,6 +48,7 @@ export default function Header(props: HeaderProps) {
             <DateRangePicker
               startDateLabel="Check In"
               endDateLabel="Check Out"
+              setDateRange={setDateRange}
             />
           </Flex>
         )}

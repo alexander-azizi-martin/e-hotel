@@ -110,7 +110,7 @@ export default function Account(props: EmployeeInfo) {
     <>
       <Header displayFilter={false} />
       <main>
-        <Center sx={{ height: "100%", marginTop: "50px" }}>
+        <Center sx={{ height: "100%", marginTop: "20px" }}>
           <Stack spacing="md">
             <Group align="center">
               <NumberInput

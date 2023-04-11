@@ -14,7 +14,7 @@ interface HotelProps {
 
 export default function Hotel(props: HotelProps) {
   const [opened, { close }] = useDisclosure();
-  const [deleted, setDeleted] = useState(false);
+  const [display, setDisplay] = useState(true);
   const [hotel, setHotel] = useState(props.hotel);
 
   const token = useToken();
@@ -42,14 +42,14 @@ export default function Hotel(props: HotelProps) {
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
 
-      setDeleted(true);
+      setDisplay(false);
       message.success("Successfully deleted hotel");
     } catch {
       message.error("Something went wrong while trying to cancel the booking");
     }
   };
 
-  if (deleted) return <></>;
+  if (!display) return <></>;
 
   return (
     <Paper shadow="xs" p="lg">

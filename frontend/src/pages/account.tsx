@@ -82,7 +82,7 @@ export default function Account(props: UserInfo) {
     <>
       <Header displayFilter={false} />
       <main>
-        <Center sx={{ height: "100%", marginTop: "50px" }}>
+        <Center sx={{ height: "100%", marginTop: "20px" }}>
           <Stack spacing="md">
             <Group align="center">
               <TextInput

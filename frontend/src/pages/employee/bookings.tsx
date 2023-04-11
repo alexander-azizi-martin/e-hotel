@@ -21,7 +21,7 @@ export default function Bookings(props: BookingsProps) {
               <Booking booking={booking} key={booking.booking_ID} />
             ))}
             {props.bookings.length === 0 && (
-              <Text>You do not currently have any bookings</Text>
+              <Text>There current aren't any bookings</Text>
             )}
           </Stack>
         </Center>
@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps<BookingsProps> = async (
   const token: Token = jwt.decode(access_token, "", true);
 
   const { data } = await axios.get<BookingInfo[]>(
-    "http://127.0.0.1:5000/booking/booking",
+    `http://127.0.0.1:5000/booking/employee_bookings/${token.user_ssn_sin}`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }

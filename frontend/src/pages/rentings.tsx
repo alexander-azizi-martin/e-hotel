@@ -1,27 +1,27 @@
-import jwt from "jwt-simple";
 import axios from "axios";
+import jwt from "jwt-simple";
 import { GetServerSideProps } from "next";
 import { Stack, Text, Center } from "@mantine/core";
 import Header from "~/components/Header";
-import Booking from "~/components/Booking";
-import { BookingInfo, Token } from "~/types";
+import Renting from "~/components/Renting";
+import { RentingInfo, Token } from "~/types";
 
-interface BookingsProps {
-  bookings: BookingInfo[];
+interface RentingsProps {
+  rentings: RentingInfo[];
 }
 
-export default function Bookings(props: BookingsProps) {
+export default function Rentings(props: RentingsProps) {
   return (
     <>
       <Header />
       <main>
         <Center sx={{ marginTop: "20px" }}>
           <Stack spacing="md">
-            {props.bookings.map((booking) => (
-              <Booking booking={booking} key={booking.booking_ID} />
+            {props.rentings.map((renting) => (
+              <Renting renting={renting} key={renting.rental_ID} />
             ))}
-            {props.bookings.length === 0 && (
-              <Text>You do not currently have any bookings</Text>
+            {props.rentings.length === 0 && (
+              <Text>You do not currently have any rentings</Text>
             )}
           </Stack>
         </Center>
@@ -30,7 +30,7 @@ export default function Bookings(props: BookingsProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<BookingsProps> = async (
+export const getServerSideProps: GetServerSideProps<RentingsProps> = async (
   context
 ) => {
   const access_token = context.req.cookies["access_token"];
@@ -43,20 +43,14 @@ export const getServerSideProps: GetServerSideProps<BookingsProps> = async (
 
   const token: Token = jwt.decode(access_token, "", true);
 
-  if (token.role === "employee") {
-    return {
-      redirect: { destination: "/employee/booking", permanent: false },
-    };
-  }
-
-  const { data } = await axios.get<BookingInfo[]>(
-    "http://127.0.0.1:5000/booking/booking",
+  const { data } = await axios.get<RentingInfo[]>(
+    `http://127.0.0.1:5000/rental/rentals/${token.user_ssn_sin}`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }
   );
 
   return {
-    props: { bookings: data },
+    props: { rentings: data },
   };
 };

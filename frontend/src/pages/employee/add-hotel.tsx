@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { useState } from "react";
 import { Container } from "@mantine/core";
 import { message } from "antd";
+import Header from "~/components/Header";
 import HotelForm from "~/components/HotelForm";
 import { HotelInfo } from "~/types";
 
@@ -25,8 +26,13 @@ export default function AddHotel() {
   };
 
   return (
-    <Container>
-      <HotelForm onSubmit={handleSubmit} setFormReset={setFormReset} />
-    </Container>
+    <>
+      <Header />
+      <main>
+        <Container sx={{ marginTop: "20px" }}>
+          <HotelForm onSubmit={handleSubmit} setFormReset={setFormReset} />
+        </Container>
+      </main>
+    </>
   );
 }

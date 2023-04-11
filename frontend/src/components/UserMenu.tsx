@@ -1,15 +1,28 @@
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useLocalStorage } from "@mantine/hooks";
 import { Text, Menu, UnstyledButton, Center } from "@mantine/core";
-import { IconUserCircle, IconUser, IconBook, IconLogout, IconPlus, IconBuilding } from "@tabler/icons";
+import {
+  IconUserCircle,
+  IconUser,
+  IconBook,
+  IconLogout,
+  IconPlus,
+  IconBuilding,
+} from "@tabler/icons";
 import useToken from "~/utils/useToken";
 
 export default function UserMenu() {
+  const setFirstName = useLocalStorage({ key: "firstName", defaultValue: "" })[1];
+  const setLastName = useLocalStorage({ key: "lastName", defaultValue: "" })[1];
+
   const router = useRouter();
   const token = useToken();
 
   const handleLogout = () => {
+    setFirstName('');
+    setLastName('');
     Cookies.remove("access_token");
     router.push("/login");
   };
