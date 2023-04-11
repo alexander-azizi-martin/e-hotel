@@ -43,8 +43,8 @@ export default function Login() {
 
       Cookies.set("access_token", res.data["access_token"]);
       router.push(role === "customer" ? "/" : "/employee");
-    } catch {
-      message.error("SSN and password do not match");
+    } catch (error: any) {
+      message.error(error.response.data.message);
     }
   });
 
