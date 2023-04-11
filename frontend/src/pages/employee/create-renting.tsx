@@ -6,10 +6,12 @@ import { Container } from "@mantine/core";
 import { message } from "antd";
 import Header from "~/components/Header";
 import RentingForm from "~/components/RentingForm";
+import useToken from "~/utils/useToken";
 import { RentingFormInfo, RoomInfo } from "~/types";
 
 export default function CreateRenting() {
   const [formReset, setFormReset] = useState(() => () => {});
+  const token = useToken();
 
   const handleSubmit = async (values: RentingFormInfo) => {
     try {
@@ -22,10 +24,18 @@ export default function CreateRenting() {
 
       const access_token = Cookies.get("access_token");
 
+      const { data } = await axios.get<{ employee_ID: number }>(
+        `http://127.0.0.1:5000/auth/employees/${token.user_ssn_sin}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+
       await axios.post(
         "http://127.0.0.1:5000/rental/rental",
         {
           ...values,
+          employee_ID: data.employee_ID,
           total_paid:
             stay_duration * room.price_per_night * (1 - values.discount / 100) +
             values.additional_charges,

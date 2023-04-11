@@ -1,9 +1,19 @@
 import { TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
+import useSearchQuery from "~/utils/useSearchQuery";
 
 export default function SearchBar() {
+  const [location, setSearchQuery] = useSearchQuery((state) => [
+    state.location,
+    state.setQuery,
+  ]);
+
   return (
     <TextInput
+      value={location}
+      onChange={(event) => {
+        setSearchQuery({ location: event.target.value });
+      }}
       placeholder="Destination"
       icon={<IconSearch />}
       radius="xl"

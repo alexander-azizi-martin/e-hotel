@@ -31,8 +31,7 @@ export default function FilterOptions() {
 
   const form = useForm({
     initialValues: {
-      minPrice: 0,
-      maxPrice: 100,
+      price: null,
       hotelChain: null,
       category: 0,
       numberOfRooms: null,
@@ -88,7 +87,8 @@ export default function FilterOptions() {
             <Title order={3} sx={{ marginBottom: "-20px" }}>
               Price
             </Title>
-            <Flex align="flex-end" justify="center">
+            <NumberInput icon="$" {...form.getInputProps("price")} />
+            {/* <Flex align="flex-end" justify="center">
               <TextInput
                 label="Min price"
                 icon="$"
@@ -124,7 +124,7 @@ export default function FilterOptions() {
                   });
                 }}
               />
-            </Box>
+            </Box> */}
           </Flex>
 
           <Divider />

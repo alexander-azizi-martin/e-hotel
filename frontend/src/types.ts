@@ -71,3 +71,7 @@ export interface RentingFormInfo {
   discount: number;
   additional_charges: number;
 }
+
+export interface HotelSearch extends HotelInfo {
+  rooms: RoomInfo[];
+}

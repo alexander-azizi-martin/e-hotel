@@ -3,11 +3,12 @@ import { create } from "zustand";
 interface SearchQuery {
   startDate: string;
   endDate: string;
-  maxPrice: null | number;
+  price: null | number;
   hotelChain: null | string;
   category: null | number;
   numberOfRooms: null | number;
   roomCapacity: string;
+  location: string;
   setDateRange: (dateRange: string[]) => void;
   setQuery: (query: SearchQueryOptional) => void;
 }
@@ -15,21 +16,23 @@ interface SearchQuery {
 interface SearchQueryOptional {
   startDate?: string;
   endDate?: string;
-  maxPrice?: null | number;
+  price?: null | number;
   hotelChain?: null | string;
   category?: null | number;
   numberOfRooms?: null | number;
   roomCapacity?: string;
+  location?: string;
 }
 
 const useSearchQuery = create<SearchQuery>((set) => ({
   startDate: "",
   endDate: "",
-  maxPrice: null,
+  price: null,
   hotelChain: null,
   category: null,
   numberOfRooms: null,
   roomCapacity: "any",
+  location: "",
   setDateRange: (dateRange: string[]) =>
     set((state) => ({
       ...state,
