@@ -501,18 +501,29 @@ VALUES
     (5, 508, 5, 'Pool', 300, FALSE, NULL);
 
 -- capacity of all the rooms of a specific hotel
-create view hotel_total_room_capacity as
-select name as hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
-from Room natural join hotel_chain
-where hotel_id = 103;
+CREATE VIEW hotel_total_room_capacity AS
+SELECT name AS hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
+FROM Room NATURAL JOIN hotel_chain;
 
--- number of available rooms per area
-create view available_rooms_in_area as
-select count(*) as available_rooms
-from Room natural join Hotel
-where (room_number, hotel_ID) not in ((select room_number, hotel_ID
-                                    from rental where check_in_date > '2023-04-03' and check_out_date < '2023-04-25')
-                                    union
-                                    (select room_number, hotel_ID
-                                    from booking where scheduled_check_in_date > '2023-04-03' and scheduled_check_out_date < '2023-04-25' and canceled = false))
-                                and address_country = 'USA' and address_province_state <> 'FL' and address_city <> 'UNFOUOUHFOGUHFHGU';
+-- this view will be queried with a select statement like the following: 
+SELECT * FROM hotel_total_room_capacity WHERE hotel_chain_name LIKE "Marriot" AND hotel_id = 1;
+-- finds the capacity of all the rooms of a Marriot hotel with id 1.
+
+-- number of available rooms per area (note the %s are parameters to pass in start date and end date)
+CREATE OR REPLACE VIEW available_rooms_in_area AS
+SELECT address_country, address_province_state, address_city, COUNT(*)
+FROM Room NATURAL JOIN Hotel
+WHERE (room_number, hotel_ID) NOT IN (
+    (
+        SELECT room_number, hotel_ID
+        FROM rental
+        WHERE check_in_date > %s AND check_out_date < %s
+    )
+    UNION
+    (
+        SELECT room_number, hotel_ID
+        FROM booking
+        WHERE scheduled_check_in_date > %s AND scheduled_check_out_date < %s AND canceled = false
+    )
+)
+GROUP BY address_country, address_province_state, address_city;

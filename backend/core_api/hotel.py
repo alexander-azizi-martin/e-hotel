@@ -166,3 +166,18 @@ class HotelByID(Resource):
 
         except Exception as e:
             return {"message": f"Error removing hotel: {e}"}, 500
+
+
+@hotel_namespace.route("/hotel/<int:hotel_ID>/total_capacity")
+class HotelTotalCapacity(Resource):
+    @hotel_namespace.doc(responses={200: "Success", 404: "Not found", 500: "Internal Server Error"})
+    def get(self, hotel_ID):
+        try:
+            total_capacity = current_app.db.get_total_capacity(hotel_ID)
+            if total_capacity is None:
+                return {"message": "Hotel not found."}, 404
+
+            return {"total_capacity": total_capacity}, 200
+
+        except Exception as e:
+            return {"message": f"Error retrieving total capacity: {e}"}, 500
