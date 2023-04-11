@@ -164,73 +164,79 @@ create index hotel_ID on hotel(hotel_id);
 
 create index room_number on room(room_number);
 
+create index chain_id on hotel_chain(chain_id);
+
+create index customer_ssn_sin on customer(customer_ssn_sin);
+
+create index employee_ssn_sin on employee(employee_ssn_sin);
+
 --Triggers for incrementing hotels on insert, decrementing number of hotels on delete
-CREATE OR REPLACE FUNCTION incr_number_of_hotels()
-RETURNS TRIGGER AS
+create or replace function incr_number_of_hotels()
+returns trigger as
     $$
-BEGIN
-    UPDATE Hotel_Chain
-    SET number_of_hotels = number_of_hotels + 1
-    WHERE chain_ID = NEW.chain_ID;
-    RETURN NEW;
-END;
+begin
+    update hotel_chain
+    set number_of_hotels = number_of_hotels + 1
+    where chain_id = new.chain_id;
+    return new;
+end;
 $$ 
-    LANGUAGE plpgsql;
+    language plpgsql;
 
-CREATE TRIGGER incr_hotel_trigger
-AFTER INSERT ON Hotel
-FOR EACH ROW
-EXECUTE FUNCTION incr_number_of_hotels();
+create trigger incr_hotel_trigger
+after insert on hotel
+for each row
+execute function incr_number_of_hotels();
 
-CREATE OR REPLACE FUNCTION decr_number_of_hotels()
-RETURNS TRIGGER AS
+create or replace function decr_number_of_hotels()
+returns trigger as
     $$
-BEGIN
-    UPDATE Hotel_Chain
-    SET number_of_hotels = number_of_hotels - 1
-    WHERE chain_ID = OLD.chain_ID;
-    RETURN OLD;
-END;
+begin
+    update hotel_chain
+    set number_of_hotels = number_of_hotels - 1
+    where chain_id = old.chain_id;
+    return old;
+end;
 $$ 
-    LANGUAGE plpgsql;
+    language plpgsql;
 
-CREATE TRIGGER decr_hotel_trigger
-AFTER DELETE ON Hotel
-FOR EACH ROW
-EXECUTE FUNCTION decr_number_of_hotels();
+create trigger decr_hotel_trigger
+after delete on hotel
+for each row
+execute function decr_number_of_hotels();
 
 
---Triggers for incrementing number of rooms in hotel on insert, decrementing number of rooms in hotel on delete
-CREATE OR REPLACE FUNCTION incr_number_of_rooms()
-RETURNS TRIGGER AS 
+--triggers for incrementing number of rooms in hotel on insert, decrementing number of rooms in hotel on delete
+create or replace function incr_number_of_rooms()
+returns trigger as 
     $$
-BEGIN
-  UPDATE Hotel
-  SET number_of_rooms = number_of_rooms + 1
-  WHERE hotel_ID = NEW.hotel_ID;
-  RETURN NEW;
-END;
+begin
+  update hotel
+  set number_of_rooms = number_of_rooms + 1
+  where hotel_id = new.hotel_id;
+  return new;
+end;
 $$ 
-    LANGUAGE plpgsql;
+    language plpgsql;
 
-CREATE TRIGGER incr_room_trigger
-AFTER INSERT ON Room
-FOR EACH ROW
-EXECUTE FUNCTION incr_number_of_rooms();
+create trigger incr_room_trigger
+after insert on room
+for each row
+execute function incr_number_of_rooms();
 
-CREATE OR REPLACE FUNCTION decr_number_of_rooms()
-RETURNS TRIGGER AS
+create or replace function decr_number_of_rooms()
+returns trigger as
     $$
-BEGIN
-  UPDATE Hotel
-  SET number_of_rooms = number_of_rooms - 1
-  WHERE hotel_ID = OLD.hotel_ID;
-  RETURN OLD;
-END;
+begin
+  update hotel
+  set number_of_rooms = number_of_rooms - 1
+  where hotel_id = old.hotel_id;
+  return old;
+end;
 $$ 
-    LANGUAGE plpgsql;
+    language plpgsql;
 
-CREATE TRIGGER decr_room_trigger
-AFTER DELETE ON Room
-FOR EACH ROW
-EXECUTE FUNCTION decr_number_of_rooms();
+create trigger decr_room_trigger
+after delete on room
+for each row
+execute function decr_number_of_rooms();
