@@ -502,8 +502,9 @@ VALUES
 
 -- capacity of all the rooms of a specific hotel
 create view hotel_total_room_capacity as
-select room_number, room_capacity
-from Room where hotel_ID = 103;
+select name as hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
+from Room natural join hotel_chain
+where hotel_id = 103;
 
 -- number of available rooms per area
 create view available_rooms_in_area as
