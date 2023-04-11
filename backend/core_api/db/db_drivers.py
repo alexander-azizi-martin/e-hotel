@@ -398,7 +398,11 @@ class Database(object):
         self.cursor.execute("SELECT * FROM Rental WHERE rental_ID = %s", (rental_id,))
         results = self.cursor.fetchall()
         return results
-
+    
+    def get_rentals_by_customer(self, customer_SSN_SIN):
+        self.cursor.execute("SELECT * FROM Rental WHERE customer_SSN_SIN = %s", (customer_SSN_SIN,))
+        results = self.cursor.fetchall()
+        return results
 
     ### INSERTION & UPDATION FUNCTIONS
     def insert_hotel(self, hotel_id, chain_id=None, number_of_rooms=None, address_street_name=None, address_street_number=None, 
