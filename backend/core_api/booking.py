@@ -163,3 +163,34 @@ class BookingByCustomerSSN_SIN(Resource):
             return parsed_bookings, 200
         except Exception as e:
             return {"message": f"Error getting bookings: {str(e)}"}, 500
+
+
+@booking_namespace.route("/all_bookings")
+class AllBookings(Resource):
+    @booking_namespace.doc(responses={200: "Success", 401: "Unauthorized", 500: "Internal Server Error"})
+    @jwt_required()
+    def get(self):
+        token_data = get_jwt()
+        if token_data["role"] != "employee":
+            return {"message": "Unauthorized!"}, 401
+        
+        try:
+            all_bookings = current_app.db.get_all_bookings()
+            parsed_bookings = [
+                {
+                    "booking_ID": booking[0],
+                    "booking_date": booking[1],
+                    "scheduled_check_in_date": booking[2],
+                    "scheduled_check_out_date": booking[3],
+                    "canceled": booking[4],
+                    "customer_SSN_SIN": booking[5],
+                    "room_number": booking[6],
+                    "hotel_ID": booking[7]
+                }
+                for booking in all_bookings
+            ]
+
+            return parsed_bookings, 200
+        except Exception as e:
+            return {"message": f"Error getting all bookings: {str(e)}"}, 500
+

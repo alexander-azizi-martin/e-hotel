@@ -375,10 +375,15 @@ class Database(object):
         results = self.cursor.fetchall()
         return results
 
-    def get_all_bookings(self, ssn_sin):
-        self.cursor.execute("SELECT * FROM Booking WHERE customer_SSN_SIN = %s", (ssn_sin,))
+    def get_all_bookings(self, ssn_sin=None):
+        if ssn_sin is None:
+            self.cursor.execute("SELECT * FROM Booking WHERE canceled = false")
+        else:
+            self.cursor.execute("SELECT * FROM Booking WHERE customer_SSN_SIN = %s AND canceled = false", (ssn_sin,))
+        
         results = self.cursor.fetchall()
         return results
+
         
     def get_booking(self, booking_id):
         self.cursor.execute("SELECT * FROM Booking WHERE booking_ID = %s AND canceled = FALSE", (booking_id,))
