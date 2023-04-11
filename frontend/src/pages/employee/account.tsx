@@ -7,9 +7,7 @@ import { useForm, isNotEmpty } from "@mantine/form";
 import { message } from "antd";
 import {
   TextInput,
-  PasswordInput,
   Button,
-  Text,
   Stack,
   Center,
   Group,

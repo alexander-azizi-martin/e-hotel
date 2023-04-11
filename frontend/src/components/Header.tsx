@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import Link from "next/link";
 import { Flex, Text, Divider, Center } from "@mantine/core";
 import { IconBed } from "@tabler/icons";
@@ -6,7 +5,6 @@ import FilterOptions from "./FilterOptions";
 import SearchBar from "./SearchBar";
 import DateRangePicker from "./DateRangePicker";
 import UserMenu from "./UserMenu";
-import { Token } from "~/types";
 
 interface HeaderProps {
   displayFilter?: boolean;

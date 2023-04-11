@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import { useForm, isNotEmpty, hasLength } from "@mantine/form";
 import Link from "next/link";
 import {
-  TextInput,
   PasswordInput,
   Button,
   Text,
@@ -73,7 +72,7 @@ export default function Login() {
         />
 
         <Text>
-          Don't have an account{" "}
+          Don&apos;t have an account{" "}
           <Link href="/signup" style={{ textDecoration: "unset" }}>
             signup
           </Link>

@@ -1,16 +1,13 @@
-import { useForm, isNotEmpty, hasLength, isInRange } from "@mantine/form";
-import Link from "next/link";
+import { useEffect } from "react";
+import { useForm, isNotEmpty, isInRange } from "@mantine/form";
 import {
   TextInput,
-  PasswordInput,
   Button,
   Text,
   Stack,
-  Center,
   Group,
   Radio,
   Textarea,
-  Title,
   Flex,
   SegmentedControl,
   NumberInput,
@@ -19,10 +16,11 @@ import { RoomInfo } from "~/types";
 
 interface RoomFormProps {
   room?: RoomInfo;
+  setFormReset?: (formReset: () => void) => void;
   onSubmit: (room: RoomInfo) => void;
 }
 
-export default function RoomFormProps(props: RoomFormProps) {
+export default function RoomForm(props: RoomFormProps) {
   const form = useForm({
     initialValues: {
       room_number: props.room?.room_number || null,
@@ -52,23 +50,30 @@ export default function RoomFormProps(props: RoomFormProps) {
     },
   });
 
+  useEffect(() => {
+    if (props.setFormReset) props.setFormReset(form.reset);
+  }, [form.reset, props.setFormReset]);
+
   return (
     <Stack spacing="md">
-      <Group align="center">
-        <NumberInput
-          placeholder="Hotel Id"
-          label="Hotel Id"
-          {...form.getInputProps("hotel_id")}
-        />
-        <NumberInput
-          placeholder="Room Number"
-          label="Room Number"
-          {...form.getInputProps("room_number")}
-        />
-      </Group>
+      {!props.room && (
+        <Group align="center">
+          <NumberInput
+            placeholder="Hotel Id"
+            label="Hotel Id"
+            {...form.getInputProps("hotel_id")}
+          />
+          <NumberInput
+            placeholder="Room Number"
+            label="Room Number"
+            {...form.getInputProps("room_number")}
+          />
+        </Group>
+      )}
       <NumberInput
         placeholder="Price Per Night"
         label="Price Per Night"
+        icon="$"
         {...form.getInputProps("price_per_night")}
       />
       <TextInput

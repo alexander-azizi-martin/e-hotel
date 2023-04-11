@@ -18,7 +18,7 @@ export default function Bookings(props: BookingsProps) {
         <Center sx={{ marginTop: "20px" }}>
           <Stack spacing="md">
             {props.bookings.map((booking) => (
-              <Booking booking={booking} />
+              <Booking booking={booking} key={booking.booking_ID} />
             ))}
             {props.bookings.length === 0 && (
               <Text>You do not currently have any bookings</Text>

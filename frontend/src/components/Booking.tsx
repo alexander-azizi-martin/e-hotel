@@ -1,6 +1,7 @@
 import axios from "axios";
+import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Text, Group, Stack, Button, Flex, Container } from "@mantine/core";
+import { Text, Stack, Button, Flex, Paper } from "@mantine/core";
 import { message } from "antd";
 import AddPaymentInfo from "~/components/AddPaymentInfo";
 import useToken from "~/utils/useToken";
@@ -14,6 +15,7 @@ export default function Booking(props: BookingProps) {
   const token = useToken();
 
   const [added, { open: add }] = useDisclosure();
+  const [cancelled, setCancelled] = useState(false);
 
   const handleCancel = async () => {
     try {
@@ -21,14 +23,17 @@ export default function Booking(props: BookingProps) {
         `http://127.0.0.1:5000/booking/booking/${props.booking.booking_ID}`
       );
 
-      message.success("Booking successfully cancelled")
+      setCancelled(true);
+      message.success("Booking successfully cancelled");
     } catch {
-      message.error("Something went wrong while trying to cancel the booking")
+      message.error("Something went wrong while trying to cancel the booking");
     }
   };
 
+  if (cancelled) return <></>;
+
   return (
-    <Container>
+    <Paper shadow="xs" p="lg">
       <Stack spacing="md">
         <Text>Booked: {props.booking.booking_date}</Text>
         <Flex justify="space-between">
@@ -49,6 +54,6 @@ export default function Booking(props: BookingProps) {
           </Flex>
         )}
       </Stack>
-    </Container>
+    </Paper>
   );
 }

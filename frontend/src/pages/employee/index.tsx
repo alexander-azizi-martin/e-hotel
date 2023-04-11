@@ -15,13 +15,15 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
-  const isLoggedIn = context.req.cookies["access_token"];
+  const access_token = context.req.cookies["access_token"];
 
-  if (!isLoggedIn) {
+  if (!access_token) {
     return {
       redirect: { destination: "/login", permanent: false },
     };
   }
+
+  
 
   return {
     props: {},

@@ -1,7 +1,7 @@
 import Payment from "payment";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm, isNotEmpty } from "@mantine/form";
-import { Modal, Button, TextInput, Group, Box, Stack } from "@mantine/core";
+import { Modal, Button, TextInput, Group, Stack } from "@mantine/core";
 import { message } from "antd";
 
 interface AddPaymentInfoProps {

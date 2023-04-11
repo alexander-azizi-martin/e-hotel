@@ -1,4 +1,3 @@
-import axios from "axios";
 import { GetServerSideProps } from "next";
 import Header from "~/components/Header";
 

@@ -1,7 +1,5 @@
 import axios from "axios";
-import jwt from "jwt-simple";
 import Cookies from "js-cookie";
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useForm, isNotEmpty, hasLength } from "@mantine/form";
@@ -143,22 +141,3 @@ export default function SignUp() {
     </Center>
   );
 }
-
-export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
-  const access_token = context.req.cookies["session_token"];
-
-  if (access_token) {
-    const token: Token = jwt.decode(access_token, "", false);
-
-    return {
-      redirect: {
-        destination: token.role === "customer" ? "/" : "/employee",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};

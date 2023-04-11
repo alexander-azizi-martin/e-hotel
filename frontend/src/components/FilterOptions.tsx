@@ -127,6 +127,7 @@ export default function FilterOptions() {
               <Radio.Group {...form.getInputProps("hotelChain")}>
                 {hotelChains.map((chain) => (
                   <Radio
+                    key={chain.chain_ID}
                     value={chain.chain_ID}
                     label={chain.name}
                     onClick={() => {
