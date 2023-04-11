@@ -34,7 +34,7 @@ CREATE TABLE Employee (
   hotel_ID INT NOT NULL,
   is_manager BOOLEAN NOT NULL,
   PRIMARY KEY (employee_SSN_SIN, employee_ID),
-  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID)
+  FOREIGN KEY (hotel_ID) REFERENCES Hotel(hotel_ID) ON DELETE SET NULL
 );
 
 CREATE TABLE Employee_Role (

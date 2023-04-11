@@ -789,6 +789,9 @@ class Database(object):
         if check_in_date + datetime.timedelta(days=1) == check_out_date:
             return (False, "Error: Check-in date and check-out date cannot be the same day.")
         
+        # if not check_employee_belongs_to_hotel(employee_ssn_sin, employee_id, hotel_id): 
+        #    return (False, "Error: Employee is not authorized to create a rental for this hotel.")
+        
         try:
             # Check if the customer exists
             existing_customer = self.get_customer(customer_SSN_SIN)
