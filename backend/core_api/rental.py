@@ -109,7 +109,8 @@ class ConvertBookingToRental(Resource):
 
         employee_ssn_sin = get_jwt_identity()
         token_data = get_jwt()
-        employee_id = token_data.get("employee_id", None)
+        data = request.json
+        employee_id = data.get("employee_id", None)
 
         if token_data["role"] != "employee":
             return {"message": "Unauthorized!"}, 401
@@ -122,7 +123,6 @@ class ConvertBookingToRental(Resource):
         if not employee or employee[1] != employee_id:
             return {"message": "Employee ID mismatch or employee not found!"}, 401
 
-        data = request.json
         success, message = current_app.db.convert_booking_to_rental(
             booking_id,
             employee_ssn_sin,
