@@ -101,6 +101,9 @@ class Hotel(Resource):
 class HotelSearch(Resource):
     @hotel_namespace.doc(responses={200: "Success", 500: "Internal Server Error"})
     def get(self):
+        start_date = request.args.get('start_date', None)
+        end_date = request.args.get('end_date', None)
+        hotel_chain = request.args.get('hotel_chain', None)
         city = request.args.get('city', None)
         star_rating = request.args.get('star_rating', None)
         view_type = request.args.get('view_type', None)
@@ -108,10 +111,12 @@ class HotelSearch(Resource):
         is_extendable = request.args.get('is_extendable', None)
         price_per_night = request.args.get('price_per_night', None)
         start_date = request.args.get('start_date', None)
-        end_date = request.args.get('end_date', None)
+
+        if not start_date or not end_date:
+            return {"message": "Start date and end date are required."}, 400
 
         try:
-            hotels = current_app.db.search_hotels_and_rooms(city=city, star_rating=star_rating, view_type=view_type, room_capacity=room_capacity, is_extendable=is_extendable, price_per_night=price_per_night)
+            hotels = current_app.db.search_hotels_and_rooms(start_date=start_date, end_date=end_date, hotel_chain=hotel_chain, city=city, star_rating=star_rating, view_type=view_type, room_capacity=room_capacity, is_extendable=is_extendable, price_per_night=price_per_night)
             return hotels, 200
 
         except Exception as e:
