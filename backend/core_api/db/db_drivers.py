@@ -591,14 +591,12 @@ class Database(object):
                     update_query += f"{column} = %s, "
                     update_values.append(value)
 
-            # Update manager role if necessary
-            if promote_to_manager is not None or demote_from_manager is not None:
-                if promote_to_manager:
-                    update_query += "is_manager = %s, "
-                    update_values.append(True)
-                else:
-                    update_query += "is_manager = %s, "
-                    update_values.append(False)
+            if promote_to_manager:
+                update_query += "is_manager = %s, "
+                update_values.append(True)
+            else:
+                update_query += "is_manager = %s, "
+                update_values.append(False)
 
             # Check if any values were added to the query
             if len(update_values) == 0:
@@ -869,17 +867,40 @@ class Database(object):
             self.connection.rollback()
 
     # ONLY RETURNS HOTELS THAT HAVE ROOMS
-    def search_hotels_and_rooms(self, city=None, star_rating=None, view_type=None, room_capacity=None, is_extendable=None, price_per_night=None):
+    def search_hotels_and_rooms(self, start_date, end_date, hotel_chain=None, city=None, star_rating=None, view_type=None, room_capacity=None, is_extendable=None, price_per_night=None):
         query = """
-            SELECT h.hotel_ID, h.chain_ID, h.number_of_rooms, h.address_street_name, h.address_street_number, 
-                  h.address_city, h.address_province_state, h.address_country, h.contact_email, h.star_rating, 
-                  r.room_number, r.room_capacity, r.view_type, r.price_per_night, r.is_extendable, r.room_problems
+        SELECT hc.name, hc.chain_id, h.hotel_ID, h.chain_ID, h.number_of_rooms, h.address_street_name, h.address_street_number, 
+            h.address_city, h.address_province_state, h.address_country, h.contact_email, h.star_rating, 
+            r.room_number, r.room_capacity, r.view_type, r.price_per_night, r.is_extendable, r.room_problems
             FROM Hotel h
             JOIN Room r ON h.hotel_ID = r.hotel_ID
+            JOIN Hotel_Chain hc ON h.chain_ID = hc.chain_ID
             WHERE 1 = 1
+            AND NOT EXISTS (
+                SELECT 1
+                FROM Booking b
+                WHERE b.room_number = r.room_number
+                AND b.hotel_ID = h.hotel_ID
+                AND NOT (b.scheduled_check_out_date <= %(start_date)s OR b.scheduled_check_in_date >= %(end_date)s)
+                AND b.canceled = false
+            )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM Rental rt
+                WHERE rt.room_number = r.room_number
+                AND rt.hotel_ID = h.hotel_ID
+                AND NOT (rt.check_out_date <= %(start_date)s OR rt.check_in_date >= %(end_date)s)
+            )
         """
 
-        params = {}
+        params = {
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        if hotel_chain is not None:
+            query += " AND hc.name = %(hotel_chain)s"
+            params['hotel_chain'] = hotel_chain
 
         if city is not None:
             query += " AND h.address_city = %(city)s"
@@ -905,11 +926,53 @@ class Database(object):
             query += " AND r.price_per_night <= %(price_per_night)s"
             params['price_per_night'] = price_per_night
 
-        query += " ORDER BY h.hotel_ID, r.room_number"
+        query += " ORDER BY hc.name, h.hotel_ID, r.room_number"
 
         self.cursor.execute(query, params)
         rows = self.cursor.fetchall()
 
+        hotels = {}
+
+        for row in rows:
+            chain_id = row[1]
+            chain_name = row[0]
+            hotel_id = row[2]
+
+            if chain_id not in hotels:
+                hotels[chain_id] = {
+                    'chain_ID': chain_id,
+                    'chain_name': chain_name,
+                    'hotels': []
+                }
+
+            hotel = next((x for x in hotels[chain_id]['hotels'] if x['hotel_ID'] == hotel_id), None)
+            if not hotel:
+                hotel = {
+                    'hotel_ID': row[3],
+                    'number_of_rooms': row[4],
+                    'address_street_name': row[5],
+                    'address_street_number': row[6],
+                    'address_city': row[7],
+                    'address_province_state': row[8],
+                    'address_country': row[9],
+                    'contact_email': row[10],
+                    'star_rating': row[11],
+                    'rooms': []
+                }
+                hotels[chain_id]['hotels'].append(hotel)
+
+            hotel['rooms'].append({
+                'room_number': row[12],
+                'room_capacity': row[13],
+                'view_type': row[14],
+                'price_per_night': row[15],
+                'is_extendable': row[16],
+                'room_problems': row[17]
+            })
+
+        return list(hotels.values())
+
+        '''
         hotels = []
         current_hotel = None
 
@@ -941,6 +1004,7 @@ class Database(object):
             })
 
         return hotels
+        '''
     
 
     def update_customer(self, customer_SSN_SIN, first_name=None, last_name=None, address_street_name=None, address_street_number=None, address_city=None, address_province_state=None, address_country=None):
@@ -1085,8 +1149,24 @@ class Database(object):
         results = self.cursor.fetchall()
         return results
 
-
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 if __name__ == '__main__':
     test_db = Database(TEST_DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
-    print(test_db.get_rooms_per_area_by_date('2023-04-03', '2023-04-25'))
+    start_date = '2023-04-07'
+    end_date = '2023-04-13'
+    res = test_db.search_hotels_and_rooms(start_date, end_date)
+    # to print out the results of the search query properly.
+    for chain in res:
+        print(f"Chain Name: {chain['chain_name']}")
+        for hotel in chain['hotels']:
+            print(f"\tHotel Name: {hotel['address_street_name']}")
+            print(f"\tAddress: {hotel['address_street_number']} {hotel['address_street_name']}, {hotel['address_city']}, {hotel['address_province_state']}, {hotel['address_country']}")
+            print(f"\tContact Email: {hotel['contact_email']}")
+            print(f"\tStar Rating: {hotel['star_rating']}")
+            for room in hotel['rooms']:
+                print(f"\t\tRoom Number: {room['room_number']}")
+                print(f"\t\tRoom Capacity: {room['room_capacity']}")
+                print(f"\t\tView Type: {room['view_type']}")
+                print(f"\t\tPrice per Night: {room['price_per_night']}")
+                print(f"\t\tIs Extendable: {room['is_extendable']}")
+                print(f"\t\tRoom Problems: {room['room_problems']}")
