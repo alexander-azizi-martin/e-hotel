@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import dayjs from "dayjs";
 
 import {
@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { RangeCalendar } from "@mantine/dates";
 import { Calendar } from "react-feather";
+import useSearchQuery from "~/utils/useSearchQuery";
 
 type DateRange = [Date | null, Date | null];
 
@@ -27,6 +28,14 @@ interface DateRangePickerProps {
 
 export default function DateRangePicker(props: DateRangePickerProps) {
   const [dateRange, setDateRange] = useState<DateRange>([null, null]);
+  const setSearchQuery = useSearchQuery((state) => state.setQuery);
+
+  useEffect(() => {
+    setSearchQuery({
+      startDate: dayjs(dateRange[0]).format("YYYY-MM-DD"),
+      endDate: dayjs(dateRange[1]).format("YYYY-MM-DD"),
+    });
+  }, [dateRange]);
 
   useLayoutEffect(() => {
     if (dateRange[0] && (!dateRange[1] || dateRange[0] > dateRange[1])) {

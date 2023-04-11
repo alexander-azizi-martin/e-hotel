@@ -19,10 +19,13 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { IconAdjustments } from "@tabler/icons";
+import useSearchQuery from "~/utils/useSearchQuery";
 import { HotelChainInfo } from "~/types";
 
 export default function FilterOptions() {
   const [open, toggle] = useToggle();
+  const setSearchQuery = useSearchQuery((state) => state.setQuery);
+
   const form = useForm({
     initialValues: {
       minPrice: 0,
@@ -35,6 +38,10 @@ export default function FilterOptions() {
   });
 
   const [hotelChains, setHotelChains] = useState<HotelChainInfo[]>([]);
+
+  useEffect(() => {
+    setSearchQuery(form.values);
+  }, [form.values]);
 
   useEffect(() => {
     axios
