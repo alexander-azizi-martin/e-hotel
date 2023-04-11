@@ -71,7 +71,7 @@ class Hotel(Resource):
     def put(self):
         token_data = get_jwt()
         if not token_data.get("is_manager", False):
-            return {"message": "Unauthorized!"}, 401
+            return {"message": "Only managers can edit hotels"}, 401
 
         data = request.json
         hotel_id = data["hotel_ID"]
@@ -95,6 +95,15 @@ class Hotel(Resource):
 
         except Exception as e:
             return {"message": f"Error updating hotel: {e}"}, 500
+        
+    @hotel_namespace.doc(responses={200: "Success", 500: "Internal Server Error"})
+    def get(self):
+        try:
+            hotels = current_app.db.get_all_hotels()
+            return hotels, 200
+
+        except Exception as e:
+            return {"message": f"Error getting hotels: {e}"}, 500
     
 
 @hotel_namespace.route("/hotel/search")
@@ -154,7 +163,7 @@ class HotelByID(Resource):
     def delete(self, hotel_ID):
         token_data = get_jwt()
         if not token_data.get("is_manager", False):
-            return {"message": "Unauthorized!"}, 401
+            return {"message": "Only managers can delete hotels"}, 401
 
         try:
             existing_hotel = current_app.db.get_hotel(hotel_ID)

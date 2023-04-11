@@ -41,7 +41,7 @@ class Room(Resource):
     def post(self):
         token_data = get_jwt()
         if not token_data.get("is_manager", False):
-            return {"message": "Unauthorized!"}, 401
+            return {"message": "Only managers can create rooms"}, 401
 
         data = request.json
         room_number = data["room_number"]
@@ -73,6 +73,33 @@ class Room(Resource):
 
         except Exception as e:
             return {"message": f"Error adding room: {e}"}, 500
+
+    def get():
+      rooms  = current_app.db.get_all_rooms_with_hotel_info()
+
+      formatted_rooms = []
+      for room in rooms:
+          formatted_rooms.append({
+              'room_number': room[0],
+              'hotel_ID': room[1],
+              'room_capacity': room[2],
+              'view_type': room[3],
+              'price_per_night': room[4],
+              'is_extendable': room[5],
+              'room_problems': room[6],
+              'chain_id': room[7],
+              'number_of_rooms': room[9],
+              'address_street_name': room[10],
+              'address_street_number': room[11],
+              'address_city': room[12],
+              'address_province_state': room[13],
+              'address_country': room[14],
+              'contact_email': room[15],
+              'star_rating': room[16]
+          })
+          
+
+      return rooms, 200
 
     @room_namespace.doc(
         responses={

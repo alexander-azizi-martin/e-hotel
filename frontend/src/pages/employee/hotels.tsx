@@ -1,6 +1,6 @@
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { Stack, Text, Center } from "@mantine/core";
+import { Center, Text, Container, Flex } from "@mantine/core";
 import Header from "~/components/Header";
 import Hotel from "~/components/Hotel";
 import { HotelInfo } from "~/types";
@@ -14,16 +14,18 @@ export default function Hotels(props: HotelsProps) {
     <>
       <Header />
       <main>
-        <Center sx={{ marginTop: "20px" }}>
-          <Stack spacing="md">
-            {props.hotels.map((hotel) => (
-              <Hotel hotel={hotel} key={hotel.hotel_id} />
-            ))}
-            {props.hotels.length === 0 && (
-              <Text>There currently aren't any hotels</Text>
-            )}
-          </Stack>
-        </Center>
+        <Container sx={{ marginTop: "20px", marginBottom: "20px" }}>
+          <Center>
+            <Flex wrap="wrap" gap="30px">
+              {props.hotels.map((hotel) => (
+                <Hotel hotel={hotel} key={hotel.hotel_id} />
+              ))}
+              {props.hotels.length === 0 && (
+                <Text>There currently aren't any hotels</Text>
+              )}
+            </Flex>
+          </Center>
+        </Container>
       </main>
     </>
   );
@@ -41,11 +43,10 @@ export const getServerSideProps: GetServerSideProps<HotelsProps> = async (
   }
 
   const { data } = await axios.get<HotelInfo[]>(
-    `http://127.0.0.1:5000/hotel/hotel/search`,
-    {
-      headers: { Authorization: `Bearer ${access_token}` },
-    }
+    `http://127.0.0.1:5000/hotel/hotel`
   );
+
+  console.log(data);
 
   return {
     props: { hotels: data },

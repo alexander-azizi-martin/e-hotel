@@ -34,6 +34,7 @@ export interface HotelChainInfo {
 
 export interface HotelInfo {
   hotel_id: number;
+  hotel_ID: number;
   chain_id: number;
   number_of_rooms: number;
   address_street_name: string;
@@ -72,6 +73,10 @@ export interface RentingFormInfo {
   additional_charges: number;
 }
 
-export interface HotelSearch extends HotelInfo {
+export interface HotelWithRooms extends HotelInfo {
   rooms: RoomInfo[];
+}
+
+export interface HotelChainSearch extends HotelChainInfo {
+  hotels: HotelWithRooms[];
 }

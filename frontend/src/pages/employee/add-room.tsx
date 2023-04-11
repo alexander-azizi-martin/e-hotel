@@ -14,9 +14,21 @@ export default function AddRoom() {
     try {
       const access_token = Cookies.get("access_token");
 
-      await axios.post("http://127.0.0.1:5000/room/room", values, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      await axios.post(
+        "http://127.0.0.1:5000/room/room",
+        {
+          room_number: values.room_number,
+          hotel_ID: values.hotel_id,
+          room_capacity: values.room_capacity,
+          view_type: values.view_type,
+          price_per_night: values.price_per_night,
+          is_extendable: values.is_extendable,
+          room_problems: values.room_problems,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
 
       formReset();
       message.success("Room successfully created");
@@ -29,7 +41,7 @@ export default function AddRoom() {
     <>
       <Header />
       <main>
-        <Container sx={{ marginTop: "20px" }}>
+        <Container sx={{ marginTop: "20px", marginBottom: "20px" }} size="sm">
           <RoomForm onSubmit={handleSubmit} setFormReset={setFormReset} />
         </Container>
       </main>

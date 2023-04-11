@@ -1,4 +1,5 @@
 import axios from "axios";
+import jwt from "jwt-simple";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -64,7 +65,11 @@ export default function SignUp() {
         role: "customer",
       });
 
+      const access_token = nextRes.data["access_token"];
+      const token: Token = jwt.decode(access_token, "", true);
+
       Cookies.set("access_token", nextRes.data["access_token"]);
+      Cookies.set("role", token.role);
       router.push("/");
     } catch (error: any) {
       message.error(error.response.data.message);

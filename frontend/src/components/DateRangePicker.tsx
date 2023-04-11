@@ -30,8 +30,12 @@ export default function DateRangePicker(props: DateRangePickerProps) {
   const [dateRange, setDateRange] = useState<DateRange>([null, null]);
 
   useEffect(() => {
-    const startDate = dayjs(dateRange[0]).format("YYYY-MM-DD");
-    const endDate = dayjs(dateRange[1]).format("YYYY-MM-DD");
+    const startDate = dateRange[0]
+      ? dayjs(dateRange[0]).format("YYYY-MM-DD")
+      : "";
+    const endDate = dateRange[1]
+      ? dayjs(dateRange[1]).format("YYYY-MM-DD")
+      : "";
 
     if (props.setDateRange) props.setDateRange([startDate, endDate]);
   }, [dateRange, props.setDateRange]);

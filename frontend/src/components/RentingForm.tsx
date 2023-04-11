@@ -1,13 +1,17 @@
-import { useEffect } from "react";
-import { useForm, isNotEmpty, isEmail, isInRange } from "@mantine/form";
+import { useEffect, useCallback } from "react";
+import { useDisclosure } from "@mantine/hooks";
+import { useForm, isNotEmpty, isInRange } from "@mantine/form";
 import {
   Button,
   Stack,
   Group,
   NumberInput,
   Text,
+  Center,
+  Box,
 } from "@mantine/core";
 import DateRangePicker from "~/components/DateRangePicker";
+import AddPaymentInfo from "./AddPaymentInfo";
 import { RentingFormInfo } from "~/types";
 
 interface HotelForm {
@@ -16,6 +20,8 @@ interface HotelForm {
 }
 
 export default function RentingForm(props: HotelForm) {
+  const [opened, { open, close }] = useDisclosure();
+
   const form = useForm({
     initialValues: {
       discount: 0,
@@ -43,15 +49,18 @@ export default function RentingForm(props: HotelForm) {
     },
   });
 
-  const handleDateChange = (dateRange: string[]) => {
-    form.setValues({
-      check_in_date: dateRange[0],
-      check_out_date: dateRange[1],
-    });
-  };
+  const handleDateChange = useCallback(
+    (dateRange: string[]) => {
+      form.setValues({
+        check_in_date: dateRange[0],
+        check_out_date: dateRange[1],
+      });
+    },
+    [form.setValues]
+  );
 
   useEffect(() => {
-    if (props.setFormReset) props.setFormReset(form.reset);
+    if (props.setFormReset) props.setFormReset(() => form.reset);
   }, [form.reset, props.setFormReset]);
 
   return (
@@ -61,13 +70,7 @@ export default function RentingForm(props: HotelForm) {
         label="Customer SSN"
         {...form.getInputProps("customer_SSN_SIN")}
       />
-      <Stack>
-        <DateRangePicker setDateRange={handleDateChange} />
-        <Text color="red" size="xs">
-          {form.errors.check_in_date}
-        </Text>
-      </Stack>
-      <Group align="center">
+      <Group position="apart">
         <NumberInput
           placeholder="Hotel Id"
           label="Hotel Id"
@@ -79,26 +82,44 @@ export default function RentingForm(props: HotelForm) {
           {...form.getInputProps("room_number")}
         />
       </Group>
-      <Group align="center">
+      <Group position="apart">
         <NumberInput
           placeholder="Discount"
           icon="%"
           label="Discount"
           {...form.getInputProps("discount")}
+          sx={{ maxWidth: "225px" }}
         />
         <NumberInput
           placeholder="Additional Charges"
           icon="$"
           label="Additional Charges"
           {...form.getInputProps("additional_charges")}
+          sx={{ maxWidth: "225px" }}
         />
       </Group>
-      <Button
-        type="submit"
-        onClick={form.onSubmit(props.onSubmit as any) as any}
-      >
-        Submit
-      </Button>
+      <Center>
+        <Stack sx={{ padding: "10px 0px" }}>
+          <DateRangePicker
+            setDateRange={handleDateChange}
+            startDateLabel="Check In"
+            endDateLabel="Check Out"
+          />
+          <Text color="red" size="xs" sx={{ marginTop: "-10px" }}>
+            {form.errors.check_in_date}
+          </Text>
+        </Stack>
+      </Center>
+      <Group position="apart">
+        <AddPaymentInfo complete={opened} setComplete={open} />
+        <Button
+          type="submit"
+          onClick={form.onSubmit(props.onSubmit as any) as any}
+          disabled={!opened}
+        >
+          Submit
+        </Button>
+      </Group>
     </Stack>
   );
 }

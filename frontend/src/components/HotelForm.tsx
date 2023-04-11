@@ -46,11 +46,23 @@ export default function HotelForm(props: HotelForm) {
   });
 
   useEffect(() => {
-    if (props.setFormReset) props.setFormReset(form.reset);
+    if (props.setFormReset)
+      props.setFormReset(() => () => {
+        form.reset();
+        form.setValues({
+          contact_email: "",
+          address_city: "",
+          address_country: "",
+          address_province_state: "",
+          address_street_name: "",
+          address_street_number: "",
+          star_rating: undefined,
+        });
+      });
   }, [form.reset, props.setFormReset]);
-
+  console.log(form.errors);
   return (
-    <Stack spacing="md">
+    <Stack spacing="md" sx={{ padding: "20px" }}>
       {!props.hotel && (
         <Group align="center">
           <NumberInput
@@ -108,6 +120,9 @@ export default function HotelForm(props: HotelForm) {
       <Stack>
         <Text>Star Rating</Text>
         <Rating {...form.getInputProps("star_rating")} />
+        <Text size="xs" sx={{ marginTop: "-10px" }} color="red">
+          {form.errors.star_rating}
+        </Text>
       </Stack>
 
       <Button

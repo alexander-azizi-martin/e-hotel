@@ -1,6 +1,7 @@
 from sqlalchemy.sql.expression import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+from random import randint
 import os
 import psycopg2
 import datetime
@@ -353,6 +354,11 @@ class Database(object):
         self.cursor.execute("SELECT * FROM Hotel_Chain_Phone_Number WHERE chain_ID = %s", (chain_id,))
         results = self.cursor.fetchall()
         return results
+    
+    def get_all_rooms_with_hotel_info(self):
+        self.cursor.execute("SELECT * FROM ROOM LEFT JOIN hotel on room.hotel_id = hotel.hotel_id")
+        results = self.cursor.fetchall()
+        return results
 
     def get_all_rooms(self):
         self.cursor.execute("SELECT * FROM Room")
@@ -675,7 +681,7 @@ class Database(object):
         if check_in_date >= check_out_date:
             raise Exception("Error: Check-in date must be earlier than check-out date.")
 
-        if check_in_date + datetime.timedelta(days=1) == check_out_date:
+        if check_in_date + datetime.timedelta(days=0) == check_out_date:
             raise Exception("Error: Check-in date and check-out date cannot be the same day.")
 
         try:
@@ -708,9 +714,9 @@ class Database(object):
 
             # Insert the booking
             self.cursor.execute("""
-                INSERT INTO Booking (booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID) 
-                VALUES (%s, %s, %s, false, %s, %s, %s)
-            """, (datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id))
+                INSERT INTO Booking (booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID, booking_id) 
+                VALUES (%s, %s, %s, false, %s, %s, %s, %s)
+            """, (datetime.date.today(), check_in_date, check_out_date, customer_SSN_SIN, room_number, hotel_id, randint(1, 1000000000)))
             self.commit()
 
         except Exception as e:
@@ -876,6 +882,33 @@ class Database(object):
             self.connection.rollback()
             return (False, f"Error creating rental:{e}")
 
+    def get_all_hotels(self):
+        query = """
+        SELECT h.hotel_ID, h.chain_ID, h.number_of_rooms, h.address_street_name, h.address_street_number, 
+            h.address_city, h.address_province_state, h.address_country, h.contact_email, h.star_rating
+            FROM Hotel h;
+        """
+
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+
+        hotels = []
+        for row in rows:
+            hotels.append({  
+              "hotel_id": row[0],
+              "chain_id": row[1],
+              "number_of_rooms": row[2],
+              "address_street_name": row[3],
+              "address_street_number": row[4],
+              "address_city": row[5],
+              "address_province_state": row[6],
+              "address_country": row[7],
+              "contact_email": row[8],
+              "star_rating": row[9]
+            })
+
+        return hotels
+
     # ONLY RETURNS HOTELS THAT HAVE ROOMS
     def search_hotels_and_rooms(self, start_date, end_date, hotel_chain=None, city=None, star_rating=None, view_type=None, room_capacity=None, is_extendable=None, price_per_night=None):
         query = """
@@ -958,7 +991,7 @@ class Database(object):
             hotel = next((x for x in hotels[chain_id]['hotels'] if x['hotel_ID'] == hotel_id), None)
             if not hotel:
                 hotel = {
-                    'hotel_ID': row[3],
+                    'hotel_ID': hotel_id,
                     'number_of_rooms': row[4],
                     'address_street_name': row[5],
                     'address_street_number': row[6],
@@ -1086,7 +1119,7 @@ class Database(object):
                 "UPDATE Booking SET canceled = TRUE WHERE booking_ID = %s",
                 (booking_id,)
             )
-            self.conn.commit()
+            self.connection.commit()
 
             # Check if any rows were affected (i.e., the booking was found and updated)
             if self.cursor.rowcount > 0:
@@ -1094,7 +1127,7 @@ class Database(object):
             else:
                 return False, "Booking not found."
         except Exception as e:
-            self.conn.rollback()
+            self.connection.rollback()
             return False, f"Error: {str(e)}"
 
     def get_rooms_per_area_by_date(self, start_date, end_date):

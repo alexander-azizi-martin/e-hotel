@@ -2,7 +2,15 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Text, Stack, Button, Flex, Paper, Modal } from "@mantine/core";
+import {
+  Text,
+  Stack,
+  Button,
+  Group,
+  Paper,
+  Modal,
+  Rating,
+} from "@mantine/core";
 import { message } from "antd";
 import HotelForm from "~/components/HotelForm";
 import useToken from "~/utils/useToken";
@@ -13,7 +21,7 @@ interface HotelProps {
 }
 
 export default function Hotel(props: HotelProps) {
-  const [opened, { close }] = useDisclosure();
+  const [opened, { open, close }] = useDisclosure();
   const [display, setDisplay] = useState(true);
   const [hotel, setHotel] = useState(props.hotel);
 
@@ -23,10 +31,26 @@ export default function Hotel(props: HotelProps) {
     try {
       const access_token = Cookies.get("access_token");
 
-      await axios.put(`http://127.0.0.1:5000/hotel/hotel`, values, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      await axios.put(
+        `http://127.0.0.1:5000/hotel/hotel`,
+        {
+          hotel_ID: values.hotel_id,
+          chain_ID: values.chain_id,
+          number_of_rooms: values.number_of_rooms,
+          address_street_name: values.address_street_name,
+          address_street_number: values.address_street_number,
+          address_city: values.address_city,
+          address_province_state: values.address_province_state,
+          address_country: values.address_country,
+          contact_email: values.contact_email,
+          star_rating: values.star_rating,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
 
+      close();
       setHotel({ ...hotel, ...values });
     } catch (error: any) {
       message.error(error.response.data.message);
@@ -36,7 +60,7 @@ export default function Hotel(props: HotelProps) {
   const handleDelete = async () => {
     try {
       const access_token = Cookies.get("access_token");
-      
+
       await axios.delete(
         `http://127.0.0.1:5000/hotel/hotel/${props.hotel.hotel_id}`,
         { headers: { Authorization: `Bearer ${access_token}` } }
@@ -44,36 +68,62 @@ export default function Hotel(props: HotelProps) {
 
       setDisplay(false);
       message.success("Successfully deleted hotel");
-    } catch {
-      message.error("Something went wrong while trying to cancel the booking");
+    } catch (error: any) {
+      message.error(error.response.data.message);
     }
   };
 
   if (!display) return <></>;
 
   return (
-    <Paper shadow="xs" p="lg">
+    <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
       <Stack spacing="md">
-        <Flex justify="space-between">
-          <Text>Hotel ID: {props.hotel.hotel_id}</Text>
-          <Text>Chain ID: {props.hotel.chain_id}</Text>
-        </Flex>
-        <Text>Number of Rooms: {props.hotel.number_of_rooms}</Text>
-        <Flex justify="space-between">
-          <Text>Street Name: {props.hotel.address_street_name}</Text>
-          <Text>Street Number: {props.hotel.address_street_number}</Text>
-        </Flex>
-        <Text>Address City: {props.hotel.address_city}</Text>
-        <Flex justify="space-between">
-          <Text>Region: {props.hotel.address_province_state}</Text>
-          <Text>Country: {props.hotel.address_country}</Text>
-        </Flex>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Hotel ID:</Text> {hotel.hotel_id}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Chain ID:</Text> {hotel.chain_id}
+          </Text>
+        </Group>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Number of Rooms:</Text>
+            {hotel.number_of_rooms}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Rating:</Text>
+            <Rating value={hotel.star_rating} readOnly />
+          </Text>
+        </Group>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Street Name:</Text>
+            {hotel.address_street_name}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Street Number:</Text>
+            {hotel.address_street_number}
+          </Text>
+        </Group>
+        <Text>
+          <Text fw="bold">City:</Text> {hotel.address_city}
+        </Text>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Region:</Text>
+            {hotel.address_province_state}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Country:</Text> {hotel.address_country}
+          </Text>
+        </Group>
 
         {token.role === "employee" && (
-          <Flex justify="space-between">
+          <Group position="apart">
             <Button onClick={handleDelete}>Delete</Button>
-            <Button>Edit</Button>
-          </Flex>
+            <Button onClick={open}>Edit</Button>
+          </Group>
         )}
       </Stack>
 

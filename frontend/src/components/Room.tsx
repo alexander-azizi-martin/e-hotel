@@ -69,7 +69,8 @@ export default function Room(props: RoomProps) {
       await axios.post(
         "http://127.0.0.1:5000/booking/booking",
         {
-          hotel_ID: props.room.hotel_id,
+          hotel_ID: props.hotel.hotel_ID,
+          room_number: props.room.room_number,
           scheduled_check_in_date: startDate,
           scheduled_check_out_date: endDate,
         },
@@ -91,7 +92,7 @@ export default function Room(props: RoomProps) {
         `http://127.0.0.1:5000/room/room`,
         {
           room_number: values.room_number,
-          hotel_id: values.hotel_id,
+          hotel_ID: values.hotel_id,
           room_capacity: values.room_capacity,
           view_type: values.view_type,
           price_per_night: values.price_per_night,

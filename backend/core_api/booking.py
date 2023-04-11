@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask import current_app
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
+from datetime import date
 
 booking_namespace = Namespace("booking", description="All routes under this namespace concern booking operations.")
 
@@ -38,9 +39,9 @@ class Booking(Resource):
                 customer_SSN_SIN, 
                 data["room_number"], 
                 data["hotel_ID"], 
-                data["scheduled_check_in_date"], 
-                data["scheduled_check_out_date"]
-            )
+            date(*map(int, data["scheduled_check_in_date"].split('-'))), 
+            date(*map(int, data["scheduled_check_out_date"].split('-')))
+        )
         except Exception as e:
             return {"message": str(e)}, 400
 
@@ -94,9 +95,9 @@ class Booking(Resource):
             parsed_bookings = [
                 {
                     "booking_ID": booking[0],
-                    "booking_date": booking[1],
-                    "scheduled_check_in_date": booking[2],
-                    "scheduled_check_out_date": booking[3],
+                    "booking_date": booking[1].isoformat(),
+                    "scheduled_check_in_date": booking[2].isoformat(),
+                    "scheduled_check_out_date": booking[3].isoformat(),
                     "canceled": booking[4],
                     "customer_SSN_SIN": booking[5],
                     "room_number": booking[6],

@@ -34,12 +34,12 @@ export default function RoomForm(props: RoomFormProps) {
       room_problems: props.room?.room_problems || "",
     },
     validate: {
-      room_number: isNotEmpty("Enter your ssn"),
-      hotel_id: isNotEmpty("Enter your first name"),
-      room_capacity: isNotEmpty("Enter your last name"),
-      view_type: isNotEmpty("Enter your street name"),
+      room_number: isNotEmpty("Enter the room number"),
+      hotel_id: isNotEmpty("Enter the hotel id"),
+      room_capacity: isNotEmpty("Enter the room capacity"),
+      view_type: isNotEmpty("Enter the view type"),
       price_per_night: isInRange({ min: 0 }, "Price must be positive"),
-      room_problems: isNotEmpty("Enter room problems"),
+      room_problems: isNotEmpty("Enter the room problems"),
     },
     transformValues(values) {
       return {
@@ -51,13 +51,13 @@ export default function RoomForm(props: RoomFormProps) {
   });
 
   useEffect(() => {
-    if (props.setFormReset) props.setFormReset(form.reset);
+    if (props.setFormReset) props.setFormReset(() => form.reset);
   }, [form.reset, props.setFormReset]);
 
   return (
     <Stack spacing="md">
       {!props.room && (
-        <Group align="center">
+        <Group>
           <NumberInput
             placeholder="Hotel Id"
             label="Hotel Id"

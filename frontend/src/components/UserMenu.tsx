@@ -14,15 +14,18 @@ import {
 import useToken from "~/utils/useToken";
 
 export default function UserMenu() {
-  const setFirstName = useLocalStorage({ key: "firstName", defaultValue: "" })[1];
+  const setFirstName = useLocalStorage({
+    key: "firstName",
+    defaultValue: "",
+  })[1];
   const setLastName = useLocalStorage({ key: "lastName", defaultValue: "" })[1];
 
   const router = useRouter();
   const token = useToken();
 
   const handleLogout = () => {
-    setFirstName('');
-    setLastName('');
+    setFirstName("");
+    setLastName("");
     Cookies.remove("access_token");
     router.push("/login");
   };
@@ -71,6 +74,9 @@ export default function UserMenu() {
           </Link>
           <Link href="/employee/add-room" style={{ textDecoration: "unset" }}>
             <Menu.Item icon={<IconPlus size={14} />}>Add Room</Menu.Item>
+          </Link>
+          <Link href="/employee/create-renting" style={{ textDecoration: "unset" }}>
+            <Menu.Item icon={<IconPlus size={14} />}>Create Renting</Menu.Item>
           </Link>
           <Menu.Item icon={<IconLogout size={14} />} onClick={handleLogout}>
             Logout

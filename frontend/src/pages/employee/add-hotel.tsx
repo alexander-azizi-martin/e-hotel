@@ -14,9 +14,24 @@ export default function AddHotel() {
     try {
       const access_token = Cookies.get("access_token");
 
-      await axios.post("http://127.0.0.1:5000/hotel/hotel", values, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      await axios.post(
+        "http://127.0.0.1:5000/hotel/hotel",
+        {
+          hotel_ID: values.hotel_id,
+          chain_ID: values.chain_id,
+          number_of_rooms: values.number_of_rooms,
+          address_street_name: values.address_street_name,
+          address_street_number: values.address_street_number,
+          address_city: values.address_city,
+          address_province_state: values.address_province_state,
+          address_country: values.address_country,
+          contact_email: values.contact_email,
+          star_rating: values.star_rating,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
 
       formReset();
       message.success("Hotel successfully created");
@@ -29,7 +44,7 @@ export default function AddHotel() {
     <>
       <Header />
       <main>
-        <Container sx={{ marginTop: "20px" }}>
+        <Container sx={{ marginTop: "20px", marginBottom: "20px" }} size="sm">
           <HotelForm onSubmit={handleSubmit} setFormReset={setFormReset} />
         </Container>
       </main>

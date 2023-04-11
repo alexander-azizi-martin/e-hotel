@@ -3,8 +3,9 @@ import jwt from "jwt-simple";
 import Cookies from "js-cookie";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useForm, isNotEmpty, hasLength } from "@mantine/form";
 import Link from "next/link";
+import { useForm, isNotEmpty, hasLength } from "@mantine/form";
+import { message } from "antd";
 import {
   PasswordInput,
   Button,
@@ -15,7 +16,6 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { Token } from "~/types";
-import { message } from "antd";
 
 export default function Login() {
   const router = useRouter();
@@ -41,7 +41,11 @@ export default function Login() {
         role,
       });
 
+      const access_token = res.data["access_token"];
+      const token: Token = jwt.decode(access_token, "", true);
+
       Cookies.set("access_token", res.data["access_token"]);
+      Cookies.set("role", token.role);
       router.push(role === "customer" ? "/" : "/employee");
     } catch (error: any) {
       message.error(error.response.data.message);

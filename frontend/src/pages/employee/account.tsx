@@ -33,14 +33,14 @@ interface EmployeeInfo {
 export default function Account(props: EmployeeInfo) {
   const token = useToken();
 
-  const [firstName, setFirstName] = useLocalStorage({
+  const setFirstName = useLocalStorage({
     key: "firstName",
     defaultValue: "",
-  });
-  const [lastName, setLastName] = useLocalStorage({
+  })[1];
+  const setLastName = useLocalStorage({
     key: "lastName",
     defaultValue: "",
-  });
+  })[1];
 
   const form = useForm({
     initialValues: {
@@ -65,11 +65,11 @@ export default function Account(props: EmployeeInfo) {
       };
     },
   });
-
+  console.log(props)
   const handleSubmit = form.onSubmit(async (info) => {
     try {
-      let promote_to_manager;
-      let demote_from_manager;
+      let promote_to_manager = null;
+      let demote_from_manager = null;
 
       if (props.is_manager && !info.is_manager) {
         demote_from_manager = true;
@@ -78,8 +78,8 @@ export default function Account(props: EmployeeInfo) {
         promote_to_manager = true;
       }
 
-      const res = await axios.put(
-        `http://127.0.0.1:5000/auth/customers/${token.user_ssn_sin}`,
+      await axios.put(
+        `http://127.0.0.1:5000/auth/employees/${token.user_ssn_sin}`,
         {
           first_name: info.firstName,
           last_name: info.lastName,
@@ -112,7 +112,7 @@ export default function Account(props: EmployeeInfo) {
       <main>
         <Center sx={{ height: "100%", marginTop: "20px" }}>
           <Stack spacing="md">
-            <Group align="center">
+            <Group position="apart">
               <NumberInput
                 placeholder="Hotel ID"
                 label="Hotel ID"
@@ -124,7 +124,7 @@ export default function Account(props: EmployeeInfo) {
                 {...form.getInputProps("employee_ID")}
               />
             </Group>
-            <Group align="center">
+            <Group position="apart">
               <TextInput
                 placeholder="First Name"
                 label="First Name"
@@ -136,7 +136,7 @@ export default function Account(props: EmployeeInfo) {
                 {...form.getInputProps("lastName")}
               />
             </Group>
-            <Group align="center">
+            <Group position="apart">
               <TextInput
                 placeholder="Street Name"
                 label="Street Name"
@@ -153,7 +153,7 @@ export default function Account(props: EmployeeInfo) {
               label="City"
               {...form.getInputProps("city")}
             />
-            <Group align="center">
+            <Group position="apart">
               <TextInput
                 placeholder="Country"
                 label="Country"
@@ -165,10 +165,12 @@ export default function Account(props: EmployeeInfo) {
                 {...form.getInputProps("region")}
               />
             </Group>
+
             <Radio.Group
               name="Is Manager"
               label="Is Manager"
-              {...form.getInputProps("isManager")}
+              {...form.getInputProps("is_manager")}
+              sx={{paddingBottom: "10px"}}
             >
               <Group mt="xs">
                 <Radio value="yes" label="Yes" />
@@ -215,8 +217,8 @@ export const getServerSideProps: GetServerSideProps<EmployeeInfo> = async (
       streetNumber: data.address_street_number,
       country: data.address_country,
       region: data.address_province_state,
-      employee_ID: data.address_province_state,
-      hotel_ID: data.address_province_state,
+      employee_ID: data.employee_ID,
+      hotel_ID: data.hotel_ID,
       is_manager: data.is_manager,
     },
   };

@@ -56,7 +56,7 @@ export default function CreateRenting() {
     <>
       <Header />
       <main>
-        <Container sx={{ marginTop: "20px" }}>
+        <Container sx={{ marginTop: "20px",  marginBottom: "20px"}} size="xs">
           <RentingForm onSubmit={handleSubmit} setFormReset={setFormReset} />
         </Container>
       </main>

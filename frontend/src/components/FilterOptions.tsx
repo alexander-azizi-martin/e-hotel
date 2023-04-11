@@ -32,7 +32,7 @@ export default function FilterOptions() {
   const form = useForm({
     initialValues: {
       price: null,
-      hotelChain: null,
+      hotelChain: "",
       category: 0,
       numberOfRooms: null,
       roomCapacity: "any",
@@ -138,11 +138,13 @@ export default function FilterOptions() {
                 {hotelChains.map((chain) => (
                   <Radio
                     key={chain.chain_ID}
-                    value={chain.chain_ID}
+                    value={chain.name}
                     label={chain.name}
                     onClick={() => {
-                      if (form.values.hotelChain === chain.chain_ID) {
-                        form.setValues({ hotelChain: null });
+                      if (form.values.hotelChain === chain.name) {
+                        form.setValues({ hotelChain: "" });
+                      } else {
+                        form.setValues({ hotelChain: chain.name });
                       }
                     }}
                   />

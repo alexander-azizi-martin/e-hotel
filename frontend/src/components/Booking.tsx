@@ -62,18 +62,33 @@ export default function Booking({ booking }: BookingProps) {
   if (!display) return <></>;
 
   return (
-    <Paper shadow="xs" p="lg">
+    <Paper shadow="xs" p="lg" sx={{width: '300px'}}>
       <Stack spacing="md">
-        <Text>Booked: {booking.booking_date}</Text>
+        <Text>
+          <Text fw="bold">Booked:</Text> 
+          {booking.booking_date}
+        </Text>
         <Flex justify="space-between">
-          <Text>Hotel: {booking.hotel_ID}</Text>
-          <Text>Room: {booking.room_number}</Text>
+          <Text>
+            <Text fw="bold">Hotel:</Text>
+            {booking.hotel_ID}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Room:</Text>
+            {booking.room_number}
+          </Text>
         </Flex>
         <Flex justify="space-between">
-          <Text>Check in: {booking.scheduled_check_in_date}</Text>
-          <Text>Check out: {booking.scheduled_check_out_date}</Text>
+          <Text>
+            <Text fw="bold">Check in:</Text>
+            {booking.scheduled_check_in_date}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Check out:</Text>
+            {booking.scheduled_check_out_date}
+          </Text>
         </Flex>
-        {token.role === "customer" && booking.canceled && (
+        {token.role === "customer" && !booking.canceled && (
           <Button onClick={handleCancel}>Cancel</Button>
         )}
         {token.role === "employee" && (

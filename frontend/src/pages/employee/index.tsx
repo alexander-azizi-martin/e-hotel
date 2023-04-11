@@ -1,20 +1,10 @@
 import axios from "axios";
+import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
-import { Container, Text, Box } from "@mantine/core";
+import { Container, Text, Box, Center, Loader } from "@mantine/core";
 import Room from "~/components/Room";
 import Header from "~/components/Header";
 import useSearchQuery from "~/utils/useSearchQuery";
-import { HotelSearch } from "~/types";
-
-const removeNullValues = (obj: any) => {
-  const newObj: any = {};
-
-  for (let key in obj) {
-    if (!obj[key]) newObj[key] = obj[key];
-  }
-
-  return newObj;
-};
 
 export default function Home() {
   const {
@@ -28,33 +18,24 @@ export default function Home() {
     location,
   } = useSearchQuery((state) => state);
   const debounceState = useRef<null | number>(null);
-  const [result, setResult] = useState<HotelSearch[]>([]);
+  const [result, setResult] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const firstRender = useRef(true);
 
   useEffect(() => {
     if (debounceState.current != null) {
       clearTimeout(debounceState.current as number);
-      debounceState.current = setTimeout(() => {
-        debounceState.current = null;
-      }, 1000) as any;
     }
 
-    axios
-      .get<HotelSearch[]>("http://127.0.0.1:5000/hotel/hotel/search", {
-        params: removeNullValues({
-          start_date: startDate,
-          end_date: endDate,
-          hotel_chain: hotelChain,
-          city: location,
-          star_rating: category,
-          room_capacity: roomCapacity,
-          price_per_night: price,
-        }),
-      })
-      .then((res) => {
+    debounceState.current = setTimeout(() => {
+      setLoading(true);
+
+      axios.get<any[]>("http://127.0.0.1:5000/room/room").then((res) => {
+        firstRender.current = false;
+        setLoading(false);
         setResult(res.data);
       });
 
-    debounceState.current = setTimeout(() => {
       debounceState.current = null;
     }, 1000) as any;
   }, [
@@ -73,20 +54,21 @@ export default function Home() {
       <Header displayFilter />
       <main>
         <Container sx={{ marginTop: "20px" }}>
-          {result.map((hotel) => (
-            <Box key={hotel.hotel_id}>
-              {hotel.rooms.map((room) => (
+          <Center>
+            {result.map((room) => (
+              <Box key={`${room.room_number}-${room.hotel_id}`}>
                 <Room
                   key={`${room.room_number}-${room.hotel_id}`}
                   room={room}
-                  hotel={hotel}
+                  hotel={room}
                 />
-              ))}
-            </Box>
-          ))}
-          {result.length && (
-            <Text>No rooms available with the given criteria</Text>
-          )}
+              </Box>
+            ))}
+            {result.length === 0 && !loading && (
+              <Text>There currently aren't any rooms</Text>
+            )}
+            {firstRender.current && <Loader />}
+          </Center>
         </Container>
       </main>
     </>

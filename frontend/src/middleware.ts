@@ -1,7 +1,5 @@
-import jwt from "jwt-simple";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { Token } from "~/types";
 
 export function middleware(request: NextRequest) {
   if (
@@ -15,16 +13,16 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    const token: Token = jwt.decode(access_token, "", true);
+    const role = request.cookies.get("role")?.value;
 
     if (
-      token.role === "customer" &&
+      role === "customer" &&
       request.nextUrl.pathname.startsWith("/employee")
     ) {
       return NextResponse.redirect(new URL("/", request.url));
     }
     if (
-      token.role === "employee" &&
+      role === "employee" &&
       !request.nextUrl.pathname.startsWith("/employee")
     ) {
       return NextResponse.redirect(new URL("/employee", request.url));
@@ -38,9 +36,9 @@ export function middleware(request: NextRequest) {
     const access_token = request.cookies.get("access_token")?.value;
 
     if (access_token) {
-      const token: Token = jwt.decode(access_token, "", true);
+      const role = request.cookies.get("role")?.value;
 
-      if (token.role == "employee") {
+      if (role == "employee") {
         return NextResponse.redirect(new URL("/employee", request.url));
       } else {
         return NextResponse.redirect(new URL("/", request.url));
