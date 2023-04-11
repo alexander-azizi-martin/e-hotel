@@ -109,6 +109,7 @@ class Booking(Resource):
         except Exception as e:
             return {"message": f"Error getting bookings: {str(e)}"}, 500
 
+
 @booking_namespace.route("/booking/<int:booking_ID>")
 class BookingByID(Resource):
 
