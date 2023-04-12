@@ -199,7 +199,7 @@ class Database(object):
         CHECK (role = 'customer' OR role = 'employee')
         ); 
 
-        CREATE VIEW hotel_total_room_capacity AS
+        CREATE OR REPLACE VIEW hotel_total_room_capacity AS
         SELECT name AS hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
         FROM Room NATURAL JOIN hotel_chain;
 
