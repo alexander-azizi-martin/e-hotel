@@ -111,7 +111,7 @@ export default function Room(props: RoomProps) {
   };
 
   if (!display) return <></>;
-  console.log(props.hotel, props.hotelChains)
+  console.log(!startDate && !endDate);
   return (
     <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
       <Stack spacing="sm">

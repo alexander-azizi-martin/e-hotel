@@ -115,7 +115,7 @@ export default function Home() {
             <Flex wrap="wrap" gap="30px">
               {rooms.map((result) => (
                 <Room
-                  key={`${result.room.room_number}-${result.room.hotel_id}`}
+                  key={`${result.room.room_number}-${result.hotel.hotel_ID}-${result.hotel.chain_id}`}
                   room={result.room}
                   hotel={result.hotel}
                   hotelChains={hotelChains}

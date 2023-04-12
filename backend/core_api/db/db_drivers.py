@@ -285,10 +285,6 @@ class Database(object):
         after delete on room
         for each row
         execute function decr_number_of_rooms();
-        SELECT hotel_chain.name as hotel_chain_name, hotel.chain_id, room.hotel_id, room.room_number, room.room_capacity 
-        FROM room 
-        LEFT JOIN hotel ON room.hotel_id=hotel.hotel_id 
-        LEFT JOIN hotel_chain on hotel_chain.chain_id=hotel.chain_id;
         """
         try:
             self.cursor.execute(s)
@@ -1470,8 +1466,8 @@ class Database(object):
             params['hotel_chain'] = hotel_chain
 
         if city is not None:
-            query += " AND h.address_city = %(city)s"
-            params['city'] = city
+            query += " AND LOWER(h.address_city) LIKE LOWER(%(city)s)"
+            params['city'] = f"%{city}%"
 
         if star_rating is not None:
             query += " AND h.star_rating = %(star_rating)s"
@@ -1657,6 +1653,18 @@ class Database(object):
 
         return results
 
+
+    def get_rooms_capacity_by_hotel(self, hotel_id):
+
+        query = """
+        SELECT hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
+        FROM hotel_total_room_capacity WHERE hotel_id = %s;
+        """
+
+        self.cursor.execute(query, (hotel_id,))
+        results = self.cursor.fetchall()
+
+        return results
 
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 if __name__ == '__main__':

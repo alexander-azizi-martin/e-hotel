@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Text, Stack, Button, Flex, Paper } from "@mantine/core";
+import { Text, Stack, Button, Group, Paper } from "@mantine/core";
 import { message } from "antd";
 import AddPaymentInfo from "~/components/AddPaymentInfo";
 import useToken from "~/utils/useToken";
@@ -74,11 +74,17 @@ export default function Booking({ booking }: BookingProps) {
   return (
     <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
       <Stack spacing="md">
-        <Text>
-          <Text fw="bold">Booked:</Text>
-          {booking.booking_date}
-        </Text>
-        <Flex justify="space-between">
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Booked:</Text>
+            {booking.booking_date}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Customer Id:</Text>
+            {booking.customer_SSN_SIN}
+          </Text>
+        </Group>
+        <Group position="apart">
           <Text>
             <Text fw="bold">Hotel Id:</Text>
             {booking.hotel_ID}
@@ -87,8 +93,8 @@ export default function Booking({ booking }: BookingProps) {
             <Text fw="bold">Room:</Text>
             {booking.room_number}
           </Text>
-        </Flex>
-        <Flex justify="space-between">
+        </Group>
+        <Group position="apart">
           <Text>
             <Text fw="bold">Check in:</Text>
             {booking.scheduled_check_in_date}
@@ -97,17 +103,17 @@ export default function Booking({ booking }: BookingProps) {
             <Text fw="bold">Check out:</Text>
             {booking.scheduled_check_out_date}
           </Text>
-        </Flex>
+        </Group>
         {token.role === "customer" && !booking.canceled && (
           <Button onClick={handleCancel}>Cancel</Button>
         )}
         {token.role === "employee" && (
-          <Flex justify="space-between">
+          <Group position="apart">
             <AddPaymentInfo complete={added} setComplete={add} />
             <Button disabled={!added} onClick={handleConvertToRenting}>
               Convert To Renting
             </Button>
-          </Flex>
+          </Group>
         )}
       </Stack>
     </Paper>

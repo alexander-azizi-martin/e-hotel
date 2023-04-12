@@ -439,9 +439,11 @@ VALUES
     (5, 508, 5, 'Pool', 300, FALSE, NULL);
 
 -- capacity of all the rooms of a specific hotel
-CREATE VIEW hotel_total_room_capacity AS
-SELECT name AS hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
-FROM Room NATURAL JOIN hotel_chain;
+CREATE OR REPLACE VIEW hotel_total_room_capacity AS
+SELECT hotel_chain.name as hotel_chain_name, hotel.chain_id, hotel.hotel_id, room.room_number, room.room_capacity 
+FROM room 
+LEFT JOIN hotel ON room.hotel_id=hotel.hotel_id 
+LEFT JOIN hotel_chain on hotel_chain.chain_id=hotel.chain_id;
 
 -- this view will be queried with a select statement like the following: 
 SELECT * FROM hotel_total_room_capacity WHERE hotel_chain_name LIKE "Marriot" AND hotel_id = 1;
