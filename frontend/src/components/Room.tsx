@@ -86,7 +86,6 @@ export default function Room(props: RoomProps) {
   };
 
   const handleUpdate = async (values: RoomInfo) => {
-    console.log("Hello");
     try {
       const access_token = Cookies.get("access_token");
 
@@ -103,7 +102,8 @@ export default function Room(props: RoomProps) {
         },
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
-
+      
+      close();
       setRoom({ ...room, ...values });
     } catch (error: any) {
       message.error(error.response.data.message);
@@ -116,7 +116,7 @@ export default function Room(props: RoomProps) {
     <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
       <Stack spacing="sm">
         <Text size="lg" weight={500}>
-          <Text fw="bold">Room number</Text>
+          <Text fw="bold">Room Number:</Text>
           {room.room_number}
         </Text>
         <Group position="apart" mt="sm">
@@ -152,7 +152,20 @@ export default function Room(props: RoomProps) {
           </Text>
 
           <Text align="right">
-            <Text fw="bold">Price Per Night:</Text>${room.price_per_night}
+            <Text fw="bold">Price Per Night:</Text>
+            ${room.price_per_night}
+          </Text>
+        </Group>
+
+        <Group position="apart" mt="sm">
+          <Text>
+            <Text fw="bold">View Type:</Text>
+            {room.view_type}
+          </Text>
+
+          <Text align="right">
+            <Text fw="bold">Is Extendable:</Text>
+            {room.is_extendable ? "Yes" : "No"}
           </Text>
         </Group>
         {token.role === "customer" && (
@@ -176,13 +189,12 @@ export default function Room(props: RoomProps) {
           </Group>
         )}
       </Stack>
+
       <Modal opened={opened} onClose={close} title="Edit Room">
         <Box sx={{ padding: "40px" }}>
           <RoomForm
             room={props.room}
-            onSubmit={() => {
-              console.log("hello");
-            }}
+            onSubmit={handleUpdate}
           />
         </Box>
       </Modal>

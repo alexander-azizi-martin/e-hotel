@@ -24,7 +24,7 @@ export default function RoomForm(props: RoomFormProps) {
   const form = useForm({
     initialValues: {
       room_number: props.room?.room_number || null,
-      hotel_id: props.room?.hotel_id || null,
+      hotel_id: props.room?.hotel_ID || null,
       room_capacity: props.room?.room_capacity
         ? `${props.room.room_capacity}`
         : "1",

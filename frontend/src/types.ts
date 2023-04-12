@@ -8,6 +8,7 @@ export interface Token {
 export interface RoomInfo {
   room_number: number;
   hotel_id: number;
+  hotel_ID: number;
   room_capacity: number;
   view_type: string;
   price_per_night: number;
