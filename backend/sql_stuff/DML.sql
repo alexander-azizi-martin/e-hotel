@@ -73,7 +73,7 @@ VALUES
     (303, 3, 320, 'Regent St', 0, 'London', 'England', 'UK', 'intercontinental3@example.com', 3),
     (304, 3, 260, 'Yonge St', 0, 'Toronto', 'ON', 'Canada', 'intercontinental4@example.com', 4),
     (305, 3, 280, 'Elizabeth St', 0, 'Sydney', 'NSW', 'Australia', 'intercontinental5@example.com', 5),
-    (306, 3, 300, 'Wellesley St', 0, 'Auckland', 'Auckland', 'New Zealand', 'intercontinental6@example.com', 2),
+    (306, 3, 300, 'Wellesley St', 0, 'Auckland', 'Auckland', 'New Zealand', 'intercontinental6@example.com', 1),
     (307, 3, 280, 'Bukit Timah Rd', 0, 'Singapore', 'Singapore', 'Singapore', 'intercontinental7@example.com', 5),
     (308, 3, 310, 'Passeig de Gracia', 0, 'Barcelona', 'Catalonia', 'Spain', 'intercontinental8@example.com', 4);
 
@@ -86,7 +86,7 @@ VALUES
     (403, 4, 320, 'Coventry St', 0, 'London', 'England', 'UK', 'accor3@example.com', 4),
     (404, 4, 240, 'Queen St', 0, 'Toronto', 'ON', 'Canada', 'accor4@example.com', 3),
     (405, 4, 290, 'Pitt St', 0, 'Sydney', 'NSW', 'Australia', 'accor5@example.com', 5),
-    (406, 4, 250, 'Albert St', 0, 'Auckland', 'Auckland', 'New Zealand', 'accor6@example.com', 2),
+    (406, 4, 250, 'Albert St', 0, 'Auckland', 'Auckland', 'New Zealand', 'accor6@example.com', 1),
     (407, 4, 270, 'Cecil St', 0, 'Singapore', 'Singapore', 'Singapore', 'accor7@example.com', 5),
     (408, 4, 260, 'Rambla de Catalunya', 0, 'Barcelona', 'Catalonia', 'Spain', 'accor8@example.com', 4);
 
