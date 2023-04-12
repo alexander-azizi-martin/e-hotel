@@ -46,7 +46,7 @@ export default function Room(props: RoomProps) {
   //         setHotel(data);
   //       });
   //   }, [props.room.hotel_id]);
-  
+
   const handleDelete = async () => {
     try {
       const access_token = Cookies.get("access_token");
@@ -102,7 +102,7 @@ export default function Room(props: RoomProps) {
         },
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
-      
+
       close();
       setRoom({ ...room, ...values });
     } catch (error: any) {
@@ -111,15 +111,21 @@ export default function Room(props: RoomProps) {
   };
 
   if (!display) return <></>;
-  console.log(!startDate && !endDate);
+
   return (
     <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
       <Stack spacing="sm">
-        <Text size="lg" weight={500}>
-          <Text fw="bold">Room Number:</Text>
-          {room.room_number}
-        </Text>
-        <Group position="apart" mt="sm">
+        <Group position="apart">
+          <Text size="lg" weight={500}>
+            <Text fw="bold">Room Number:</Text>
+            {room.room_number}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Hotel Id:</Text>
+            {props.hotel.hotel_ID}
+          </Text>
+        </Group>
+        <Group position="apart">
           <Text>
             <Text fw="bold">Hotel Chain:</Text>
             {
@@ -152,8 +158,7 @@ export default function Room(props: RoomProps) {
           </Text>
 
           <Text align="right">
-            <Text fw="bold">Price Per Night:</Text>
-            ${room.price_per_night}
+            <Text fw="bold">Price Per Night:</Text>${room.price_per_night}
           </Text>
         </Group>
 
@@ -192,10 +197,7 @@ export default function Room(props: RoomProps) {
 
       <Modal opened={opened} onClose={close} title="Edit Room">
         <Box sx={{ padding: "40px" }}>
-          <RoomForm
-            room={props.room}
-            onSubmit={handleUpdate}
-          />
+          <RoomForm room={props.room} onSubmit={handleUpdate} />
         </Box>
       </Modal>
     </Paper>
