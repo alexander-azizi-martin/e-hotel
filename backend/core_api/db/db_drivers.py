@@ -290,6 +290,7 @@ class Database(object):
             self.cursor.execute(s)
             self.commit()
         except Exception as e:
+            self.connection.rollback()
             traceback.print_exc()
     
     def setup_test_data(self):

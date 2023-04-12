@@ -84,7 +84,7 @@ export default function FilterOptions() {
         <Box sx={{ padding: "0px 20px" }}>
           <Flex rowGap="20px" direction="column" sx={{ margin: "20px" }}>
             <Title order={3} sx={{ marginBottom: "-20px" }}>
-              Price
+              Max Price
             </Title>
             <NumberInput icon="$" {...form.getInputProps("price")} />
             {/* <Flex align="flex-end" justify="center">
