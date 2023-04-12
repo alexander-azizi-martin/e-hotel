@@ -52,3 +52,27 @@ Run the build command: `yarn build`
 Start the server: `yarn start`
 
 Open your browser and go to http://localhost:3000
+
+## Backend
+
+### Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+- [Python](https://www.python.org/doc/) installed
+
+### Installing the backend
+
+To install the frontend dependencies, follow these steps:
+
+Navigate to the frontend directory: `cd backend`
+
+Install dependencies by running the following in your command line: `pip install -r requirements.txt`
+
+### Running the Backend
+
+To run the project, follow these steps:
+
+Start the development server: 
+
+Open your browser and go to 
