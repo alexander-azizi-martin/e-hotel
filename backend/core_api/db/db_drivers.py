@@ -333,72 +333,70 @@ class Database(object):
         INSERT INTO Hotel_Chain_Contact_Email (chain_ID, contact_email) VALUES (5, 'info@wyndham.com');
         INSERT INTO Hotel_Chain_Phone_Number (chain_ID, phone_number) VALUES (5, '555-567-8901');
 
-        -- Insert hotels
-        -- Insert data for Hilton hotel chain
         -- Hilton
         INSERT INTO Hotel
             (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
         VALUES
-            (101, 1, 200, 'Main St', 0, 'New York', 'NY', 'USA', 'hilton1@example.com', 5),
-            (102, 1, 250, 'Market St', 0, 'San Francisco', 'CA', 'USA', 'hilton2@example.com', 5),
-            (103, 1, 300, 'Baker St', 0, 'London', 'England', 'UK', 'hilton3@example.com', 3),
-            (104, 1, 220, 'King St', 0, 'Toronto', 'ON', 'Canada', 'hilton4@example.com', 4),
-            (105, 1, 280, 'George St', 0, 'Sydney', 'NSW', 'Australia', 'hilton5@example.com', 5),
-            (106, 1, 240, 'Queen St', 0, 'Auckland', 'Auckland', 'New Zealand', 'hilton6@example.com', 2),
-            (107, 1, 260, 'Orchard Rd', 0, 'Singapore', 'Singapore', 'Singapore', 'hilton7@example.com', 5),
-            (108, 1, 230, 'Las Ramblas', 0, 'Barcelona', 'Catalonia', 'Spain', 'hilton8@example.com', 4);
+            (101, 1, 0, 'Main St', 2, 'New York', 'NY', 'USA', 'hilton1@example.com', 5),
+            (102, 1, 0, 'Market St', 99, 'San Francisco', 'CA', 'USA', 'hilton2@example.com', 5),
+            (103, 1, 0, 'Baker St', 25, 'London', 'England', 'UK', 'hilton3@example.com', 3),
+            (104, 1, 0, 'King St', 45, 'Toronto', 'ON', 'Canada', 'hilton4@example.com', 4),
+            (105, 1, 0, 'George St', 23, 'Sydney', 'NSW', 'Australia', 'hilton5@example.com', 5),
+            (106, 1, 0, 'Queen St', 12, 'Auckland', 'Auckland', 'New Zealand', 'hilton6@example.com', 2),
+            (107, 1, 0, 'Orchard Rd', 5, 'Singapore', 'Singapore', 'Singapore', 'hilton7@example.com', 5),
+            (108, 1, 0, 'Las Ramblas', 23, 'Barcelona', 'Catalonia', 'Spain', 'hilton8@example.com', 4);
 
         -- Marriott 
         INSERT INTO Hotel
             (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
         VALUES
-            (201, 2, 300, 'Madison Ave', 0, 'New York', 'NY', 'USA', 'marriott1@example.com', 5),
-            (202, 2, 320, 'Mission St', 0, 'San Francisco', 'CA', 'USA', 'marriott2@example.com', 5),
-            (203, 2, 350, 'Oxford St', 0, 'London', 'England', 'UK', 'marriott3@example.com', 3),
-            (204, 2, 270, 'Front St', 0, 'Toronto', 'ON', 'Canada', 'marriott4@example.com', 4),
-            (205, 2, 330, 'Pitt St', 0, 'Sydney', 'NSW', 'Australia', 'marriott5@example.com', 5),
-            (206, 2, 290, 'Victoria St', 0, 'Auckland', 'Auckland', 'New Zealand', 'marriott6@example.com', 2),
-            (207, 2, 310, 'Shenton Way', 0, 'Singapore', 'Singapore', 'Singapore', 'marriott7@example.com', 5),
-            (208, 2, 280, 'Passeig de Gracia', 0, 'Barcelona', 'Catalonia', 'Spain', 'marriott8@example.com', 4);
+            (201, 2, 0, 'Madison Ave', 1, 'New York', 'NY', 'USA', 'marriott1@example.com', 5),
+            (202, 2, 0, 'Mission St', 5, 'San Francisco', 'CA', 'USA', 'marriott2@example.com', 5),
+            (203, 2, 0, 'Oxford St', 2, 'London', 'England', 'UK', 'marriott3@example.com', 3),
+            (204, 2, 0, 'Front St', 7, 'Toronto', 'ON', 'Canada', 'marriott4@example.com', 4),
+            (205, 2, 0, 'Pitt St', 3, 'Sydney', 'NSW', 'Australia', 'marriott5@example.com', 5),
+            (206, 2, 0, 'Victoria St', 2, 'Auckland', 'Auckland', 'New Zealand', 'marriott6@example.com', 2),
+            (207, 2, 0, 'Shenton Way', 8, 'Singapore', 'Singapore', 'Singapore', 'marriott7@example.com', 5),
+            (208, 2, 0, 'Passeig de Gracia', 9, 'Barcelona', 'Catalonia', 'Spain', 'marriott8@example.com', 4);
 
         -- Intercontinental 
         INSERT INTO Hotel
             (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
         VALUES
-            (301, 3, 250, 'Park Ave', 0, 'New York', 'NY', 'USA', 'intercontinental1@example.com', 5),
-            (302, 3, 270, 'Van Ness Ave', 0, 'San Francisco', 'CA', 'USA', 'intercontinental2@example.com', 5),
-            (303, 3, 320, 'Regent St', 0, 'London', 'England', 'UK', 'intercontinental3@example.com', 3),
-            (304, 3, 260, 'Yonge St', 0, 'Toronto', 'ON', 'Canada', 'intercontinental4@example.com', 4),
-            (305, 3, 280, 'Elizabeth St', 0, 'Sydney', 'NSW', 'Australia', 'intercontinental5@example.com', 5),
-            (306, 3, 300, 'Wellesley St', 0, 'Auckland', 'Auckland', 'New Zealand', 'intercontinental6@example.com', 2),
-            (307, 3, 280, 'Bukit Timah Rd', 0, 'Singapore', 'Singapore', 'Singapore', 'intercontinental7@example.com', 5),
-            (308, 3, 310, 'Passeig de Gracia', 0, 'Barcelona', 'Catalonia', 'Spain', 'intercontinental8@example.com', 4);
+            (301, 3, 0, 'Park Ave', 6, 'New York', 'NY', 'USA', 'intercontinental1@example.com', 5),
+            (302, 3, 0, 'Van Ness Ave', 15, 'San Francisco', 'CA', 'USA', 'intercontinental2@example.com', 5),
+            (303, 3, 0, 'Regent St', 16, 'London', 'England', 'UK', 'intercontinental3@example.com', 3),
+            (304, 3, 0, 'Yonge St', 82, 'Toronto', 'ON', 'Canada', 'intercontinental4@example.com', 4),
+            (305, 3, 0, 'Elizabeth St', 53, 'Sydney', 'NSW', 'Australia', 'intercontinental5@example.com', 5),
+            (306, 3, 0, 'Wellesley St', 25, 'Auckland', 'Auckland', 'New Zealand', 'intercontinental6@example.com', 1),
+            (307, 3, 0, 'Bukit Timah Rd', 14, 'Singapore', 'Singapore', 'Singapore', 'intercontinental7@example.com', 5),
+            (308, 3, 0, 'Passeig de Gracia', 63, 'Barcelona', 'Catalonia', 'Spain', 'intercontinental8@example.com', 4);
 
         -- AccorHotels
         INSERT INTO Hotel
             (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
         VALUES
-            (401, 4, 280, 'Fifth Ave', 0, 'New York', 'NY', 'USA', 'accor1@example.com', 5),
-            (402, 4, 300, 'Geary St', 0, 'San Francisco', 'CA', 'USA', 'accor2@example.com', 5),
-            (403, 4, 320, 'Coventry St', 0, 'London', 'England', 'UK', 'accor3@example.com', 4),
-            (404, 4, 240, 'Queen St', 0, 'Toronto', 'ON', 'Canada', 'accor4@example.com', 3),
-            (405, 4, 290, 'Pitt St', 0, 'Sydney', 'NSW', 'Australia', 'accor5@example.com', 5),
-            (406, 4, 250, 'Albert St', 0, 'Auckland', 'Auckland', 'New Zealand', 'accor6@example.com', 2),
-            (407, 4, 270, 'Cecil St', 0, 'Singapore', 'Singapore', 'Singapore', 'accor7@example.com', 5),
-            (408, 4, 260, 'Rambla de Catalunya', 0, 'Barcelona', 'Catalonia', 'Spain', 'accor8@example.com', 4);
+            (401, 4, 0, 'Fifth Ave', 97, 'New York', 'NY', 'USA', 'accor1@example.com', 5),
+            (402, 4, 0, 'Geary St', 53, 'San Francisco', 'CA', 'USA', 'accor2@example.com', 5),
+            (403, 4, 0, 'Coventry St', 25, 'London', 'England', 'UK', 'accor3@example.com', 4),
+            (404, 4, 0, 'Queen St', 15, 'Toronto', 'ON', 'Canada', 'accor4@example.com', 3),
+            (405, 4, 0, 'Pitt St', 97, 'Sydney', 'NSW', 'Australia', 'accor5@example.com', 5),
+            (406, 4, 0, 'Albert St', 23, 'Auckland', 'Auckland', 'New Zealand', 'accor6@example.com', 1),
+            (407, 4, 0, 'Cecil St', 68, 'Singapore', 'Singapore', 'Singapore', 'accor7@example.com', 5),
+            (408, 4, 0, 'Rambla de Catalunya', 23, 'Barcelona', 'Catalonia', 'Spain', 'accor8@example.com', 4);
 
         --Wyndham
         INSERT INTO Hotel
             (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
         VALUES
-            (501, 5, 320, 'Broadway', 0, 'New York', 'NY', 'USA', 'wyndham1@example.com', 5),
-            (502, 5, 300, 'Fisherman''s Wharf', 0, 'San Francisco', 'CA', 'USA', 'wyndham2@example.com', 5),
-            (503, 5, 350, 'Baker St', 0, 'London', 'England', 'UK', 'wyndham3@example.com', 4),
-            (504, 5, 240, 'Queen St', 0, 'Toronto', 'ON', 'Canada', 'wyndham4@example.com', 3),
-            (505, 5, 280, 'George St', 0, 'Sydney', 'NSW', 'Australia', 'wyndham5@example.com', 5),
-            (506, 5, 260, 'Queen St', 0, 'Auckland', 'Auckland', 'New Zealand', 'wyndham6@example.com', 2),
-            (507, 5, 290, 'Orchard Rd', 0, 'Singapore', 'Singapore', 'Singapore', 'wyndham7@example.com', 5),
-            (508, 5, 270, 'Passeig de Gracia', 0, 'Barcelona', 'Catalonia', 'Spain', 'wyndham8@example.com', 4);
+            (501, 5, 0, 'Broadway', 15, 'New York', 'NY', 'USA', 'wyndham1@example.com', 5),
+            (502, 5, 0, 'Fisherman''s Wharf', 64, 'San Francisco', 'CA', 'USA', 'wyndham2@example.com', 5),
+            (503, 5, 0, 'Baker St', 96, 'London', 'England', 'UK', 'wyndham3@example.com', 4),
+            (504, 5, 0, 'Queen St', 97, 'Toronto', 'ON', 'Canada', 'wyndham4@example.com', 3),
+            (505, 5, 0, 'George St', 325, 'Sydney', 'NSW', 'Australia', 'wyndham5@example.com', 5),
+            (506, 5, 0, 'Queen St', 64, 'Auckland', 'Auckland', 'New Zealand', 'wyndham6@example.com', 2),
+            (507, 5, 0, 'Orchard Rd', 21, 'Singapore', 'Singapore', 'Singapore', 'wyndham7@example.com', 5),
+            (508, 5, 0, 'Passeig de Gracia', 123, 'Barcelona', 'Catalonia', 'Spain', 'wyndham8@example.com', 4);
 
         -- Hotel phone numbers
         -- Hilton
