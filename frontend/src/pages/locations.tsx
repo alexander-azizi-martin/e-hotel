@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<LocationProps> = async (
   }
 
   const { data } = await axios.get<LocationInfo[]>(
-    `http://127.0.0.1:5000/room/available-rooms`,
+    `http://localhost:5000/room/available-rooms`,
     {
       params: {
         start_date: dayjs().subtract(10, "years").format("YYYY-MM-DD"),

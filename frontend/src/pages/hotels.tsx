@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps<HotelsProps> = async (
 
   if ("hotel_id" in context.query) {
     const { data } = await axios.get<CapacityInfo[]>(
-      `http://127.0.0.1:5000/hotel/hotel/total_capacity/${context.query.hotel_id}`
+      `http://localhost:5000/hotel/hotel/total_capacity/${context.query.hotel_id}`
     );
 
     return {
@@ -91,7 +91,7 @@ export const getServerSideProps: GetServerSideProps<HotelsProps> = async (
     };
   } else {
     const { data } = await axios.get<CapacityInfo[]>(
-      "http://127.0.0.1:5000/hotel/hotel/total_capacity"
+      "http://localhost:5000/hotel/hotel/total_capacity"
     );
 
     return {

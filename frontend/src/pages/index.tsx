@@ -51,7 +51,7 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get<HotelChainInfo[]>("http://127.0.0.1:5000/hotel_chain/hotel_chain")
+      .get<HotelChainInfo[]>("http://localhost:5000/hotel_chain/hotel_chain")
       .then((res) => {
         const { data } = res;
 
@@ -68,7 +68,7 @@ export default function Home() {
       setLoading(true);
 
       axios
-        .get<HotelChainSearch[]>("http://127.0.0.1:5000/hotel/hotel/search", {
+        .get<HotelChainSearch[]>("http://localhost:5000/hotel/hotel/search", {
           params: formatParameters({
             start_date: startDate,
             end_date: endDate,
@@ -87,15 +87,7 @@ export default function Home() {
 
       debounceState.current = null;
     }, 1000) as any;
-  }, [
-    startDate,
-    endDate,
-    price,
-    hotelChain,
-    category,
-    roomCapacity,
-    location,
-  ]);
+  }, [startDate, endDate, price, hotelChain, category, roomCapacity, location]);
 
   const rooms: RoomQuery[] = [];
   for (let hotelChain of result) {

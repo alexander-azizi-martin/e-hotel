@@ -15,7 +15,7 @@ export default function Rentings(props: RentingsProps) {
     <>
       <Header />
       <main>
-        <Center sx={{ marginTop: "20px", marginBottom: "20px"  }}>
+        <Center sx={{ marginTop: "20px", marginBottom: "20px" }}>
           <Flex wrap="wrap" gap="30px">
             {props.rentings.map((renting) => (
               <Renting renting={renting} key={renting.rental_ID} />
@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps<RentingsProps> = async (
   const token: Token = jwt.decode(access_token, "", true);
 
   const { data } = await axios.get<RentingInfo[]>(
-    `http://127.0.0.1:5000/rental/rentals/${token.user_ssn_sin}`,
+    `http://localhost:5000/rental/rentals/${token.user_ssn_sin}`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }

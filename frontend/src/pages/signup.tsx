@@ -47,7 +47,7 @@ export default function SignUp() {
 
   const handleSubmit = form.onSubmit(async (info) => {
     try {
-      const res = await axios.post("http://127.0.0.1:5000/auth/customers", {
+      const res = await axios.post("http://localhost:5000/auth/customers", {
         customer_SSN_SIN: info.ssn,
         first_name: info.firstName,
         last_name: info.lastName,
@@ -59,7 +59,7 @@ export default function SignUp() {
         password: info.password,
       });
 
-      const nextRes = await axios.post("http://127.0.0.1:5000/auth/login", {
+      const nextRes = await axios.post("http://localhost:5000/auth/login", {
         user_SSN_SIN: info.ssn,
         password: info.password,
         role: "customer",

@@ -46,7 +46,7 @@ export default function FilterOptions() {
 
   useEffect(() => {
     axios
-      .get<HotelChainInfo[]>("http://127.0.0.1:5000/hotel_chain/hotel_chain")
+      .get<HotelChainInfo[]>("http://localhost:5000/hotel_chain/hotel_chain")
       .then((res) => {
         const { data } = res;
 

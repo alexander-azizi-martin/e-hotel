@@ -15,7 +15,7 @@ export default function Bookings(props: BookingsProps) {
     <>
       <Header />
       <main>
-        <Center sx={{ marginTop: "20px", marginBottom: "20px"  }}>
+        <Center sx={{ marginTop: "20px", marginBottom: "20px" }}>
           <Flex wrap="wrap" gap="30px">
             {props.bookings.map((booking) => (
               <Booking booking={booking} key={booking.booking_ID} />
@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<BookingsProps> = async (
   }
 
   const { data } = await axios.get<BookingInfo[]>(
-    "http://127.0.0.1:5000/booking/all_bookings",
+    "http://localhost:5000/booking/all_bookings",
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }

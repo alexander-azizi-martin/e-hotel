@@ -27,7 +27,7 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get<HotelChainInfo[]>("http://127.0.0.1:5000/hotel_chain/hotel_chain")
+      .get<HotelChainInfo[]>("http://localhost:5000/hotel_chain/hotel_chain")
       .then((res) => {
         const { data } = res;
 
@@ -43,7 +43,7 @@ export default function Home() {
     debounceState.current = setTimeout(() => {
       setLoading(true);
 
-      axios.get<RoomQuery[]>("http://127.0.0.1:5000/room/room").then((res) => {
+      axios.get<RoomQuery[]>("http://localhost:5000/room/room").then((res) => {
         firstRender.current = false;
         setLoading(false);
         setResult(res.data);
@@ -51,21 +51,13 @@ export default function Home() {
 
       debounceState.current = null;
     }, 1000) as any;
-  }, [
-    startDate,
-    endDate,
-    price,
-    hotelChain,
-    category,
-    roomCapacity,
-    location,
-  ]);
+  }, [startDate, endDate, price, hotelChain, category, roomCapacity, location]);
 
   return (
     <>
       <Header />
       <main>
-        <Container sx={{ marginTop: "20px", marginBottom: "20px"  }}>
+        <Container sx={{ marginTop: "20px", marginBottom: "20px" }}>
           <Center>
             <Flex wrap="wrap" gap="30px">
               {result.map((room) => (

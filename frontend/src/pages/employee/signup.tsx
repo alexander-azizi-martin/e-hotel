@@ -61,7 +61,7 @@ export default function SignUp() {
 
   const handleSubmit = form.onSubmit(async (info) => {
     try {
-      await axios.post("http://127.0.0.1:5000/auth/employees", {
+      await axios.post("http://localhost:5000/auth/employees", {
         employee_SSN_SIN: info.ssn,
         first_name: info.firstName,
         last_name: info.lastName,
@@ -77,7 +77,7 @@ export default function SignUp() {
         employee_ID: info.employeeId,
       });
 
-      const nextRes = await axios.post("http://127.0.0.1:5000/auth/login", {
+      const nextRes = await axios.post("http://localhost:5000/auth/login", {
         user_SSN_SIN: info.ssn,
         password: info.password,
         role: "employee",

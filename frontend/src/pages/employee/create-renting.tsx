@@ -19,20 +19,20 @@ export default function CreateRenting() {
       const check_out = dayjs(values.check_out_date, "YYYY-MM-DD");
       const stay_duration = check_out.diff(check_in, "days");
       const { data: room } = await axios.get<RoomInfo>(
-        `http://127.0.0.1:5000/room/room/${values.hotel_ID}/${values.room_number}`
+        `http://localhost:5000/room/room/${values.hotel_ID}/${values.room_number}`
       );
 
       const access_token = Cookies.get("access_token");
 
       const { data } = await axios.get<{ employee_ID: number }>(
-        `http://127.0.0.1:5000/auth/employees/${token.user_ssn_sin}`,
+        `http://localhost:5000/auth/employees/${token.user_ssn_sin}`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
       );
 
       await axios.post(
-        "http://127.0.0.1:5000/rental/rental",
+        "http://localhost:5000/rental/rental",
         {
           ...values,
           employee_ID: data.employee_ID,
@@ -56,7 +56,7 @@ export default function CreateRenting() {
     <>
       <Header />
       <main>
-        <Container sx={{ marginTop: "20px",  marginBottom: "20px"}} size="xs">
+        <Container sx={{ marginTop: "20px", marginBottom: "20px" }} size="xs">
           <RentingForm onSubmit={handleSubmit} setFormReset={setFormReset} />
         </Container>
       </main>

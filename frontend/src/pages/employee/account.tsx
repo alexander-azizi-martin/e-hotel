@@ -79,7 +79,7 @@ export default function Account(props: EmployeeInfo) {
       }
 
       await axios.put(
-        `http://127.0.0.1:5000/auth/employees/${token.user_ssn_sin}`,
+        `http://localhost:5000/auth/employees/${token.user_ssn_sin}`,
         {
           first_name: info.firstName,
           last_name: info.lastName,
@@ -170,7 +170,7 @@ export default function Account(props: EmployeeInfo) {
               name="Is Manager"
               label="Is Manager"
               {...form.getInputProps("is_manager")}
-              sx={{paddingBottom: "10px"}}
+              sx={{ paddingBottom: "10px" }}
             >
               <Group mt="xs">
                 <Radio value="yes" label="Yes" />
@@ -202,7 +202,7 @@ export const getServerSideProps: GetServerSideProps<EmployeeInfo> = async (
   const token = jwt.decode(access_token, "", true);
 
   const { data } = await axios.get(
-    `http://127.0.0.1:5000/auth/employees/${token.user_ssn_sin}`,
+    `http://localhost:5000/auth/employees/${token.user_ssn_sin}`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }

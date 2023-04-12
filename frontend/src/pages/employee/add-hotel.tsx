@@ -15,7 +15,7 @@ export default function AddHotel() {
       const access_token = Cookies.get("access_token");
 
       await axios.post(
-        "http://127.0.0.1:5000/hotel/hotel",
+        "http://localhost:5000/hotel/hotel",
         {
           hotel_ID: values.hotel_id,
           chain_ID: values.chain_id,

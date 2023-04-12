@@ -5,13 +5,7 @@ import jwt from "jwt-simple";
 import { useLocalStorage } from "@mantine/hooks";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { message } from "antd";
-import {
-  TextInput,
-  Button,
-  Stack,
-  Center,
-  Group,
-} from "@mantine/core";
+import { TextInput, Button, Stack, Center, Group } from "@mantine/core";
 import Header from "~/components/Header";
 import useToken from "~/utils/useToken";
 
@@ -55,7 +49,7 @@ export default function Account(props: UserInfo) {
   const handleSubmit = form.onSubmit(async (info) => {
     try {
       const res = await axios.put(
-        `http://127.0.0.1:5000/auth/customers/${token.user_ssn_sin}`,
+        `http://localhost:5000/auth/customers/${token.user_ssn_sin}`,
         {
           first_name: info.firstName,
           last_name: info.lastName,
@@ -150,7 +144,7 @@ export const getServerSideProps: GetServerSideProps<UserInfo> = async (
   const token = jwt.decode(access_token, "", true);
 
   const { data } = await axios.get(
-    `http://127.0.0.1:5000/auth/customers/${token.user_ssn_sin}`,
+    `http://localhost:5000/auth/customers/${token.user_ssn_sin}`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }
