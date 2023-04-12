@@ -69,6 +69,19 @@ Navigate to the frontend directory: `cd backend`
 
 Install dependencies by running the following in your command line: `pip install -r requirements.txt`
 
+Setup an environment variable file of format .env in the root backend directory.
+
+In the file, include the following lines: 
+
+DB_HOST=localhost
+DB_PORT=(add your database port here)
+DB_NAME=(add your database name here)
+DB_USER=(add your database user here -- typically postgres)
+DB_PASSWORD=(add your database password here)
+SECRET_KEY=mysecretkey
+DEBUG=False
+JWT_SECRET_KEY=mynotsosecretkey
+
 ### Running the Backend
 
 To run the project, follow these steps:
