@@ -25,7 +25,7 @@ class Database(object):
         self.cursor = self.connection.cursor()
         self.connection_details = f"dbname={dbname} user={user} password={password} host={host} port={port}"
         self.create_tables()
-        # self.setup_test_data()
+        self.setup_test_data()
 
     # Methods to close connection and commit changes to the database.
     def close(self):
@@ -33,20 +33,7 @@ class Database(object):
 
     def commit(self):
       self.connection.commit()
-
-    def insert_test_data(self): 
-        s = """INSERT INTO Hotel_Chain (chain_ID, name, number_of_hotels) VALUES (1, 'Hilton', 8);
-            INSERT INTO Hotel
-                (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
-            VALUES
-                (1, 1, 200, 'Main St', 123, 'New York', 'NY', 'USA', 'hilton1@example.com', 5)"""
-        try:
-            self.cursor.execute(s)
-            self.commit()
-        except Exception as e:
-            traceback.print_exc()
         
-
     def create_tables(self): 
         s = """
         CREATE TABLE IF NOT EXISTS Hotel_Chain (
@@ -215,12 +202,131 @@ class Database(object):
         CREATE OR REPLACE VIEW hotel_total_room_capacity AS
         SELECT name AS hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
         FROM Room NATURAL JOIN hotel_chain;
+
+        create index hotel_ID on hotel(hotel_id);
+
+        create index room_number on room(room_number);
+
+        create index chain_id on hotel_chain(chain_id);
+
+        create index customer_ssn_sin on customer(customer_ssn_sin);
+
+        create index employee_ssn_sin on employee(employee_ssn_sin);
+
+        --Triggers for incrementing hotels on insert, decrementing number of hotels on delete
+        create or replace function incr_number_of_hotels()
+        returns trigger as
+            $$
+        begin
+            update hotel_chain
+            set number_of_hotels = number_of_hotels + 1
+            where chain_id = new.chain_id;
+            return new;
+        end;
+        $$ 
+            language plpgsql;
+
+        create trigger incr_hotel_trigger
+        after insert on hotel
+        for each row
+        execute function incr_number_of_hotels();
+
+        create or replace function decr_number_of_hotels()
+        returns trigger as
+            $$
+        begin
+            update hotel_chain
+            set number_of_hotels = number_of_hotels - 1
+            where chain_id = old.chain_id;
+            return old;
+        end;
+        $$ 
+            language plpgsql;
+
+        create trigger decr_hotel_trigger
+        after delete on hotel
+        for each row
+        execute function decr_number_of_hotels();
+
+
+        --triggers for incrementing number of rooms in hotel on insert, decrementing number of rooms in hotel on delete
+        create or replace function incr_number_of_rooms()
+        returns trigger as 
+            $$
+        begin
+        update hotel
+        set number_of_rooms = number_of_rooms + 1
+        where hotel_id = new.hotel_id;
+        return new;
+        end;
+        $$ 
+            language plpgsql;
+
+        create trigger incr_room_trigger
+        after insert on room
+        for each row
+        execute function incr_number_of_rooms();
+
+        create or replace function decr_number_of_rooms()
+        returns trigger as
+            $$
+        begin
+        update hotel
+        set number_of_rooms = number_of_rooms - 1
+        where hotel_id = old.hotel_id;
+        return old;
+        end;
+        $$ 
+            language plpgsql;
+
+        create trigger decr_room_trigger
+        after delete on room
+        for each row
+        execute function decr_number_of_rooms();
         """
         try:
             self.cursor.execute(s)
             self.commit()
         except Exception as e:
             traceback.print_exc()
+    
+    def setup_test_data(self):
+        # Insert sample data into the tables
+        sample_data = """
+        -- Hotel Chain
+        INSERT INTO Hotel_Chain (chain_ID, name, number_of_hotels) VALUES (1, 'Hilton', 8);
+
+        -- Hotel
+        INSERT INTO Hotel
+            (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
+        VALUES
+            (1, 1, 200, 'Main St', 123, 'New York', 'NY', 'USA', 'hilton1@example.com', 5),
+            (2, 1, 150, 'Ocean Ave', 456, 'San Francisco', 'CA', 'USA', 'hilton2@example.com', 4);
+
+        -- Room
+        INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
+        VALUES
+            (1, 1, 2, 'city', 100, true, ''),
+            (2, 1, 4, 'city', 150, true, ''),
+            (1, 2, 2, 'ocean', 120, true, ''),
+            (2, 2, 4, 'ocean', 180, true, '');
+
+        -- Customer
+        INSERT INTO Customer (customer_SSN_SIN, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date)
+        VALUES
+            (123456789, 'John', 'Doe', 'Main St', 123, 'New York', 'NY', 'USA', '2023-01-01');
+
+        -- Booking
+        INSERT INTO Booking (booking_ID, booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID)
+        VALUES
+            (1, '2023-03-01', '2023-04-05', '2023-04-15', false, 123456789, 1, 1);
+        """
+        try:
+            self.cursor.execute(sample_data)
+            self.commit()
+        except Exception as e:
+            traceback.print_exc()
+            self.connection.rollback()
     
     def clear_table(self, table_name):
         try:
@@ -1074,44 +1180,6 @@ class Database(object):
     def delete_room(self, room_number, hotel_id):
         self.cursor.execute("DELETE FROM Room WHERE room_number = %s AND hotel_ID = %s", (room_number, hotel_id))
         self.commit()
-
-    def setup_test_data(self):
-        # Insert sample data into the tables
-        sample_data = """
-        -- Hotel Chain
-        INSERT INTO Hotel_Chain (chain_ID, name, number_of_hotels) VALUES (1, 'Hilton', 8);
-
-        -- Hotel
-        INSERT INTO Hotel
-            (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
-        VALUES
-            (1, 1, 200, 'Main St', 123, 'New York', 'NY', 'USA', 'hilton1@example.com', 5),
-            (2, 1, 150, 'Ocean Ave', 456, 'San Francisco', 'CA', 'USA', 'hilton2@example.com', 4);
-
-        -- Room
-        INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
-        VALUES
-            (1, 1, 2, 'city', 100, true, ''),
-            (2, 1, 4, 'city', 150, true, ''),
-            (1, 2, 2, 'ocean', 120, true, ''),
-            (2, 2, 4, 'ocean', 180, true, '');
-
-        -- Customer
-        INSERT INTO Customer (customer_SSN_SIN, first_name, last_name, address_street_name, address_street_number, address_city, address_province_state, address_country, registration_date)
-        VALUES
-            (123456789, 'John', 'Doe', 'Main St', 123, 'New York', 'NY', 'USA', '2023-01-01');
-
-        -- Booking
-        INSERT INTO Booking (booking_ID, booking_date, scheduled_check_in_date, scheduled_check_out_date, canceled, customer_SSN_SIN, room_number, hotel_ID)
-        VALUES
-            (1, '2023-03-01', '2023-04-05', '2023-04-15', false, 123456789, 1, 1);
-        """
-        try:
-            self.cursor.execute(sample_data)
-            self.commit()
-        except Exception as e:
-            traceback.print_exc()
-            self.connection.rollback()
     
     def cancel_booking(self, booking_id):
         try:
@@ -1175,6 +1243,7 @@ class Database(object):
 #db = Database(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 if __name__ == '__main__':
     test_db = Database(TEST_DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+    '''
     start_date = '2023-04-07'
     end_date = '2023-04-13'
     res = test_db.search_hotels_and_rooms(start_date, end_date)
@@ -1192,4 +1261,4 @@ if __name__ == '__main__':
                 print(f"\t\tView Type: {room['view_type']}")
                 print(f"\t\tPrice per Night: {room['price_per_night']}")
                 print(f"\t\tIs Extendable: {room['is_extendable']}")
-                print(f"\t\tRoom Problems: {room['room_problems']}")
+                print(f"\t\tRoom Problems: {room['room_problems']}")'''
