@@ -69,7 +69,7 @@ Navigate to the frontend directory: `cd backend`
 
 Install dependencies by running the following in your command line: `pip install -r requirements.txt`
 
-Setup an environment variable file of format .env in the root backend directory.
+Setup an environment variable file of format `.env` in the root backend directory.
 
 In the file, include the following lines: 
 
@@ -86,4 +86,4 @@ In the file, include the following lines:
 
 To run the project, follow these steps:
 
-Start the development server: `python backend/core_api/run.py`
+Start the development server: run `python backend/core_api/run.py` in the root directionry
