@@ -213,8 +213,10 @@ class Database(object):
         ); 
 
         CREATE OR REPLACE VIEW hotel_total_room_capacity AS
-        SELECT name AS hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
-        FROM Room NATURAL JOIN hotel_chain;
+        SELECT hotel_chain.name as hotel_chain_name, hotel.chain_id, room.hotel_id, room.room_number, room.room_capacity 
+        FROM room 
+        LEFT JOIN hotel ON room.hotel_id=hotel.hotel_id 
+        LEFT JOIN hotel_chain on hotel_chain.chain_id=hotel.chain_id;
         """
         try:
             self.cursor.execute(s)
@@ -991,6 +993,7 @@ class Database(object):
             hotel = next((x for x in hotels[chain_id]['hotels'] if x['hotel_ID'] == hotel_id), None)
             if not hotel:
                 hotel = {
+                    'chain_id': chain_id,
                     'hotel_ID': hotel_id,
                     'number_of_rooms': row[4],
                     'address_street_name': row[5],
@@ -1158,15 +1161,14 @@ class Database(object):
         results = self.cursor.fetchall()
         return results
     
-    def get_rooms_capacity(self, hotel_id):
+    def get_rooms_capacity(self):
 
         query = """
         SELECT hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
-        FROM hotel_total_room_capacity
-        WHERE hotel_id = %s;
+        FROM hotel_total_room_capacity;
         """
 
-        self.cursor.execute(query, (hotel_id,))
+        self.cursor.execute(query)
         results = self.cursor.fetchall()
 
         return results

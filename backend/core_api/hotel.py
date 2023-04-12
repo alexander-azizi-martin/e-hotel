@@ -177,12 +177,12 @@ class HotelByID(Resource):
             return {"message": f"Error removing hotel: {e}"}, 500
 
 
-@hotel_namespace.route("/hotel/total_capacity/<int:hotel_id>")
+@hotel_namespace.route("/hotel/total_capacity")
 class HotelTotalCapacity(Resource):
     @hotel_namespace.doc(responses={200: "Success", 404: "Not found", 500: "Internal Server Error"})
-    def get(self, hotel_id):
+    def get(self):
         try:
-            total_capacity = current_app.db.get_rooms_capacity(hotel_id)
+            total_capacity = current_app.db.get_rooms_capacity()
             if total_capacity == None:
                 return {"message": "Hotel not found or hotel has no rooms."}, 404
             
@@ -196,7 +196,7 @@ class HotelTotalCapacity(Resource):
                     "room_capacity": result[4]
                 })
 
-            return {"total_capacity": total_capacity}, 200
+            return output, 200
 
         except Exception as e:
             return {"message": f"Error retrieving total capacity: {e}"}, 500

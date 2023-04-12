@@ -3,11 +3,13 @@ import dayjs from "dayjs";
 import { GetServerSideProps } from "next";
 import { Center, Container, Table } from "@mantine/core";
 import Header from "~/components/Header";
-import { HotelInfo } from "~/types";
 
 interface CapacityInfo {
-  total_capacity: number;
+  hotel_chain_name: string;
+  chain_id: number;
   hotel_id: number;
+  room_number: number;
+  room_capacity: number;
 }
 
 interface HotelsProps {
@@ -25,14 +27,18 @@ export default function Hotels(props: HotelsProps) {
               <thead>
                 <tr>
                   <th>Hotel</th>
+                  <th>Room Number</th>
                   <th>Capacity</th>
                 </tr>
               </thead>
               <tbody>
                 {props.capacitiesInfo.map((capacityInfo) => (
-                  <tr key={capacityInfo.hotel_id}>
-                    <td>{capacityInfo.hotel_id}</td>
-                    <td>{capacityInfo.total_capacity}</td>
+                  <tr
+                    key={`${capacityInfo.hotel_chain_name}-${capacityInfo.room_number}`}
+                  >
+                    <td>{capacityInfo.hotel_chain_name}</td>
+                    <td>{capacityInfo.room_number}</td>
+                    <td>{capacityInfo.room_capacity}</td>
                   </tr>
                 ))}
               </tbody>
@@ -55,21 +61,11 @@ export const getServerSideProps: GetServerSideProps<HotelsProps> = async (
     };
   }
 
-  const { data: hotels } = await axios.get<HotelInfo[]>(
-    `http://127.0.0.1:5000/hotel/hotel`
+  const { data } = await axios.get<CapacityInfo[]>(
+    "http://127.0.0.1:5000/hotel/hotel/total_capacity"
   );
 
-  const capacityInfo: CapacityInfo[] = [];
-  for (let hotel of hotels) {
-    const {
-      data: { total_capacity },
-    } = await axios.get<{ total_capacity: number }>(
-      `http://127.0.0.1:5000/hotel/hotel/total_capacity/${hotel.hotel_id}`
-    );
-    capacityInfo.push({ hotel_id: hotel.hotel_id, total_capacity });
-  }
-
   return {
-    props: { capacitiesInfo: capacityInfo },
+    props: { capacitiesInfo: data },
   };
 };
