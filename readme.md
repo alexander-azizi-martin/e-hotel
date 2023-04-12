@@ -86,6 +86,4 @@ In the file, include the following lines:
 
 To run the project, follow these steps:
 
-Start the development server: 
-
-Open your browser and go to 
+Start the development server: `python backend/core_api/run.py`
