@@ -185,6 +185,16 @@ class HotelTotalCapacity(Resource):
             total_capacity = current_app.db.get_rooms_capacity(hotel_id)
             if total_capacity == None:
                 return {"message": "Hotel not found or hotel has no rooms."}, 404
+            
+            output = []
+            for result in total_capacity:
+                output.append({
+                    "hotel_chain_name": result[0],
+                    "chain_id": result[1],
+                    "hotel_id": result[2],
+                    "room_number": result[3],
+                    "room_capacity": result[4]
+                })
 
             return {"total_capacity": total_capacity}, 200
 
