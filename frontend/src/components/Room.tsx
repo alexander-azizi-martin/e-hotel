@@ -8,19 +8,20 @@ import {
   Group,
   Rating,
   Modal,
-  Center,
+  Stack,
   Button,
-  Flex,
+  Box,
 } from "@mantine/core";
 import { message } from "antd";
 import RoomForm from "~/components/RoomForm";
 import useSearchQuery from "~/utils/useSearchQuery";
 import useToken from "~/utils/useToken";
-import { RoomInfo, HotelInfo } from "~/types";
+import { RoomInfo, HotelInfo, HotelChainInfo } from "~/types";
 
 interface RoomProps {
   room: RoomInfo;
   hotel: HotelInfo;
+  hotelChains: HotelChainInfo[];
 }
 
 export default function Room(props: RoomProps) {
@@ -45,13 +46,13 @@ export default function Room(props: RoomProps) {
   //         setHotel(data);
   //       });
   //   }, [props.room.hotel_id]);
-
+  
   const handleDelete = async () => {
     try {
       const access_token = Cookies.get("access_token");
 
       await axios.delete(
-        `http://127.0.0.1:5000/room/room/${props.room.hotel_id}/${props.room.room_number}`,
+        `http://127.0.0.1:5000/room/room/${props.hotel.hotel_ID}/${props.room.room_number}`,
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
 
@@ -85,6 +86,7 @@ export default function Room(props: RoomProps) {
   };
 
   const handleUpdate = async (values: RoomInfo) => {
+    console.log("Hello");
     try {
       const access_token = Cookies.get("access_token");
 
@@ -111,30 +113,48 @@ export default function Room(props: RoomProps) {
   if (!display) return <></>;
 
   return (
-    <Paper shadow="xs" p="lg">
-      <Text size="lg" weight={500}>
-        Room {room.room_number}
-      </Text>
-      <Group position="apart" mt="sm">
-        <Text>Hotel Chain </Text>
-
-        <Rating value={props.hotel.star_rating} readOnly />
-      </Group>
-      <Group position="apart" mt="sm">
-        <Text size="xs" color="dimmed">
-          {`${props.hotel.address_street_number} ${props.hotel.address_street_name}, ${props.hotel.address_city}`}
-        </Text>{" "}
-        <Text size="xs" color="dimmed">
-          {`${props.hotel.address_province_state}, ${props.hotel.address_country}`}
+    <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
+      <Stack spacing="sm">
+        <Text size="lg" weight={500}>
+          <Text fw="bold">Room number</Text>
+          {room.room_number}
         </Text>
-      </Group>
+        <Group position="apart" mt="sm">
+          <Text>
+            <Text fw="bold">Hotel Chain:</Text>
+            {
+              props.hotelChains.find(
+                (hotelChain) => hotelChain.chain_ID === props.hotel.chain_id
+              )?.name
+            }
+          </Text>
 
-      <Group position="apart" mt="sm">
-        <Text>{room.room_capacity} Guests</Text>
+          <Text align="right">
+            <Text fw="bold">Star Rating:</Text>
+            <Rating value={props.hotel.star_rating} readOnly />
+          </Text>
+        </Group>
+        <Group position="apart" mt="sm">
+          <Text>
+            <Text fw="bold">Address:</Text>
+            {`${props.hotel.address_street_number} ${props.hotel.address_street_name}, ${props.hotel.address_city}`}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Location:</Text>
+            {`${props.hotel.address_province_state}, ${props.hotel.address_country}`}
+          </Text>
+        </Group>
 
-        <Text>${room.price_per_night} per night</Text>
-      </Group>
-      <Center>
+        <Group position="apart" mt="sm">
+          <Text>
+            <Text fw="bold">Room Capacity:</Text>
+            {room.room_capacity}
+          </Text>
+
+          <Text align="right">
+            <Text fw="bold">Price Per Night:</Text>${room.price_per_night}
+          </Text>
+        </Group>
         {token.role === "customer" && (
           <Button
             size="md"
@@ -146,18 +166,25 @@ export default function Room(props: RoomProps) {
           </Button>
         )}
         {token.role === "employee" && (
-          <Flex justify="between">
+          <Group position="apart">
             <Button size="md" compact onClick={handleDelete}>
               Delete
             </Button>
             <Button size="md" compact onClick={open}>
               Edit
             </Button>
-          </Flex>
+          </Group>
         )}
-      </Center>
-      <Modal opened={opened} onClose={close} title="">
-        <RoomForm room={props.room} onSubmit={handleUpdate} />
+      </Stack>
+      <Modal opened={opened} onClose={close} title="Edit Room">
+        <Box sx={{ padding: "40px" }}>
+          <RoomForm
+            room={props.room}
+            onSubmit={() => {
+              console.log("hello");
+            }}
+          />
+        </Box>
       </Modal>
     </Paper>
   );

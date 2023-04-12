@@ -48,7 +48,6 @@ export default function HotelForm(props: HotelForm) {
   useEffect(() => {
     if (props.setFormReset)
       props.setFormReset(() => () => {
-        form.reset();
         form.setValues({
           contact_email: "",
           address_city: "",
@@ -57,10 +56,13 @@ export default function HotelForm(props: HotelForm) {
           address_street_name: "",
           address_street_number: "",
           star_rating: undefined,
+          chain_id: undefined,
+          hotel_id: undefined,
+          number_of_rooms: undefined,
         });
       });
   }, [form.reset, props.setFormReset]);
-  console.log(form.errors);
+
   return (
     <Stack spacing="md" sx={{ padding: "20px" }}>
       {!props.hotel && (

@@ -77,22 +77,6 @@ export default function SignUp() {
         employee_ID: info.employeeId,
       });
 
-      console.log({
-        customer_SSN_SIN: info.ssn,
-        first_name: info.firstName,
-        last_name: info.lastName,
-        address_street_name: info.streetName,
-        address_street_number: info.streetNumber,
-        address_city: info.city,
-        address_province_state: info.region,
-        address_country: info.country,
-        password: info.password,
-        role: info.role,
-        is_manager: info.isManager,
-        hotel_id: info.hotelId,
-        employee_id: info.employeeId,
-      });
-
       const nextRes = await axios.post("http://127.0.0.1:5000/auth/login", {
         user_SSN_SIN: info.ssn,
         password: info.password,

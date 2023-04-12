@@ -43,13 +43,23 @@ export default function Booking({ booking }: BookingProps) {
         `http://127.0.0.1:5000/room/room/${booking.hotel_ID}/${booking.room_number}`
       );
 
+      const access_token = Cookies.get("access_token");
+      const { data } = await axios.get<{ employee_ID: number }>(
+        `http://127.0.0.1:5000/auth/employees/${token.user_ssn_sin}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+
       await axios.post(
-        `http://127.0.0.1:5000/rental/convert/${booking.booking_ID}`,
+        `http://127.0.0.1:5000/rental/rental/convert/${booking.booking_ID}`,
         {
           total_paid: stay_duration * room.price_per_night,
           discount: 0,
           additional_charges: 0,
-        }
+          employee_id: data.employee_ID,
+        },
+        { headers: { Authorization: `Bearer ${access_token}` } }
       );
 
       setDisplay(false);
@@ -62,15 +72,15 @@ export default function Booking({ booking }: BookingProps) {
   if (!display) return <></>;
 
   return (
-    <Paper shadow="xs" p="lg" sx={{width: '300px'}}>
+    <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
       <Stack spacing="md">
         <Text>
-          <Text fw="bold">Booked:</Text> 
+          <Text fw="bold">Booked:</Text>
           {booking.booking_date}
         </Text>
         <Flex justify="space-between">
           <Text>
-            <Text fw="bold">Hotel:</Text>
+            <Text fw="bold">Hotel Id:</Text>
             {booking.hotel_ID}
           </Text>
           <Text align="right">

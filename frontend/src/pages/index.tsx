@@ -1,11 +1,13 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
-import { Container, Text, Box, Center, Loader } from "@mantine/core";
+import { Container, Text, Box, Center, Loader, Flex } from "@mantine/core";
 import Room from "~/components/Room";
 import Header from "~/components/Header";
 import useSearchQuery from "~/utils/useSearchQuery";
-import { HotelChainSearch } from "~/types";
+import { HotelChainSearch, HotelChainInfo, RoomInfo, HotelInfo } from "~/types";
+
+type RoomQuery = { room: RoomInfo; hotel: HotelInfo };
 
 const formatParameters = (obj: any) => {
   const newObj: any = {};
@@ -46,6 +48,17 @@ export default function Home() {
   const [result, setResult] = useState<HotelChainSearch[]>([]);
   const [loading, setLoading] = useState(true);
   const firstRender = useRef(true);
+  const [hotelChains, setHotelChains] = useState<HotelChainInfo[]>([]);
+
+  useEffect(() => {
+    axios
+      .get<HotelChainInfo[]>("http://127.0.0.1:5000/hotel_chain/hotel_chain")
+      .then((res) => {
+        const { data } = res;
+
+        setHotelChains(data);
+      });
+  }, []);
 
   useEffect(() => {
     if (debounceState.current != null) {
@@ -86,31 +99,35 @@ export default function Home() {
     location,
   ]);
 
+  const rooms: RoomQuery[] = [];
+  for (let hotelChain of result) {
+    for (let hotel of hotelChain.hotels) {
+      for (let room of hotel.rooms) {
+        rooms.push({ room, hotel });
+      }
+    }
+  }
+
   return (
     <>
       <Header displayFilter />
       <main>
-        <Container sx={{ marginTop: "20px" }}>
+        <Container sx={{ marginTop: "20px", marginBottom: "20px" }}>
           <Center>
-            {result.map((hotelChain) => (
-              <Box key={hotelChain.chain_ID}>
-                {hotelChain.hotels.map((hotel) => (
-                  <Box key={hotel.hotel_id}>
-                    {hotel.rooms.map((room) => (
-                      <Room
-                        key={`${room.room_number}-${room.hotel_id}`}
-                        room={room}
-                        hotel={hotel}
-                      />
-                    ))}
-                  </Box>
-                ))}
-              </Box>
-            ))}
-            {result.length === 0 && !loading && (
-              <Text>No rooms available with the given criteria</Text>
-            )}
-            {firstRender.current && <Loader />}
+            <Flex wrap="wrap" gap="30px">
+              {rooms.map((result) => (
+                <Room
+                  key={`${result.room.room_number}-${result.room.hotel_id}`}
+                  room={result.room}
+                  hotel={result.hotel}
+                  hotelChains={hotelChains}
+                />
+              ))}
+              {result.length === 0 && !loading && (
+                <Text>No rooms available with the given criteria</Text>
+              )}
+              {firstRender.current && <Loader />}
+            </Flex>
           </Center>
         </Container>
       </main>

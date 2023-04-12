@@ -183,7 +183,7 @@ class HotelTotalCapacity(Resource):
     def get(self, hotel_id):
         try:
             total_capacity = current_app.db.get_rooms_capacity(hotel_id)
-            if not total_capacity:
+            if total_capacity == None:
                 return {"message": "Hotel not found or hotel has no rooms."}, 404
 
             return {"total_capacity": total_capacity}, 200

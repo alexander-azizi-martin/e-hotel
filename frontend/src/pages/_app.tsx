@@ -33,7 +33,7 @@ export default function App(props: AppProps) {
 
 export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
   const isLoggedIn = context.req.cookies["session_token"];
-  console.log("HELLO?");
+
   if (!isLoggedIn) {
     return {
       redirect: { destination: "/login", permanent: false },

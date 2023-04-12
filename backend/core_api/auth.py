@@ -195,13 +195,21 @@ class Login(Resource):
         result = current_app.db.check_account_and_role(user_ssn_sin, password, role)
         if result[0] == "Invalid SSN/SIN" or result[0] == "Invalid Password" or result[0] == "Invalid Role":
             return {"message": result[0]}, 401
-        
-        token_data = {
-                "user_ssn_sin": user_ssn_sin,
-                "first_name": result[2][2],
-                "last_name": result[2][3],
-                "role": role,
-            }
+
+        if role == "employee":
+          token_data = {
+                  "user_ssn_sin": user_ssn_sin,
+                  "first_name": result[2][2],
+                  "last_name": result[2][3],
+                  "role": role,
+              }
+        else:
+          token_data = {
+                  "user_ssn_sin": user_ssn_sin,
+                  "first_name": result[2][1],
+                  "last_name": result[2][2],
+                  "role": role,
+              }
         
         is_manager = False
 

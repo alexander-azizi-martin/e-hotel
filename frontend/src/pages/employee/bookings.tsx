@@ -1,7 +1,7 @@
 import jwt from "jwt-simple";
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { Stack, Text, Center } from "@mantine/core";
+import { Flex, Text, Center } from "@mantine/core";
 import Header from "~/components/Header";
 import Booking from "~/components/Booking";
 import { BookingInfo, Token } from "~/types";
@@ -15,15 +15,15 @@ export default function Bookings(props: BookingsProps) {
     <>
       <Header />
       <main>
-        <Center sx={{ marginTop: "20px" }}>
-          <Stack spacing="md">
+        <Center sx={{ marginTop: "20px", marginBottom: "20px"  }}>
+          <Flex wrap="wrap" gap="30px">
             {props.bookings.map((booking) => (
               <Booking booking={booking} key={booking.booking_ID} />
             ))}
             {props.bookings.length === 0 && (
               <Text>There current aren't any bookings</Text>
             )}
-          </Stack>
+          </Flex>
         </Center>
       </main>
     </>
@@ -41,15 +41,13 @@ export const getServerSideProps: GetServerSideProps<BookingsProps> = async (
     };
   }
 
-  const token: Token = jwt.decode(access_token, "", true);
-
   const { data } = await axios.get<BookingInfo[]>(
-    `http://127.0.0.1:5000/booking/employee_bookings/${token.user_ssn_sin}`,
+    "http://127.0.0.1:5000/booking/all_bookings",
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }
   );
-
+  console.log(data);
   return {
     props: { bookings: data },
   };

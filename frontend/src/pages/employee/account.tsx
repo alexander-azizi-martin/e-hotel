@@ -65,7 +65,7 @@ export default function Account(props: EmployeeInfo) {
       };
     },
   });
-  console.log(props)
+
   const handleSubmit = form.onSubmit(async (info) => {
     try {
       let promote_to_manager = null;

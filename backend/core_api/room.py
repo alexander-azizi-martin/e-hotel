@@ -4,7 +4,8 @@ from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 from datetime import datetime
 
-room_namespace = Namespace("room", description="All routes under this namespace concern room operations.")
+room_namespace = Namespace(
+    "room", description="All routes under this namespace concern room operations.")
 
 room_model = room_namespace.model('Room', {
     'room_number': fields.Integer(required=True, description='Room number'),
@@ -25,6 +26,7 @@ room_update_model = room_namespace.model('RoomUpdate', {
     'is_extendable': fields.Boolean(required=False, description='Indicates if the room is extendable'),
     'room_problems': fields.String(required=False, description='Problems associated with the room')
 })
+
 
 @room_namespace.route("/room")
 class Room(Resource):
@@ -74,32 +76,36 @@ class Room(Resource):
         except Exception as e:
             return {"message": f"Error adding room: {e}"}, 500
 
-    def get():
-      rooms  = current_app.db.get_all_rooms_with_hotel_info()
+    def get(self):
+        rooms = current_app.db.get_all_rooms_with_hotel_info()
 
-      formatted_rooms = []
-      for room in rooms:
-          formatted_rooms.append({
-              'room_number': room[0],
-              'hotel_ID': room[1],
-              'room_capacity': room[2],
-              'view_type': room[3],
-              'price_per_night': room[4],
-              'is_extendable': room[5],
-              'room_problems': room[6],
-              'chain_id': room[7],
-              'number_of_rooms': room[9],
-              'address_street_name': room[10],
-              'address_street_number': room[11],
-              'address_city': room[12],
-              'address_province_state': room[13],
-              'address_country': room[14],
-              'contact_email': room[15],
-              'star_rating': room[16]
-          })
-          
+        formatted_rooms = []
+        for room in rooms:
+            formatted_rooms.append({
+                "room": {
+                    'room_number': room[0],
+                    'hotel_ID': room[1],
+                    'room_capacity': room[2],
+                    'view_type': room[3],
+                    'price_per_night': room[4],
+                    'is_extendable': room[5],
+                    'room_problems': room[6],
+                },
+                "hotel": {
+                    'hotel_ID': room[1],
+                    'chain_id': room[8],
+                    'number_of_rooms': room[9],
+                    'address_street_name': room[10],
+                    'address_street_number': room[11],
+                    'address_city': room[12],
+                    'address_province_state': room[13],
+                    'address_country': room[14],
+                    'contact_email': room[15],
+                    'star_rating': room[16]
+                }
+          })          
 
-      return rooms, 200
+        return formatted_rooms, 200
 
     @room_namespace.doc(
         responses={

@@ -1,7 +1,7 @@
 import axios from "axios";
 import jwt from "jwt-simple";
 import { GetServerSideProps } from "next";
-import { Stack, Text, Center } from "@mantine/core";
+import { Flex, Text, Center } from "@mantine/core";
 import Header from "~/components/Header";
 import Renting from "~/components/Renting";
 import { RentingInfo, Token } from "~/types";
@@ -15,15 +15,15 @@ export default function Rentings(props: RentingsProps) {
     <>
       <Header />
       <main>
-        <Center sx={{ marginTop: "20px" }}>
-          <Stack spacing="md">
+        <Center sx={{ marginTop: "20px", marginBottom: "20px"  }}>
+          <Flex wrap="wrap" gap="30px">
             {props.rentings.map((renting) => (
               <Renting renting={renting} key={renting.rental_ID} />
             ))}
             {props.rentings.length === 0 && (
               <Text>You do not currently have any rentings</Text>
             )}
-          </Stack>
+          </Flex>
         </Center>
       </main>
     </>

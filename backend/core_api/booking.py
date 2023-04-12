@@ -183,15 +183,15 @@ class AllBookings(Resource):
             parsed_bookings = [
                 {
                     "booking_ID": booking[0],
-                    "booking_date": booking[1],
-                    "scheduled_check_in_date": booking[2],
-                    "scheduled_check_out_date": booking[3],
+                    "booking_date": booking[1].isoformat(),
+                    "scheduled_check_in_date": booking[2].isoformat(),
+                    "scheduled_check_out_date": booking[3].isoformat(),
                     "canceled": booking[4],
                     "customer_SSN_SIN": booking[5],
                     "room_number": booking[6],
                     "hotel_ID": booking[7]
                 }
-                for booking in all_bookings
+                for booking in all_bookings if not booking[4]
             ]
 
             return parsed_bookings, 200

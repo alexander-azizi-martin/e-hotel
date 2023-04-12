@@ -51,7 +51,18 @@ export default function RoomForm(props: RoomFormProps) {
   });
 
   useEffect(() => {
-    if (props.setFormReset) props.setFormReset(() => form.reset);
+    if (props.setFormReset)
+      props.setFormReset(() => () => {
+        form.setValues({
+          room_number: null,
+          hotel_id: null,
+          room_capacity: "1",
+          view_type: "",
+          price_per_night: null,
+          is_extendable: "no",
+          room_problems: "",
+        });
+      });
   }, [form.reset, props.setFormReset]);
 
   return (

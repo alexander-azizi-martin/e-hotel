@@ -46,7 +46,6 @@ export const getServerSideProps: GetServerSideProps<HotelsProps> = async (
     `http://127.0.0.1:5000/hotel/hotel`
   );
 
-  console.log(data);
 
   return {
     props: { hotels: data },

@@ -10,6 +10,7 @@ import {
   IconLogout,
   IconPlus,
   IconBuilding,
+  IconMap
 } from "@tabler/icons";
 import useToken from "~/utils/useToken";
 
@@ -53,6 +54,12 @@ export default function UserMenu() {
           <Link href="/rentings" style={{ textDecoration: "unset" }}>
             <Menu.Item icon={<IconBook size={14} />}>Rentings</Menu.Item>
           </Link>
+          <Link href="/hotels" style={{ textDecoration: "unset" }}>
+            <Menu.Item icon={<IconBuilding size={14} />}>Hotels</Menu.Item>
+          </Link>
+          <Link href="/locations" style={{ textDecoration: "unset" }}>
+            <Menu.Item icon={<IconMap size={14} />}>Locations</Menu.Item>
+          </Link>
           <Menu.Item icon={<IconLogout size={14} />} onClick={handleLogout}>
             Logout
           </Menu.Item>
@@ -75,7 +82,10 @@ export default function UserMenu() {
           <Link href="/employee/add-room" style={{ textDecoration: "unset" }}>
             <Menu.Item icon={<IconPlus size={14} />}>Add Room</Menu.Item>
           </Link>
-          <Link href="/employee/create-renting" style={{ textDecoration: "unset" }}>
+          <Link
+            href="/employee/create-renting"
+            style={{ textDecoration: "unset" }}
+          >
             <Menu.Item icon={<IconPlus size={14} />}>Create Renting</Menu.Item>
           </Link>
           <Menu.Item icon={<IconLogout size={14} />} onClick={handleLogout}>

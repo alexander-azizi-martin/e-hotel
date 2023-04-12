@@ -1,4 +1,4 @@
-import { Text, Stack, Flex, Paper } from "@mantine/core";
+import { Text, Stack, Group, Paper } from "@mantine/core";
 import { RentingInfo } from "~/types";
 
 interface RentingProps {
@@ -7,24 +7,48 @@ interface RentingProps {
 
 export default function Renting({ renting }: RentingProps) {
   return (
-    <Paper shadow="xs" p="lg">
+    <Paper shadow="xs" p="lg" sx={{ width: "400px" }}>
       <Stack spacing="md">
-        <Flex justify="space-between">
-          <Text>Hotel id: {renting.hotel_ID}</Text>
-          <Text>Room number: {renting.room_number}</Text>
-        </Flex>
-        <Flex justify="space-between">
-          <Text>Total paid: {renting.total_paid}$</Text>
-          <Text>Date paid: {renting.date_paid}</Text>
-        </Flex>
-        <Flex justify="space-between">
-          <Text>Discount: {renting.discount}%</Text>
-          <Text>Additional charges: {renting.date_paid}$</Text>
-        </Flex>
-        <Flex justify="space-between">
-          <Text>Check in: {renting.check_in_date}</Text>
-          <Text>Check out: {renting.check_out_date}</Text>
-        </Flex>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Hotel Id:</Text>
+            {renting.hotel_ID}
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Room Number:</Text>
+            {renting.room_number}
+          </Text>
+        </Group>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Total Paid:</Text>
+            {renting.total_paid}$
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Date Paid:</Text>
+            {renting.date_paid}
+          </Text>
+        </Group>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Discount:</Text>
+            {renting.discount}%
+          </Text>
+          <Text align="right">
+            <Text fw="bold">Additional Charges:</Text>
+            {renting.date_paid}$
+          </Text>
+        </Group>
+        <Group position="apart">
+          <Text>
+            <Text fw="bold">Check In:</Text>
+            {renting.check_in_date}
+          </Text>
+          <Text>
+            <Text fw="bold">Check Out:</Text>
+            {renting.check_out_date}
+          </Text>
+        </Group>
       </Stack>
     </Paper>
   );
