@@ -34,7 +34,6 @@ export default function FilterOptions() {
       price: null,
       hotelChain: "",
       category: 0,
-      numberOfRooms: null,
       roomCapacity: "any",
     },
   });
@@ -157,13 +156,13 @@ export default function FilterOptions() {
               <Rating size="lg" {...form.getInputProps("category")} />
             </Flex>
 
-            <Flex direction="column" rowGap="8px">
+            {/* <Flex direction="column" rowGap="8px">
               <Text>Number of Rooms</Text>
               <NumberInput
                 sx={{ width: "50%" }}
                 {...form.getInputProps("numberOfRooms")}
               />
-            </Flex>
+            </Flex> */}
           </Flex>
 
           <Divider />

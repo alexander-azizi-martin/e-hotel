@@ -16,7 +16,6 @@ export default function Home() {
     price,
     hotelChain,
     category,
-    numberOfRooms,
     roomCapacity,
     location,
   } = useSearchQuery((state) => state);
@@ -58,7 +57,6 @@ export default function Home() {
     price,
     hotelChain,
     category,
-    numberOfRooms,
     roomCapacity,
     location,
   ]);

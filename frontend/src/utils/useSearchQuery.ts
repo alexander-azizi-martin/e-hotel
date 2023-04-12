@@ -6,7 +6,6 @@ interface SearchQuery {
   price: null | number;
   hotelChain: null | string;
   category: null | number;
-  numberOfRooms: null | number;
   roomCapacity: string;
   location: string;
   setDateRange: (dateRange: string[]) => void;
@@ -19,7 +18,6 @@ interface SearchQueryOptional {
   price?: null | number;
   hotelChain?: null | string;
   category?: null | number;
-  numberOfRooms?: null | number;
   roomCapacity?: string;
   location?: string;
 }
@@ -30,7 +28,6 @@ const useSearchQuery = create<SearchQuery>((set) => ({
   price: null,
   hotelChain: null,
   category: null,
-  numberOfRooms: null,
   roomCapacity: "any",
   location: "",
   setDateRange: (dateRange: string[]) =>

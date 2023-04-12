@@ -51,16 +51,6 @@ VALUES
     (107, 1, 260, 'Orchard Rd', 135, 'Singapore', 'Singapore', 'Singapore', 'hilton7@example.com', 5),
     (108, 1, 230, 'Las Ramblas', 246, 'Barcelona', 'Catalonia', 'Spain', 'hilton8@example.com', 4);
 
-
-/* INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (101, 1, 200, 'Main St', 123, 'New York', 'NY', 'USA', 'hilton1@example.com', 5);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (102, 1, 250, 'Market St', 456, 'San Francisco', 'CA', 'USA', 'hilton2@example.com', 5);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (103, 1, 300, 'Baker St', 789, 'London', 'England', 'UK', 'hilton3@example.com', 3);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (104, 1, 220, 'King St', 321, 'Toronto', 'ON', 'Canada', 'hilton4@example.com', 4);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (105, 1, 280, 'George St', 654, 'Sydney', 'NSW', 'Australia', 'hilton5@example.com', 5);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (106, 1, 240, 'Queen St', 987, 'Auckland', 'Auckland', 'New Zealand', 'hilton6@example.com', 2);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (107, 1, 260, 'Orchard Rd', 135, 'Singapore', 'Singapore', 'Singapore', 'hilton7@example.com', 5);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (108, 1, 230, 'Las Ramblas', 246, 'Barcelona', 'Catalonia', 'Spain', 'hilton8@example.com', 4);
-*/
 -- Marriott 
 INSERT INTO Hotel
     (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
@@ -73,16 +63,7 @@ VALUES
     (206, 2, 290, 'Victoria St', 951, 'Auckland', 'Auckland', 'New Zealand', 'marriott6@example.com', 2),
     (207, 2, 310, 'Shenton Way', 147, 'Singapore', 'Singapore', 'Singapore', 'marriott7@example.com', 5),
     (208, 2, 280, 'Passeig de Gracia', 258, 'Barcelona', 'Catalonia', 'Spain', 'marriott8@example.com', 4);
-/*
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (201, 300, 'Madison Ave', 369, 'New York', 'NY', 'USA', 'marriott1@example.com', 5);
-INSERT INTO Hotel (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (202, 320, 'Mission St', 482, 'San Francisco', 'CA', 'USA', 'marriott2@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (203, 350, 'Oxford St', 793, 'London', 'England', 'UK', 'marriott3@example.com', 3);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (204, 270, 'Front St', 345, 'Toronto', 'ON', 'Canada', 'marriott4@example.com', 4);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (205, 330, 'Pitt St', 678, 'Sydney', 'NSW', 'Australia', 'marriott5@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (206, 290, 'Victoria St', 951, 'Auckland', 'Auckland', 'New Zealand', 'marriott6@example.com', 2);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (207, 310, 'Shenton Way', 147, 'Singapore', 'Singapore', 'Singapore', 'marriott7@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (208, 280, 'Passeig de Gracia', 258, 'Barcelona', 'Catalonia', 'Spain', 'marriott8@example.com', 4);
-*/
+
 -- Intercontinental 
 INSERT INTO Hotel
     (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
@@ -95,16 +76,7 @@ VALUES
     (306, 3, 300, 'Wellesley St', 915, 'Auckland', 'Auckland', 'New Zealand', 'intercontinental6@example.com', 2),
     (307, 3, 280, 'Bukit Timah Rd', 741, 'Singapore', 'Singapore', 'Singapore', 'intercontinental7@example.com', 5),
     (308, 3, 310, 'Passeig de Gracia', 369, 'Barcelona', 'Catalonia', 'Spain', 'intercontinental8@example.com', 4);
-/*
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (301, 250, 'Park Ave', 159, 'New York', 'NY', 'USA', 'intercontinental1@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (302, 270, 'Van Ness Ave', 498, 'San Francisco', 'CA', 'USA', 'intercontinental2@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (303, 320, 'Regent St', 777, 'London', 'England', 'UK', 'intercontinental3@example.com', 3);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (304, 260, 'Yonge St', 369, 'Toronto', 'ON', 'Canada', 'intercontinental4@example.com', 4);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (305, 280, 'Elizabeth St', 702, 'Sydney', 'NSW', 'Australia', 'intercontinental5@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (306, 300, 'Wellesley St', 915, 'Auckland', 'Auckland', 'New Zealand', 'intercontinental6@example.com', 2);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (307, 280, 'Bukit Timah Rd', 741, 'Singapore', 'Singapore', 'Singapore', 'intercontinental7@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (308, 310, 'Passeig de Gracia', 369, 'Barcelona', 'Catalonia', 'Spain', 'intercontinental8@example.com', 4);
-*/
+
 -- AccorHotels
 INSERT INTO Hotel
     (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
@@ -117,16 +89,7 @@ VALUES
     (406, 4, 250, 'Albert St', 789, 'Auckland', 'Auckland', 'New Zealand', 'accor6@example.com', 2),
     (407, 4, 270, 'Cecil St', 369, 'Singapore', 'Singapore', 'Singapore', 'accor7@example.com', 5),
     (408, 4, 260, 'Rambla de Catalunya', 159, 'Barcelona', 'Catalonia', 'Spain', 'accor8@example.com', 4);
-/*
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (401, 280, 'Fifth Ave', 963, 'New York', 'NY', 'USA', 'accor1@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (402, 300, 'Geary St', 456, 'San Francisco', 'CA', 'USA', 'accor2@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (403, 320, 'Coventry St', 678, 'London', 'England', 'UK', 'accor3@example.com', 4);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (404, 240, 'Queen St', 123, 'Toronto', 'ON', 'Canada', 'accor4@example.com', 3);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (405, 290, 'Pitt St', 456, 'Sydney', 'NSW', 'Australia', 'accor5@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (406, 250, 'Albert St', 789, 'Auckland', 'Auckland', 'New Zealand', 'accor6@example.com', 2);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (407, 270, 'Cecil St', 369, 'Singapore', 'Singapore', 'Singapore', 'accor7@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (408, 260, 'Rambla de Catalunya', 159, 'Barcelona', 'Catalonia', 'Spain', 'accor8@example.com', 4);
-*/
+
 --Wyndham
 INSERT INTO Hotel
     (hotel_ID, chain_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating)
@@ -140,16 +103,6 @@ VALUES
     (507, 5, 290, 'Orchard Rd', 951, 'Singapore', 'Singapore', 'Singapore', 'wyndham7@example.com', 5),
     (508, 5, 270, 'Passeig de Gracia', 753, 'Barcelona', 'Catalonia', 'Spain', 'wyndham8@example.com', 4);
 
-/*
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (501, 320, 'Broadway', 789, 'New York', 'NY', 'USA', 'wyndham1@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (502, 300, 'Fisherman''s Wharf', 456, 'San Francisco', 'CA', 'USA', 'wyndham2@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (503, 350, 'Baker St', 852, 'London', 'England', 'UK', 'wyndham3@example.com', 4);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (504, 240, 'Queen St', 654, 'Toronto', 'ON', 'Canada', 'wyndham4@example.com', 3);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (505, 280, 'George St', 147, 'Sydney', 'NSW', 'Australia', 'wyndham5@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (506, 260, 'Queen St', 369, 'Auckland', 'Auckland', 'New Zealand', 'wyndham6@example.com', 2);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (507, 290, 'Orchard Rd', 951, 'Singapore', 'Singapore', 'Singapore', 'wyndham7@example.com', 5);
-INSERT INTO Hotel (hotel_ID, number_of_rooms, address_street_name, address_street_number, address_city, address_province_state, address_country, contact_email, star_rating) VALUES (508, 270, 'Passeig de Gracia', 753, 'Barcelona', 'Catalonia', 'Spain', 'wyndham8@example.com', 4);
-*/
 -- Hotel phone numbers
 -- Hilton
 -- Hilton Hotel Phone Numbers
@@ -203,7 +156,6 @@ INSERT INTO Hotel_Phone_Number (hotel_ID, phone_number) VALUES (507, '+65-6222-1
 INSERT INTO Hotel_Phone_Number (hotel_ID, phone_number) VALUES (508, '+34-93-567-8901');
 
 -- Rooms
--- Hotel 103 (5-star)
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 103, 2, 'City', 300, TRUE, NULL),
        (2, 103, 2, 'Garden', 320, TRUE, NULL),
@@ -211,7 +163,6 @@ VALUES (1, 103, 2, 'City', 300, TRUE, NULL),
        (4, 103, 4, 'City', 400, TRUE, NULL),
        (5, 103, 4, 'Garden', 420, FALSE, NULL);
 
--- Hotel 104 (5-star)
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 104, 2, 'City', 320, TRUE, NULL),
        (2, 104, 3, 'Garden', 360, TRUE, NULL),
@@ -219,7 +170,6 @@ VALUES (1, 104, 2, 'City', 320, TRUE, NULL),
        (4, 104, 4, 'City', 420, TRUE, NULL),
        (5, 104, 5, 'Garden', 500, FALSE, NULL);
 
--- Hotel 105 (3-star)
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 105, 1, 'City', 100, TRUE, NULL),
        (2, 105, 2, 'Garden', 150, TRUE, NULL),
@@ -227,7 +177,6 @@ VALUES (1, 105, 1, 'City', 100, TRUE, NULL),
        (4, 105, 3, 'City', 200, TRUE, NULL),
        (5, 105, 3, 'Garden', 220, FALSE, NULL);
 
--- Hotel 106 (4-star)
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 106, 2, 'City', 250, TRUE, NULL),
        (2, 106, 3, 'Garden', 290, TRUE, NULL),
@@ -235,7 +184,6 @@ VALUES (1, 106, 2, 'City', 250, TRUE, NULL),
        (4, 106, 4, 'City', 380, TRUE, NULL),
        (5, 106, 5, 'Garden', 450, FALSE, NULL);
 
--- Hotel 107 (5-star)
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 107, 2, 'City', 320, TRUE, NULL),
        (2, 107, 2, 'Garden', 350, TRUE, NULL),
@@ -251,7 +199,6 @@ VALUES
 (4, 108, 3, 'City', 175, TRUE, NULL),
 (5, 108, 4, 'Pool', 225, FALSE, NULL);
 
--- Hotel 201
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES
 (1, 201, 1, 'City', 50, TRUE, NULL),
@@ -260,7 +207,6 @@ VALUES
 (4, 201, 3, 'City', 150, TRUE, NULL),
 (5, 201, 4, 'Garden', 200, FALSE, NULL);
 
--- Hotel 202
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES
 (1, 202, 1, 'City', 55, TRUE, NULL),
@@ -269,7 +215,6 @@ VALUES
 (4, 202, 3, 'City', 165, TRUE, NULL),
 (5, 202, 4, 'Garden', 220, FALSE, NULL);
 
--- Hotel 203
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES
 (1, 203, 1, 'City', 45, TRUE, NULL),
@@ -278,7 +223,6 @@ VALUES
 (4, 203, 3, 'City', 135, TRUE, NULL),
 (5, 203, 4, 'Garden', 180, FALSE, NULL);
 
--- Hotel 204
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES
 (1, 204, 1, 'City', 60, TRUE, NULL),
@@ -287,7 +231,6 @@ VALUES
 (4, 204, 3, 'City', 180, TRUE, NULL),
 (5, 204, 4, 'Garden', 240, FALSE, NULL);
 
--- Hotel 205
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES
 (1, 205, 1, 'City', 75, TRUE, NULL),
@@ -387,7 +330,6 @@ VALUES (1, 401, 1, 'Pool', 50, TRUE, NULL),
        (4, 401, 4, 'Pool', 125, TRUE, NULL),
        (5, 401, 5, 'City', 150, FALSE, NULL);
 
--- Hotel 402
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 402, 2, 'City', 80, TRUE, NULL),
        (2, 402, 4, 'Garden', 150, TRUE, NULL),
@@ -395,7 +337,6 @@ VALUES (1, 402, 2, 'City', 80, TRUE, NULL),
        (4, 402, 1, 'City', 60, FALSE, NULL),
        (5, 402, 3, 'Garden', 120, TRUE, NULL);
 
--- Hotel 403
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 403, 1, 'City', 70, FALSE, 'Broken AC'),
        (2, 403, 2, 'Pool', 120, TRUE, NULL),
@@ -403,7 +344,6 @@ VALUES (1, 403, 1, 'City', 70, FALSE, 'Broken AC'),
        (4, 403, 2, 'City', 100, TRUE, NULL),
        (5, 403, 4, 'Garden', 200, TRUE, 'Clogged toilet');
 
--- Hotel 404
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 404, 1, 'City', 50, FALSE, NULL),
        (2, 404, 2, 'Garden', 90, TRUE, NULL),
@@ -411,7 +351,6 @@ VALUES (1, 404, 1, 'City', 50, FALSE, NULL),
        (4, 404, 4, 'Pool', 180, TRUE, NULL),
        (5, 404, 5, 'Garden', 250, TRUE, NULL);
 
--- Hotel 405
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 405, 1, 'City', 60, FALSE, NULL),
        (2, 405, 2, 'Pool', 120, TRUE, 'TV not working'),
@@ -419,7 +358,6 @@ VALUES (1, 405, 1, 'City', 60, FALSE, NULL),
        (4, 405, 2, 'City', 100, TRUE, NULL),
        (5, 405, 4, 'Garden', 200, TRUE, 'Leaky shower');
 
--- Hotel 406
 INSERT INTO Room (room_number, hotel_ID, room_capacity, view_type, price_per_night, is_extendable, room_problems)
 VALUES (1, 406, 1, 'City', 70, FALSE, NULL),
        (2, 406, 2, 'Garden', 120, TRUE, 'Broken hair dryer'),

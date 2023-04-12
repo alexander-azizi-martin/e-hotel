@@ -1,7 +1,7 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import { GetServerSideProps } from "next";
-import { Center, Container, Table } from "@mantine/core";
+import { Center, Container, Table, Text } from "@mantine/core";
 import Header from "~/components/Header";
 
 interface LocationInfo {
@@ -22,24 +22,29 @@ export default function Location(props: LocationProps) {
       <main>
         <Container size="xs">
           <Center sx={{ marginTop: "20px", marginBottom: "20px" }}>
-            <Table>
-              <thead>
-                <tr>
-                  <th>Location</th>
-                  <th>Available Rooms</th>
-                </tr>
-              </thead>
-              <tbody>
-                {props.locationsInfo.map((locationInfo) => (
-                  <tr
-                    key={`${locationInfo.city} - ${locationInfo.state_province}, ${locationInfo.country}`}
-                  >
-                    <td>{`${locationInfo.city} - ${locationInfo.state_province}, ${locationInfo.country}`}</td>
-                    <td>{locationInfo.available_rooms}</td>
+            {props.locationsInfo.length > 0 && (
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Location</th>
+                    <th>Available Rooms</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {props.locationsInfo.map((locationInfo) => (
+                    <tr
+                      key={`${locationInfo.city} - ${locationInfo.state_province}, ${locationInfo.country}`}
+                    >
+                      <td>{`${locationInfo.city} - ${locationInfo.state_province}, ${locationInfo.country}`}</td>
+                      <td>{locationInfo.available_rooms}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+            {props.locationsInfo.length === 0 && (
+              <Text>No rooms currently available</Text>
+            )}
           </Center>
         </Container>
       </main>
