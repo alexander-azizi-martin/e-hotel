@@ -200,8 +200,10 @@ class Database(object):
         ); 
 
         CREATE OR REPLACE VIEW hotel_total_room_capacity AS
-        SELECT name AS hotel_chain_name, chain_id, hotel_id, room_number, room_capacity
-        FROM Room NATURAL JOIN hotel_chain;
+        SELECT hotel_chain.name as hotel_chain_name, hotel.chain_id, hotel.hotel_id, room.room_number, room.room_capacity 
+        FROM room 
+        LEFT JOIN hotel ON room.hotel_id=hotel.hotel_id 
+        LEFT JOIN hotel_chain on hotel_chain.chain_id=hotel.chain_id;
 
         create index hotel_ID on hotel(hotel_id);
 
