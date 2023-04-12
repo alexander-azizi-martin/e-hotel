@@ -27,7 +27,9 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get<HotelChainInfo[]>("http://localhost:5000/hotel_chain/hotel_chain")
+      .get<HotelChainInfo[]>(
+        `${process.env.NEXT_PUBLIC_URL}/hotel_chain/hotel_chain`
+      )
       .then((res) => {
         const { data } = res;
 
@@ -43,11 +45,13 @@ export default function Home() {
     debounceState.current = setTimeout(() => {
       setLoading(true);
 
-      axios.get<RoomQuery[]>("http://localhost:5000/room/room").then((res) => {
-        firstRender.current = false;
-        setLoading(false);
-        setResult(res.data);
-      });
+      axios
+        .get<RoomQuery[]>(`${process.env.NEXT_PUBLIC_URL}/room/room`)
+        .then((res) => {
+          firstRender.current = false;
+          setLoading(false);
+          setResult(res.data);
+        });
 
       debounceState.current = null;
     }, 1000) as any;

@@ -49,7 +49,7 @@ export default function Account(props: UserInfo) {
   const handleSubmit = form.onSubmit(async (info) => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/auth/customers/${token.user_ssn_sin}`,
+        `${process.env.NEXT_PUBLIC_URL}/auth/customers/${token.user_ssn_sin}`,
         {
           first_name: info.firstName,
           last_name: info.lastName,
@@ -144,7 +144,7 @@ export const getServerSideProps: GetServerSideProps<UserInfo> = async (
   const token = jwt.decode(access_token, "", true);
 
   const { data } = await axios.get(
-    `http://localhost:5000/auth/customers/${token.user_ssn_sin}`,
+    `${process.env.NEXT_PUBLIC_URL}/auth/customers/${token.user_ssn_sin}`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }

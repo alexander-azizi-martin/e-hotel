@@ -32,7 +32,7 @@ export default function Hotel(props: HotelProps) {
       const access_token = Cookies.get("access_token");
 
       await axios.put(
-        `http://localhost:5000/hotel/hotel`,
+        `${process.env.NEXT_PUBLIC_URL}/hotel/hotel`,
         {
           hotel_ID: values.hotel_id,
           chain_ID: values.chain_id,
@@ -62,7 +62,7 @@ export default function Hotel(props: HotelProps) {
       const access_token = Cookies.get("access_token");
 
       await axios.delete(
-        `http://localhost:5000/hotel/hotel/${props.hotel.hotel_id}`,
+        `${process.env.NEXT_PUBLIC_URL}/hotel/hotel/${props.hotel.hotel_id}`,
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
 

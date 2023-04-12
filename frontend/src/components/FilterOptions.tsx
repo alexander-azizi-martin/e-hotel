@@ -20,6 +20,7 @@ import {
 } from "@mantine/core";
 import { IconAdjustments } from "@tabler/icons";
 import useSearchQuery from "~/utils/useSearchQuery";
+import useHotelChains from "~/utils/useHotelChains"
 import { HotelChainInfo } from "~/types";
 
 export default function FilterOptions() {
@@ -38,21 +39,11 @@ export default function FilterOptions() {
     },
   });
 
-  const [hotelChains, setHotelChains] = useState<HotelChainInfo[]>([]);
+  const hotelChains = useHotelChains((state) => state.hotelChains);
 
   useEffect(() => {
     setSearchQuery(form.values);
   }, [form.values]);
-
-  useEffect(() => {
-    axios
-      .get<HotelChainInfo[]>("http://localhost:5000/hotel_chain/hotel_chain")
-      .then((res) => {
-        const { data } = res;
-
-        setHotelChains(data);
-      });
-  }, []);
 
   return (
     <>
@@ -131,25 +122,25 @@ export default function FilterOptions() {
           <Flex rowGap="20px" direction="column" sx={{ margin: "20px" }}>
             <Title order={3}>Hotel</Title>
 
-            <Flex direction="column" rowGap="8px">
-              <Text>Hotel Chain</Text>
-              <Radio.Group {...form.getInputProps("hotelChain")}>
-                {hotelChains.map((chain) => (
-                  <Radio
-                    key={chain.chain_ID}
-                    value={chain.name}
-                    label={chain.name}
-                    onClick={() => {
-                      if (form.values.hotelChain === chain.name) {
-                        form.setValues({ hotelChain: "" });
-                      } else {
-                        form.setValues({ hotelChain: chain.name });
-                      }
-                    }}
-                  />
-                ))}
-              </Radio.Group>
-            </Flex>
+            {hotelChains.length > 0 && (
+              <Flex direction="column" rowGap="8px">
+                <Text>Hotel Chain</Text>
+                <Radio.Group {...form.getInputProps("hotelChain")}>
+                  {hotelChains.map((chain) => (
+                    <Radio
+                      key={chain.chain_ID}
+                      value={chain.name}
+                      label={chain.name}
+                      onClick={() => {
+                        if (form.values.hotelChain === chain.name) {
+                          form.setValues({ hotelChain: "" });
+                        }
+                      }}
+                    />
+                  ))}
+                </Radio.Group>
+              </Flex>
+            )}
 
             <Flex direction="column" rowGap="8px">
               <Text>Category</Text>

@@ -19,20 +19,20 @@ export default function CreateRenting() {
       const check_out = dayjs(values.check_out_date, "YYYY-MM-DD");
       const stay_duration = check_out.diff(check_in, "days");
       const { data: room } = await axios.get<RoomInfo>(
-        `http://localhost:5000/room/room/${values.hotel_ID}/${values.room_number}`
+        `${process.env.NEXT_PUBLIC_URL}/room/room/${values.hotel_ID}/${values.room_number}`
       );
 
       const access_token = Cookies.get("access_token");
 
       const { data } = await axios.get<{ employee_ID: number }>(
-        `http://localhost:5000/auth/employees/${token.user_ssn_sin}`,
+        `${process.env.NEXT_PUBLIC_URL}/auth/employees/${token.user_ssn_sin}`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
       );
 
       await axios.post(
-        "http://localhost:5000/rental/rental",
+        `${process.env.NEXT_PUBLIC_URL}/rental/rental`,
         {
           ...values,
           employee_ID: data.employee_ID,

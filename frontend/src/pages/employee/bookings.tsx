@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<BookingsProps> = async (
   }
 
   const { data } = await axios.get<BookingInfo[]>(
-    "http://localhost:5000/booking/all_bookings",
+    `${process.env.NEXT_PUBLIC_URL}/booking/all_bookings`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }

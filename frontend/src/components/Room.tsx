@@ -39,7 +39,7 @@ export default function Room(props: RoomProps) {
   //   useEffect(() => {
   //     axios
   //       .get<HotelInfo>(
-  //         `http://localhost:5000/hotel/hotel/${props.room.hotel_id}`
+  //         `http://127.0.0.1:5000/hotel/hotel/${props.room.hotel_id}`
   //       )
   //       .then((res) => {
   //         const { data } = res;
@@ -52,7 +52,7 @@ export default function Room(props: RoomProps) {
       const access_token = Cookies.get("access_token");
 
       await axios.delete(
-        `http://localhost:5000/room/room/${props.hotel.hotel_ID}/${props.room.room_number}`,
+        `${process.env.NEXT_PUBLIC_URL}/room/room/${props.hotel.hotel_ID}/${props.room.room_number}`,
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
 
@@ -68,7 +68,7 @@ export default function Room(props: RoomProps) {
       const access_token = Cookies.get("access_token");
 
       await axios.post(
-        "http://localhost:5000/booking/booking",
+        `${process.env.NEXT_PUBLIC_URL}/booking/booking`,
         {
           hotel_ID: props.hotel.hotel_ID,
           room_number: props.room.room_number,
@@ -90,7 +90,7 @@ export default function Room(props: RoomProps) {
       const access_token = Cookies.get("access_token");
 
       await axios.put(
-        `http://localhost:5000/room/room`,
+        `${process.env.NEXT_PUBLIC_URL}/room/room`,
         {
           room_number: values.room_number,
           hotel_ID: values.hotel_id,

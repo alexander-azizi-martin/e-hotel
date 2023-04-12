@@ -15,7 +15,7 @@ export default function AddRoom() {
       const access_token = Cookies.get("access_token");
 
       await axios.post(
-        "http://localhost:5000/room/room",
+        `${process.env.NEXT_PUBLIC_URL}/room/room`,
         {
           room_number: values.room_number,
           hotel_ID: values.hotel_id,

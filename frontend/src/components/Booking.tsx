@@ -23,7 +23,7 @@ export default function Booking({ booking }: BookingProps) {
     try {
       const access_token = Cookies.get("access_token");
       await axios.delete(
-        `http://localhost:5000/booking/booking/${booking.booking_ID}`,
+        `${process.env.NEXT_PUBLIC_URL}/booking/booking/${booking.booking_ID}`,
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
 
@@ -40,19 +40,19 @@ export default function Booking({ booking }: BookingProps) {
       const check_out = dayjs(booking.scheduled_check_out_date, "YYYY-MM-DD");
       const stay_duration = check_out.diff(check_in, "days");
       const { data: room } = await axios.get<RoomInfo>(
-        `http://localhost:5000/room/room/${booking.hotel_ID}/${booking.room_number}`
+        `${process.env.NEXT_PUBLIC_URL}/room/room/${booking.hotel_ID}/${booking.room_number}`
       );
 
       const access_token = Cookies.get("access_token");
       const { data } = await axios.get<{ employee_ID: number }>(
-        `http://localhost:5000/auth/employees/${token.user_ssn_sin}`,
+        `${process.env.NEXT_PUBLIC_URL}/auth/employees/${token.user_ssn_sin}`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
       );
 
       await axios.post(
-        `http://localhost:5000/rental/rental/convert/${booking.booking_ID}`,
+        `${process.env.NEXT_PUBLIC_URL}/rental/rental/convert/${booking.booking_ID}`,
         {
           total_paid: stay_duration * room.price_per_night,
           discount: 0,

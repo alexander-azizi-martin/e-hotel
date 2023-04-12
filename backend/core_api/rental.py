@@ -2,6 +2,7 @@ from flask import request
 from flask import current_app
 from flask_restx import Resource, Namespace, fields
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
+from datetime import date
 
 rental_namespace = Namespace("rental", description="All routes under this namespace concern rental operations.")
 
@@ -43,8 +44,8 @@ class Rental(Resource):
                 data["room_number"],
                 data["hotel_ID"],
                 data["customer_SSN_SIN"],
-                data["check_in_date"],
-                data["check_out_date"],
+                date(*map(int, data["check_in_date"].split("-"))),
+                date(*map(int, data["check_out_date"].split("-"))),
                 data.get("total_paid", None),
                 data.get("discount", None),
                 data.get("additional_charges", None)

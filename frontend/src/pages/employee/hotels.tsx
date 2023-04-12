@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps<HotelsProps> = async (
   }
 
   const { data } = await axios.get<HotelInfo[]>(
-    `http://localhost:5000/hotel/hotel`
+    `${process.env.NEXT_PUBLIC_URL}/hotel/hotel`
   );
 
   return {

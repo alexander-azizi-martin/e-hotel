@@ -47,23 +47,29 @@ export default function SignUp() {
 
   const handleSubmit = form.onSubmit(async (info) => {
     try {
-      const res = await axios.post("http://localhost:5000/auth/customers", {
-        customer_SSN_SIN: info.ssn,
-        first_name: info.firstName,
-        last_name: info.lastName,
-        address_street_name: info.streetName,
-        address_street_number: info.streetNumber,
-        address_city: info.city,
-        address_province_state: info.region,
-        address_country: info.country,
-        password: info.password,
-      });
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/auth/customers`,
+        {
+          customer_SSN_SIN: info.ssn,
+          first_name: info.firstName,
+          last_name: info.lastName,
+          address_street_name: info.streetName,
+          address_street_number: info.streetNumber,
+          address_city: info.city,
+          address_province_state: info.region,
+          address_country: info.country,
+          password: info.password,
+        }
+      );
 
-      const nextRes = await axios.post("http://localhost:5000/auth/login", {
-        user_SSN_SIN: info.ssn,
-        password: info.password,
-        role: "customer",
-      });
+      const nextRes = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/auth/login`,
+        {
+          user_SSN_SIN: info.ssn,
+          password: info.password,
+          role: "customer",
+        }
+      );
 
       const access_token = nextRes.data["access_token"];
       const token: Token = jwt.decode(access_token, "", true);

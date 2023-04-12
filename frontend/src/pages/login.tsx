@@ -35,11 +35,14 @@ export default function Login() {
 
   const handleSubmit = form.onSubmit(async ({ ssn, password, role }) => {
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", {
-        user_SSN_SIN: ssn,
-        password,
-        role,
-      });
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/auth/login`,
+        {
+          user_SSN_SIN: ssn,
+          password,
+          role,
+        }
+      );
 
       const access_token = res.data["access_token"];
       const token: Token = jwt.decode(access_token, "", true);

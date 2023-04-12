@@ -43,6 +43,14 @@ Start the development server: `yarn dev`
 
 Open your browser and go to http://localhost:3000
 
+Create a `.env` file in the `/frontend` directory.
+
+In the file, include the following lines: 
+
+```
+NEXT_PUBLIC_URL=(the URL the backend is running on. The flash app should print to the consol running on URL. Use that URL here.)
+```
+
 ### Building the Frontend for Production
 
 To build the project for production, follow these steps:
@@ -60,12 +68,13 @@ Open your browser and go to http://localhost:3000
 Before you begin, ensure you have met the following requirements:
 
 - [Python](https://www.python.org/doc/) installed
+- [PostgreSQL](https://www.postgresql.org/) installed
 
 ### Installing the backend
 
-To install the frontend dependencies, follow these steps:
+To install the backend dependencies, follow these steps:
 
-Navigate to the frontend directory: `cd backend`
+Navigate to the backend directory: `cd backend`
 
 Install dependencies by running the following in your command line: `pip install -r requirements.txt`
 
@@ -73,14 +82,16 @@ Setup an environment variable file of format `.env` in the root backend director
 
 In the file, include the following lines: 
 
-- DB_HOST=localhost
-- DB_PORT=(add your database port here -- typically 5432)
-- DB_NAME=(add your database name here)
-- DB_USER=(add your database user here -- typically postgres)
-- DB_PASSWORD=(add your database password here)
-- SECRET_KEY=mysecretkey
-- DEBUG=False
-- JWT_SECRET_KEY=mynotsosecretkey
+```
+DB_HOST=localhost
+DB_PORT=(add your postgresql database port here -- typically 5432)
+DB_NAME=(add your postgresql database name here)
+DB_USER=(add your postgresql database user here -- typically postgres)
+DB_PASSWORD=(add your database password here)
+SECRET_KEY=mysecretkey
+DEBUG=False
+JWT_SECRET_KEY=mynotsosecretkey
+```
 
 ### Running the Backend
 

@@ -5,6 +5,7 @@ import { Container, Text, Box, Center, Loader, Flex } from "@mantine/core";
 import Room from "~/components/Room";
 import Header from "~/components/Header";
 import useSearchQuery from "~/utils/useSearchQuery";
+import useHotelChains from "~/utils/useHotelChains";
 import { HotelChainSearch, HotelChainInfo, RoomInfo, HotelInfo } from "~/types";
 
 type RoomQuery = { room: RoomInfo; hotel: HotelInfo };
@@ -47,11 +48,16 @@ export default function Home() {
   const [result, setResult] = useState<HotelChainSearch[]>([]);
   const [loading, setLoading] = useState(true);
   const firstRender = useRef(true);
-  const [hotelChains, setHotelChains] = useState<HotelChainInfo[]>([]);
+  const [hotelChains, setHotelChains] = useHotelChains((state) => [
+    state.hotelChains,
+    state.setHotelChains,
+  ]);
 
   useEffect(() => {
     axios
-      .get<HotelChainInfo[]>("http://localhost:5000/hotel_chain/hotel_chain")
+      .get<HotelChainInfo[]>(
+        `${process.env.NEXT_PUBLIC_URL}/hotel_chain/hotel_chain`
+      )
       .then((res) => {
         const { data } = res;
 
@@ -68,17 +74,20 @@ export default function Home() {
       setLoading(true);
 
       axios
-        .get<HotelChainSearch[]>("http://localhost:5000/hotel/hotel/search", {
-          params: formatParameters({
-            start_date: startDate,
-            end_date: endDate,
-            hotel_chain: hotelChain,
-            city: location,
-            star_rating: category,
-            room_capacity: roomCapacity,
-            price_per_night: price,
-          }),
-        })
+        .get<HotelChainSearch[]>(
+          `${process.env.NEXT_PUBLIC_URL}/hotel/hotel/search`,
+          {
+            params: formatParameters({
+              start_date: startDate,
+              end_date: endDate,
+              hotel_chain: hotelChain,
+              city: location,
+              star_rating: category,
+              room_capacity: roomCapacity,
+              price_per_night: price,
+            }),
+          }
+        )
         .then((res) => {
           firstRender.current = false;
           setLoading(false);

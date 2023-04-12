@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps<RentingsProps> = async (
   const token: Token = jwt.decode(access_token, "", true);
 
   const { data } = await axios.get<RentingInfo[]>(
-    `http://localhost:5000/rental/rentals/${token.user_ssn_sin}`,
+    `${process.env.NEXT_PUBLIC_URL}/rental/rentals/${token.user_ssn_sin}`,
     {
       headers: { Authorization: `Bearer ${access_token}` },
     }
