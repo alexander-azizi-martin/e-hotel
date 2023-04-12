@@ -74,7 +74,7 @@ Setup an environment variable file of format .env in the root backend directory.
 In the file, include the following lines: 
 
 - DB_HOST=localhost
-- DB_PORT=(add your database port here)
+- DB_PORT=(add your database port here -- typically 5432)
 - DB_NAME=(add your database name here)
 - DB_USER=(add your database user here -- typically postgres)
 - DB_PASSWORD=(add your database password here)
